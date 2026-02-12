@@ -7,7 +7,7 @@ Contiene notebooks y recursos para el desarrollo de ejercicios y prácticas en e
 
 # Requisitos previos
 
-## 1. Instalar Python
+## Instalar Python
 
 Se requiere **Python 3.8 o superior**.
 
@@ -39,7 +39,7 @@ Se recomienda trabajar con un entorno virtual aislado utilizando `venv`.
 
 ---
 
-## 2. Clonar el repositorio
+## Clonar el repositorio
 
 ```
 git clone https://github.com/juanantoniofr/ETSII_IA.git
@@ -48,7 +48,7 @@ cd ETSII_IA
 
 ---
 
-## 2.1 Crear un entorno virtual con venv
+## Crear un entorno virtual con venv
 
 ```
 python -m venv .venv
@@ -62,7 +62,7 @@ python3 -m venv .venv
 
 ---
 
-## 2.2 Activar el entorno virtual
+## Activar el entorno virtual
 
 ### macOS / Linux
 
@@ -84,7 +84,7 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ---
 
-## 2.3 Actualizar pip
+## Actualizar pip
 
 ```
 pip install --upgrade pip
@@ -92,7 +92,7 @@ pip install --upgrade pip
 
 ---
 
-## 2.4 Instalar Jupyter Lab
+## Instalar Jupyter Lab
 
 ```
 pip install jupyterlab
@@ -100,7 +100,7 @@ pip install jupyterlab
 
 ---
 
-## 2.5 Configurar el kernel de Jupyter
+## Configurar el kernel de Jupyter
 
 Instalar ipykernel:
 
