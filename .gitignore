@@ -1,3 +1,4 @@
 .spyproject/
 spyder-env/
 jupyter-env/
+.ipynb_checkpoints/
