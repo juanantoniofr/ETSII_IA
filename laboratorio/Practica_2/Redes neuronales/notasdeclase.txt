@@ -1,0 +1,61 @@
+import keras
+
+# UV gestor de paquetes para python
+
+# Configuración de la Red Neuronal
+Recetas para capas ocultas -> no hay regla
+Capas de salida -> pista -> tarea es de clasificación o regresión?
+    Cuando hay regresión no puedo poner una capa de activación en la capa de salida.
+
+Plantilla para resolver el ejercicio propuesto (abre la documentación de keras):
+
+from sklearn.model_selection import train_test_split
+from keras import Sequential, Input
+from keras.layers import Dense, Normalization
+
+import pandas as pd
+
+hormigón = 
+
+
+
+(atributos_entrenamiento, atributos_prueba,
+ objetivo_entrenamiento, objetivo_prueba) = 
+
+normalizador = Normalization()
+normalizador.adapt(atributos_entrenamiento.to_numpy())
+
+red_hormigón = Sequential()
+red_hormigón.
+red_hormigón.
+red_hormigón.
+red_hormigón.
+
+
+----
+
+Cuando queremos Experimentar con distintas arquitecturas de la red (cantidad de capas ocultas, cantidad de neuronas en cada capa 
+oculta, función de activación de las capas) e hiperparámetros de entrenamiento 
+(factor de aprendizaje, tamaño de los minilotes, número de épocas) -> se hace con una "grid search/rejilla" o algo parecido que se vio en la práctica
+anterior.
+
+*** Importante para la práctica final ***
+en la rejilla poner -> normalizador -> true/false
+                    -> distintas funciones de activación
+                    -> añadir capas ocultas.
+                    -> dividir los datos de prueba en más subconjuntos.
+truco -> número de neuronas en capas ocultas deben ser potencias de 2 -> por eficiencia
+
+
+----
+De todas las configuraciones posibles (importante para la práctica final) -> poner solo los atributos más significativos
+
+---
+
+
+Ejercicio 2:
+
+El csv tiene columnas categóricas -> que hacer un one-hot -> es una matriz de ceros y unos 
+ojo con las celdas vacías -> se puede eliminar la fila o completar con la mediana, la media....
+Como hay que categorías -> se utiliza un labelBinarize....
+Como el problema es categórico y hay 4 categorías, la salida es un vector de 4 posiciones y suman 1.
