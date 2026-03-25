@@ -4,3 +4,7 @@ jupyter-env/
 .ipynb_checkpoints/
 laboratorio/Practica_3/Procesamiento del lenguaje natural/Filtro antispam/
 laboratorio/Practica_3/Procesamiento del lenguaje natural/Texto predictivo/
+laboratorio/Practica_3/corpora/
+laboratorio/Practica_3/Filtro antispam/
+laboratorio/Practica_3/Texto predictivo/
+laboratorio/Practica_3/tokenizers/
