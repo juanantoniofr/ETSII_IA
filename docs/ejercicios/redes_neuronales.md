@@ -73,3 +73,21 @@ El entrenamiento converge aquí, y los pesos finales aprendidos por el modelo so
 |      **(0, 0)**      |        $(0.0, 0.1, 0.2)$        | $z = 0.0 + 0.1(0) + 0.2(0) = \mathbf{0.0}$    | Como $0.0 \le 0$, no se activa.  | **0** (Negativa)     |
 
 Estos cálculos tabulados aplican directamente la regla matemática del perceptrón clásico, donde la entrada neta se calcula como la suma ponderada de las entradas más el sesgo ($z = w^Tx + b$) y la salida se determina mediante la función umbral, que devuelve 1 estrictamente cuando $z > 0$ y 0 en caso contrario.
+
+## Ejercicio 11.
+
+En la tabla se muestran los vectores de entrada neta ($z^l$) y de activación ($a^l$) calculados capa por capa. Recuerda que para las capas ocultas ($l=2$ y $l=3$) se aplica la función sigmoide vectorizada, mientras que para la capa de salida ($l=4$) se aplica la función identidad (es decir, $a^4 = z^4$).
+
+_(Nota: Los valores han sido redondeados a 4 cifras decimales para mantener la tabla limpia y legible. El superíndice $T$ indica que matemáticamente son vectores columna)._
+
+### Resultados detallados de las capas intermedias y de salida
+
+|   Ejemplo $(x_1, x_2)$    |         Variable         | Capa Oculta 2 ($l=2$)                                             | Capa Oculta 3 ($l=3$)                           | Capa de Salida ($l=4$)   |
+| :-----------------------: | :----------------------: | :---------------------------------------------------------------- | :---------------------------------------------- | :----------------------- |
+| **1** <br> $(1.0, -1.9)$  | **$z^l$** <br> **$a^l$** | $(-2.6400, -0.4500, -0.0200)^T$ <br> $(0.0666, 0.3894, 0.4950)^T$ | $(0.5167, 0.5448)^T$ <br> $(0.6264, 0.6329)^T$  | $-0.0780$ <br> $-0.0780$ |
+| **2** <br> $(-1.7, -3.9)$ | **$z^l$** <br> **$a^l$** | $(-1.4100, -1.4500, -0.7000)^T$ <br> $(0.1962, 0.1899, 0.3318)^T$ | $(0.5211, 0.5717)^T$ <br> $(0.6274, 0.6391)^T$  | $-0.0804$ <br> $-0.0804$ |
+|  **3** <br> $(0.3, 0.0)$  | **$z^l$** <br> **$a^l$** | $(-0.8700, 0.5000, -0.6800)^T$ <br> $(0.2953, 0.6225, 0.3363)^T$  | $(0.7653, 0.1044)^T$ <br> $(0.6825, 0.5261)^T$  | $0.0147$ <br> $0.0147$   |
+| **4** <br> $(-2.4, 4.7)$  | **$z^l$** <br> **$a^l$** | $(4.3800, 2.8500, -2.7000)^T$ <br> $(0.9876, 0.9453, 0.0630)^T$   | $(1.2437, -0.8220)^T$ <br> $(0.7762, 0.3053)^T$ | $0.1907$ <br> $0.1907$   |
+|  **5** <br> $(0.9, 1.1)$  | **$z^l$** <br> **$a^l$** | $(-0.7500, 1.0500, -0.6600)^T$ <br> $(0.3208, 0.7408, 0.3407)^T$  | $(0.8304, -0.0212)^T$ <br> $(0.6964, 0.4947)^T$ | $0.0401$ <br> $0.0401$   |
+
+Esta tabla te será muy útil si en el futuro necesitas practicar a mano la segunda fase del algoritmo (la **retropropagación** del error hacia atrás). Cuando tengas que calcular los "Deltas" ($\Delta^3$ o $\Delta^2$), simplemente tendrás que usar los vectores $a^l$ que acabamos de tabular aquí para evaluar las derivadas locales de la sigmoide, recordando el truco de que $\sigma'(z^l) = a^l \odot (1 - a^l)$.
