@@ -43,6 +43,51 @@ Considera un problema de clasificación de correos electrónicos en "Spam" y "No
 
 Se pide: Usando el modelo de **bolsa de palabras** y un clasificador **Naive Bayes Multinomial con suavizado de Laplace ($k=1$)**, calcula las probabilidades y determina si el nuevo correo $D_{nuevo} =$ "oferta hola gratis" sería clasificado como Spam o No Spam.
 
+**Solución**
+Vocabulario = {oferta,premio,hola,gratis}
+
+Corpus.
+Spam -> D_1 = "oferta premio", D_2 = "oferta gratis gratis", D_3 = "premio gratis"
+No spam -> D_4 = "hola hola", D_5 = "Hola premio"
+
+**Bolsa de palabras**
+
+- Contamos cuantas veces ocurre los términos del vocabulario en cada documento: n<sub>D,t</sub>
+
+D_1 -> (1 1 0 0)
+D_2 -> (1 0 0 2)
+D_3 -> (0 1 0 1)
+D_4 -> (0 0 0 2)
+D_5 -> (0 1 1 0)
+
+**naive Bayes Multinomial**
+
+- 1. Calcular las probabilidades a priori
+     P(spam) = 3/5
+     P(no-spam) = 2/5
+- 2. Calcular las probabilidades condicionadas de cada término del documento pertenezca a la clase c => P(t|c) = Cuantas veces aparece t en todos los documentos de la clase c / número total de palabras en la clase c.
+
+Número total de palabras en la clase "spam": 7
+Término únicos en la clase "spam": 3
+Número toal de palabras en la clase "no spam": 4
+Término únicos en la clase "no-spam": 2
+
+D_nuevo ="oferta hola gratis"
+D_nuevo=(1 0 1 1)
+
+P(oferta|spam)=3+1/7+3
+P(hola|spam)=0+1/7+3
+P(gratis|spam)=3+1/7+3
+
+P(oferta|no-spam)=0+1/4+2
+P(hola|no-spam)=2+1/4+2
+P(gratis|no-spam)=0+1/4+2
+
+- Regla de decisión: multiplicar P(c) por las P(t|c) elevado al n<sub>D,t</sub>
+
+Clase spam para D*nuevo =3/5 * 4/10 _ 1/10 _ 4/10
+Calse no-spam para D*nuevo = 2/5 * 1/6 _ 3/6 _ 1/6
+
 **Problema 2: Redes Neuronales - Perceptrón (1.50 puntos)**
 Considera un perceptrón con función de activación umbral (devuelve 1 si $z > 0$, y 0 si $z \le 0$). Sus parámetros iniciales son:
 
@@ -58,18 +103,18 @@ Dado el siguiente conjunto de entrenamiento ordenado:
 Se pide: Realiza paso a paso **una única iteración (época)** del algoritmo de entrenamiento del perceptrón (método de descenso) procesando $E_1$ y luego $E_2$. Muestra cuáles son los pesos finales ($w_1$, $w_2$) y el sesgo ($b$) al terminar.
 
 Formulas a aplicar
-actualización de pesos: wi <- wi + (y - a) f_aprendizaje
-calculo de z: a = w0 _ 1 + w1 _ x1 + w2 \* x2
+actualización de pesos: wi <- wi + (y - a) f*aprendizaje
+calculo de z: a = w0 * 1 + w1 \_ x1 + w2 \* x2
 salida del perceptron: umbral(z)
 
-E_1 = (1,1)
-z = 0.1 _ 1 + 0.2 _ 1 + (-0,1) _ 1 = 0.2 => f(z) = 1, como y = 0 => Fallo => se actualizan los pesos
+E*1 = (1,1)
+z = 0.1 * 1 + 0.2 _ 1 + (-0,1) _ 1 = 0.2 => f(z) = 1, como y = 0 => Fallo => se actualizan los pesos
 w0 <- 0.1 + (0 - 1) _ 0.1 = 0 => w0 = 0
 w1 <- 0.2 + (0 - 1) _ 0.1 = 0.1 => w1 = 0.1
-w2 <- -0.1 + (0 - 1) _ 0.1 = 0 => w2 = 0
+w2 <- -0.1 + (0 - 1) \_ 0.1 = 0 => w2 = 0
 
-E_2 ? (1,0)
-z = (0 _ 1) + (0.1 _ 1) + (0 \* 0)= 0.1 => f(z) = 1, como y es 1 => Acierto => no se actualizan los pesos
+E*2 ? (1,0)
+z = (0 * 1) + (0.1 \_ 1) + (0 \* 0)= 0.1 => f(z) = 1, como y es 1 => Acierto => no se actualizan los pesos
 
 Fin de la primera época
 
