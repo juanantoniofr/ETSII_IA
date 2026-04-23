@@ -231,3 +231,32 @@ En este dominio los hechos se especifican a partir de los siguientes predicados:
     - _objetivo:_ en_destino(PE0), en_destino(PE1)
 
 3.  **Especificar un posible plan solución** del problema anterior y comprobar que efectivamente lo es describiendo la secuencia de estados que se obtiene al aplicar las acciones contenidas en el plan.
+
+**PLAN** = { bajar(PL1,PL0), entrar(PE0, PL0), subir (PL0,PL1), subir(PL1,PL2), salir(PE0,PL2), subir(PL2,PL3), entrar(PE1,PL3), bajar(PL3,PL2), bajar(PL2,PL1), bajar(PL1,PL0), salir(PE0,PL0)}
+
+**Traza**
+
+- _Estado Inicial:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), ascensor_en(PL1), origen(PE0,PL0), destino(PE0,PL2), fuera_ascensor(PE0), origen(PE1,PL3), destino(PE1,PL0), fuera_ascensor(PE1) }
+
+- **Acción 1 bajar(PL1,PL0):**
+  - _Estado:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), origen(PE0,PL0), destino(PE0,PL2), fuera_ascensor(PE0), origen(PE1,PL3), destino(PE1,PL0), fuera_ascensor(PE1), ascensor_en(PL0) }
+- **Acción 2 entrar(PE0,PL0):**
+  - _Estado:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), origen(PE0,PL0), destino(PE0,PL2), origen(PE1,PL3), destino(PE1,PL0), fuera_ascensor(PE1), ascensor_en(PL0) }
+- **Acción 3 sublir(PL0,PL1):**
+  - _Estado:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), origen(PE0,PL0), destino(PE0,PL2), origen(PE1,PL3), destino(PE1,PL0), fuera_ascensor(PE1), ascensor_en(PL1) }
+- **Acción 4 sublir(PL1,PL2):**
+  - _Estado:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), origen(PE0,PL0), destino(PE0,PL2), origen(PE1,PL3), destino(PE1,PL0), fuera_ascensor(PE1), ascensor_en(PL2) }
+- **Acción 5 salir(PE0,PL2):**
+  - _Estado:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), origen(PE0,PL0), destino(PE0,PL2), origen(PE1,PL3), destino(PE1,PL0), fuera_ascensor(PE1), ascensor_en(PL2), fuera_ascensor(PE0), **en_destino(PE0)** }
+- **Acción 6 subir(PL2,PL3):**
+  - _Estado:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), origen(PE0,PL0), destino(PE0,PL2), origen(PE1,PL3), destino(PE1,PL0), fuera_ascensor(PE1), ascensor_en(PL3), fuera_ascensor(PE0), **en_destino(PE0)** }
+- **Acción 7 entrar(PE1,PL3):**
+  - _Estado:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), origen(PE0,PL0), destino(PE0,PL2), origen(PE1,PL3), destino(PE1,PL0), ascensor_en(PL3), fuera_ascensor(PE0), **en_destino(PE0)** }
+- **Acción 8 bajar(PL3,PL2):**
+  - _Estado:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), origen(PE0,PL0), destino(PE0,PL2), origen(PE1,PL3), destino(PE1,PL0), ascensor_en(PL2), fuera_ascensor(PE0), **en_destino(PE0)** }
+- **Acción 9 bajar(PL2,PL1):**
+  - _Estado:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), origen(PE0,PL0), destino(PE0,PL2), origen(PE1,PL3), destino(PE1,PL0), ascensor_en(PL1), fuera_ascensor(PE0), **en_destino(PE0)**s }
+- **Acción 10 bajar(PL1,PL0):**
+  - _Estado:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), origen(PE0,PL0), destino(PE0,PL2), origen(PE1,PL3), destino(PE1,PL0), ascensor_en(PL0), fuera_ascensor(PE0), **en_destino(PE0)** }
+- **Acción 11 salir(PE1,PL0):**
+  - _Estado:_ { superior(PL3,PL2), superior(PL3,PL1),superior(PL3,PL0), superior(PL2,PL1), superior(PL2,PL0), superior(PL1,PL0), origen(PE0,PL0), destino(PE0,PL2), origen(PE1,PL3), destino(PE1,PL0), ascensor_en(PL0), fuera_ascensor(PE0), **en_destino(PE0)**, fuera_ascensor(PE1), **en_destino(PE1)** }

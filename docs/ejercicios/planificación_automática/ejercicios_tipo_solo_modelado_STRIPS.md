@@ -128,50 +128,6 @@ Todas las $N$ pelotas deben estar sueltas en la habitación B:
 Representar en el formalismo STRIPS el siguiente dominio: hay varias ciudades, cada una de ellas conteniendo varias localizaciones, algunas de las cuales son aeropuertos; hay también camiones, que pueden moverse de una localización a
 otra dentro de una misma ciudad, y aviones, que pueden volar entre aeropuertos; el objetivo es transportar diversos paquetes de ciertas localizaciones de partida a ciertas localizaciones de llegada, que pueden estar en la misma o en otra ciudad.
 
-- **Predicados**
-  - { CAMION_EN(camion_c, almacen_ij) | c=1,....,C, i=1,.....,N; j=1,...,M} : Camión `c` en almacén `j` de la ciudad `i`.
-  - { AVION_EN(avion_a, aeorpuerto_ik) | a=1,....,A; i=1,.....,N; k=1,...,K} : Avión `a` en el aeropuerto `k` de la ciudad `i`c
-  - { PAQUETE_EN_ALMACEN(paquete_p, almacen_ij) | p=1,....,P; i=1,.....,N; j=1,...,M} : Paquete `p` en el almacén `j` de la ciudad `i`
-  - { PAQUETE_EN_AEROPUERTO(paquete_p, aeorpuerto_ik) | p=1,....,P; i=1,.....,N; k=1,...,K} : Paquete `p` en el aeropuerto `k` de la ciudad `i`
-  - { PAQUETE_EN_AVIÓN(paquete_p, avión_a) | p=1,....P; a=1,.....,A; } : Paquete `p` en el avión `a`
-  - { PAQUETE_EN_CAMIÓN(paquete_p, camion_a) | p=1,....P; c=1,.....,C; } : : Paquete `p` en el camión `c`
-
-- **Acciones**
-  - IR_A(camion_c, almacen_ij, almacen_ik) | a=1,....A; i=1,....N; j,k=1,...,M; : El camión `a` se desplaza del almacén `j` al `k` de la ciudad `i`
-    - _Precondiciones:_ CAMION_EN(camion_c, almacen_ij)
-    - _Lista de borrado:_ CAMION_EN(camion_c, almacen_ij)
-    - _Lista de adición:_ CAMION_EN(camion_c, almacen_ik)
-  - VOLAR_A(avion_a, aeropuerto_ik, aeorpuerto_jl) : El avión `a` vuela del aeropuerto `k` de la ciudad `i` al aeropuerto `l` de la ciudad `j`.
-    - _Precondiciones:_ AVION_EN(avion_a, aeorpuerto_ik)
-    - _Lista de borrado:_ AVION_EN(avion_a, aeorpuerto_ik)
-    - _Lista de adición:_ AVION_EN(avion_a, aeorpuerto_jl)
-  - CARGAR_PAQUETE_EN_CAMIÓN(paquete_p, camion_c, alamcen_ij)
-    - _Precondiciones:_ CAMION_EN_ALMACÉN(camion_c, almacen_ij), PAQUETE_EN_ALMACÉN(paquete_p, almacen_ij)
-    - _Lista de borrado:_ PAQUETE_EN_ALMACÉN(paquete_p, almacen_ij)
-    - _Lista de adición:_ PAQUETE_EN_CAMIÓN(paquete_p, camion_a)
-  - CARGAR_PAQUETE_EN_AVIÓN(paquete_p, avion_a, aeropuerto_ij )
-    - _Precondiciones:_ AVION_EN(avion_a, aeorpuerto_ij), PAQUETE_EN_AEROPUERTO(paquete_p, aeorpuerto_ij),
-    - _Lista de borrado:_ PAQUETE_EN_AEROPUERTO(paquete_p, aeorpuerto_ij)
-    - _Lista de adición:_ PAQUETE_EN_AVIÓN(paquete_p, avión_a)
-  - DESCARGAR_PAQUETE_DE_CAMIÓN(paquete_p, camion_c, alamcen_ij)
-    - _Precondiciones:_ CAMION_EN_ALMACÉN(camion_c, almacen_ij), PAQUETE_EN_CAMIÓN(paquete_p, camion_a)
-    - _Lista de borrado:_ PAQUETE_EN_CAMIÓN(paquete_p, camion_a)
-    - _Lista de adición:_ PAQUETE_EN_ALMACÉN(paquete_p, almacen_ij)
-  - DESCARGAR_PAQUETE_DE_AVIÓN(paquete_p, avion_a, aeropuerto_ij, alamcen_kl )
-    - _Precondiciones:_ PAQUETE_EN_AVIÓN(paquete_p, avión_a), AVION_EN(avion_a, aeorpuerto_ij)
-    - _Lista de borrado:_ PAQUETE_EN_AVIÓN(paquete_p, avión_a)
-    - _Lista de adición:_ PAQUETE_EN_ALMACÉN(paquete_p, almacen_kl)
-
-  -**estado inicial**
-  - { PAQUETE_EN(paquete_p, almacen_ij) | p=1,....,P; i=1,.....,N; j=1,...,M} : Paquete `p` en el almacén `j` de la ciudad `i`
-  - { PAQUETE_EN(paquete_p, aeorpuerto_ik) | p=1,....,P; i=1,.....,N; k=1,...,K} : Paquete `p` en el aeropuerto `k` de la ciudad `i`
-
-  -**OBJETIVO**
-  - { PAQUETE_EN(paquete_p, almacen_ij) | p=1,....,P'; i=1,.....,N; j=1,...,M} : Paquete `p` en el almacén `j` de la ciudad `i`, con P != P'
-  - { PAQUETE_EN(paquete_p, aeorpuerto_ik) | p=1,....,P'; i=1,.....,N; k=1,...,K} : Paquete `p` en el aeropuerto `k` de la ciudad `i`, , con P != P'
-
-¡Es completamente normal que te hayas agobiado con la notación! Te has enfrentado al ejercicio más complejo del boletín a nivel de abstracción.
-
 Has caído en una trampa muy común cuando se empieza a programar en STRIPS: **intentar incrustar matrices, subíndices matemáticos ($i, j, k$) y tipos de datos directamente en el nombre de las variables y predicados**.
 
 En STRIPS clásico, el motor de planificación no entiende de "índices de ciudades" ni sabe qué es un "almacén_ij". En su lugar, el formalismo STRIPS emplea una estrategia mucho más elegante: utilizar **predicados unarios para definir las propiedades/tipos** de las cosas y **predicados binarios para definir las relaciones estáticas** entre ellas.
