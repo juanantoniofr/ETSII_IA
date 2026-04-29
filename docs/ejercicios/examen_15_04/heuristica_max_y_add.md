@@ -46,3 +46,5 @@ Esta heurística es casi idéntica a la anterior, pero cambia drásticamente en 
 
 - **$h^{\max}$** es optimista (es una heurística "admisible"). Piensa: _"Si tengo que hacer la tarea A que cuesta 3 y la tarea B que cuesta 5, como puedo hacerlas a la vez, el coste total será 5"_.
 - **$h^{\text{add}}$** es pesimista y no toma en cuenta que una misma acción podría ayudar a lograr ambas metas (es "inadmisible"). Piensa: _"Si tengo que hacer la tarea A que cuesta 3 y la tarea B que cuesta 5, el coste total será 8"_. Aunque sobreestima el coste, suele guiar a los algoritmos de búsqueda de forma mucho más rápida en la práctica.
+
+![alt text](image.png)
