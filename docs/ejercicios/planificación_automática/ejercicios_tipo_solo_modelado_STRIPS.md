@@ -73,6 +73,10 @@ Representar en el formalismo STRIPS el siguiente dominio: hay dos habitaciones c
 
 ### Solución del Ejercicio 5: Robot, pinzas y pelotas
 
+**0. Constantes**
+
+- Constantes: { `h1`, `h2`, `p1`, `p2`, ..., `pN`, `pinza1`, `pinza2` }
+
 **1. Predicados**
 
 - `ROBOT_EN(h)`: El robot está en la habitación `h`.
@@ -81,7 +85,12 @@ Representar en el formalismo STRIPS el siguiente dominio: hay dos habitaciones c
 - `EN_PINZA_2(p)`: La pelota `p` está sujeta por la pinza 2.
 - `PINZA1_LIBRE()`: La pinza 1 del robot está vacía.
 - `PINZA2_LIBRE()`: La pinza 2 del robot está vacía.
-- `CONECTADA(h1, h2)`: Existe conexión entre la habitación `h1` y la `h2`.
+- `CONECTADA(h1, h2)`: Existe conexión entre la habitación `h1` y la `h2`. (Profe -> No hace falta)
+
+**- Predicados según solución expuesta en clase**
+ROBOT_EN(h)
+LIBRE(z)
+sujetando(p,z)
 
 **2. Acciones**
 
@@ -109,6 +118,23 @@ Representar en el formalismo STRIPS el siguiente dominio: hay dos habitaciones c
   - _Precondiciones:_ `ROBOT_EN(h)`, `EN_PINZA_2(p)`
   - _Lista de borrado:_ `EN_PINZA_2(p)`
   - _Lista de adición:_ `PELOTA_EN(p, h)`, `PINZA2_LIBRE()`
+
+**- Acciones según solución expuesta en clase**
+
+- mover(h1,h2)
+  - _Precondiciones:_ robot_en(h1)
+  - _Lista de borrado:_ robot_en(h1)
+  - _Lista de adición:_ robot_en(h2)
+
+- coger(z,p,h)
+  - _Precondiciones:_ pelota_en(p,h)
+  - _Lista de borrado:_ libre(z)
+  - _Lista de adición:_ sujetando(p,z)
+
+- soltar(z,p,h)
+  - _Precondiciones:_ pelota_en(h), sujeta(z,p)
+  - _Lista de borrado:_ sujetando(z,p)
+  - _Lista de adición:_ pelota_en(h), libre(z)
 
 **3. Estado Inicial (I)**
 Asumiendo que empezamos en la habitación A y que hay $N$ pelotas ($p_1, p_2, \dots, p_N$):
