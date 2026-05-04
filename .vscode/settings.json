@@ -1,3 +1,19 @@
 {
-  "cSpell.words": ["computacionalmente", "heurística", "STRIPS"]
+  "cSpell.words": [
+    "accion",
+    "astar",
+    "computacionalmente",
+    "heurística",
+    "heurísticas",
+    "heurístico",
+    "hmax",
+    "Instananeous",
+    "localizacion",
+    "Oneshot",
+    "pddl",
+    "plannig",
+    "sobreestima",
+    "STRIPS",
+    "submetas"
+  ]
 }

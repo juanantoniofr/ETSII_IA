@@ -6,7 +6,7 @@ Por un lado especificamos el problema y por otro usamos un planificador para res
 
 - Bibliotecas
   - unified-planning -> Especificar el problema (compatible con distintos planificadores)
-  - up-fast-downward -> Planificador (en nuestro caso, puede ser otro)
+  - up-fast-downward -> Planificador (elegimos este pero puede ser otro)
 
 ## 1. unified-planning
 
@@ -168,9 +168,9 @@ Llegado este punto, ya tenemos definido el **dominio del problema**, y lo podemo
 
 Para completar la definición o especificación del problema nos falta.
 
-- 1. Objetos concretos usados por esa instancia del problema.
-- 2. Establece a true los hechos del estado inicial.
-- 3. Se establece el objetivo.
+- 1. Objetos concretos usados por esa **instancia del problema**.
+- 2. Establecer a true los hechos del estado inicial.
+- 3. Establecer el objetivo.
 
 ```python
 
@@ -203,5 +203,23 @@ Para completar la definición o especificación del problema nos falta.
 
     problema_transporte_de_paquetes.add_goal(camion_en(C, lugares[0]))
     problema_transporte_de_paquetes.add_goal(paquete_en(P, lugares[3]))
+
+```
+
+También podemos salvar el problema a un fichero pddl.
+
+```python
+
+    escritor_PDDL.write_problem('problema_transporte_de_paquetes.pddl')
+```
+
+## 2. Planificación
+
+- Buscamos un plan usando nuestro planificador (fast-downward), indicando que use los algoritmo A<sup>∗</sup> con heurística h<sup>max</sup>.
+
+```python
+
+    planificador = OneshotPlanner(name='fast-downward', params={'fast_downward_search_config': 'astar(hmax())'})
+    plan = planificador.solve(problema_transporte_de_paquetes)
 
 ```
