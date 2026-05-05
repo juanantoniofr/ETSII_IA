@@ -45,8 +45,8 @@ Por un lado especificamos el problema y por otro usamos un planificador para res
 
     paquete = UserType('Paquete')
     localización = UserType('Localización')
-    lugar = UserType('Lugar', father='localización')
-    camion = UserType('Camion', father='localización')
+    lugar = UserType('Lugar', father=localización)
+    camion = UserType('Camion', father=localización)
 
 
 ```
