@@ -134,3 +134,5 @@ El sistema de ecuaciones lineales que te pide el ejercicio y que debes resolver 
 
 - Supongamos que hemos resuelto las ecuaciones anteriores y que conocemos $U^*$.  
   **Describir cómo podríamos obtener una política óptima.**
+
+## Ejercicio 2

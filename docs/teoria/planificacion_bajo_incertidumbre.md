@@ -36,6 +36,37 @@ Para resolver esto, la formulación matemática eleva su complejidad de manera s
 - **Fórmula:** **$U_\pi(s) = \mathbb{E}[U(h|\pi)] = \sum_{h \in H(s)} \mathbb{P}(h|\pi) U(h|\pi)$**.
 - **Evolución:** Esta ecuación representa la cúspide teórica, ya que **fusiona la Parte 3 y la Parte 4**. Multiplica la utilidad exacta de cada historia posible ($U$) por su probabilidad de ocurrir ($\mathbb{P}$) y suma todos esos escenarios.
 
+#### 5.1 Cota superior del valor esperado de la utilidad (U) de cualquier historia
+
+El **valor esperado de la utilidad (U)** de cualquier historia (o trayectoria) está limitado superiormente por esa expresión.
+
+##### La Cota Superior de la Utilidad
+
+Si definimos la utilidad de una secuencia de recompensas como la suma descontada:
+
+$$U([r_0, r_1, r_2, \dots]) = \sum_{t=0}^{\infty} \gamma^t r_t$$
+
+Donde:
+
+- **$R_{max}$**: Es la recompensa máxima posible que el agente puede obtener en un solo paso.
+- **$\gamma$ (gamma)**: Es el factor de descuento ($0 \le \gamma < 1$).
+
+Si el agente tuviera la "suerte" extrema de recibir la recompensa máxima en cada uno de los infinitos pasos de tiempo, la suma geométrica resultante nos da el límite máximo:
+
+$$U_{max} = \frac{R_{max}}{1 - \gamma}$$
+
+---
+
+##### ¿Por qué es importante esta cota?
+
+1. **Convergencia:** Garantiza que, aunque el horizonte sea infinito, la utilidad total no "explote" y se mantenga en un valor finito. Sin el factor $\gamma$, la suma podría tender al infinito, haciendo imposible comparar qué camino es mejor.
+2. **Horizonte Efectivo:** Nos dice que lo que ocurra muy lejos en el futuro tiene un impacto despreciable. El agente se enfoca en un "presente extendido".
+3. **Algoritmos de Aprendizaje:** Muchos algoritmos (como _Value Iteration_) utilizan esta cota para determinar cuándo detenerse. Si el cambio en la utilidad es menor que un margen de error basado en esta relación, sabemos que estamos cerca de la solución óptima.
+
+##### El matiz del signo
+
+Solo un pequeño detalle técnico: nota que en tu fórmula mencionaste "gamma - 1". En realidad, como $\gamma$ es menor que 1 (por ejemplo, 0.9), se usa **$1 - \gamma$** para que el denominador sea positivo. Si usaras $\gamma - 1$, obtendrías un número negativo, ¡lo cual arruinaría tus cálculos de rendimiento!
+
 ### 6. La simplificación práctica (El sistema de ecuaciones)
 
 Calcular infinitas historias con la fórmula anterior es imposible en la práctica. Por ello, las matemáticas permiten simplificar esa compleja esperanza matemática en una ecuación recursiva y elegante:
@@ -58,7 +89,7 @@ Por dos razones derivadas de la matemática del modelo:
 
 Como las utilidades son las incógnitas que queremos averiguar, conformamos un sistema de ecuaciones lineales cerrado donde el número de ecuaciones coincide con el número de variables (los estados). Resolver algebraicamente este sistema nos da el valor exacto de la utilidad de todos los estados sin tener que simular ni una sola historia infinita.
 
-#### 6.4 Un Ejemplo Práctico
+#### 6.2 Un Ejemplo Práctico
 
 Imagina un problema donde un robot se mueve por un mapa con 5 localizaciones (los estados $s_1, s_2, s_3, s_4, s_5$) intentando llegar al estado $s_4$, que da una gran recompensa. Las acciones tienen un coste (gasto de energía) y en ocasiones el movimiento falla.
 
