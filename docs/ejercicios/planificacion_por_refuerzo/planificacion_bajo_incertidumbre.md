@@ -136,3 +136,159 @@ El sistema de ecuaciones lineales que te pide el ejercicio y que debes resolver 
   **Describir cómo podríamos obtener una política óptima.**
 
 ## Ejercicio 2
+
+Aquí tienes el texto del **Ejercicio 2** convertido a Markdown, limpio y estructurado:
+
+---
+
+## Ejercicio 2
+
+Consideremos el proceso de decisión de Markov tal que $S = \{s_1, s_2, s_3, s_4\}, \quad A = \{a_1, a_2, a_3\}$
+
+---
+
+### Probabilidades de transición
+
+#### Acción $a_1$
+
+|         | $$s_1$$ | $$s_2$$ | $$s_3$$ | $$s_4$$ |
+| ------- | ------- | ------- | ------- | ------- |
+| $$s_1$$ | 0.0     | 0.0     | 0.2     | 0.8     |
+| $$s_4$$ | 0.0     | 0.0     | 0.5     | 0.5     |
+
+---
+
+#### Acción $a_3$
+
+|         | $$s_1$$ | $$s_2$$ | $$s_3$$ | $$s_4$$ |
+| ------- | ------- | ------- | ------- | ------- |
+| $$s_2$$ | 1.0     | 0.0     | 0.0     | 0.0     |
+| $$s_3$$ | 1/3     | 1/3     | 0.0     | 1/3     |
+
+---
+
+#### Acción $a_2$
+
+|         | $$s_1$$ | $$s_2$$ | $$s_3$$ | $$s_4$$ |
+| ------- | ------- | ------- | ------- | ------- |
+| $$s_1$$ | 1/3     | 1/3     | 1/3     | 0.0     |
+| $$s_3$$ | 1/3     | 1/3     | 0.0     | 1/3     |
+
+---
+
+### Recompensas
+
+$(s_1) = -3,\quad R(s_2) = -2,\quad R(s_3) = 1,\quad R(s_4) = 1$
+
+---
+
+### Costes de acciones
+
+$
+\begin{aligned}
+C(s_1, a_1) &= 2, \quad C(s_4, a_1) = 2 \\
+C(s_1, a_2) &= 3, \quad C(s_3, a_2) = 3 \\
+C(s_3, a_3) &= 3, \quad C(s_2, a_3) = 1
+\end{aligned}
+$
+
+---
+
+### Factor de descuento
+
+$
+\gamma = 0.5
+$
+
+---
+
+### Política dada
+
+$\pi(s_1) = a_1,\quad \pi(s_2) = a_3,\quad \pi(s_3) = a_2,\quad \pi(s_4) = a_1$
+
+---
+
+## Se pide
+
+1.  **Calcular $U_\pi(s)$** para cada $s \in S$ planteando y resolviendo el sistema de ecuaciones que caracteriza $U_\pi$
+
+2.  Dada la función de utilidad inicial:$U_0(s_1) = -2,\quad U_0(s_2) = -1,\quad U_0(s_3) = 1,\quad U_0(s_4) = 2$. Calcular la función de utilidad que se obtiene tras **una iteración del algoritmo de iteración de valores**.
+
+3.  Describir:
+    - Hasta cuándo el algoritmo anterior seguiría realizando iteraciones
+    - Cómo se obtendría entonces una **política óptima**
+
+---
+
+## Solución
+
+1.
+
+Para calcular la utilidad esperada de cada estado $s$ del conjunto de estados $S$ bajo la política dictada, debemos plantear y resolver un sistema de ecuaciones lineales. Basándonos en la teoría de los Procesos de Decisión de Markov, la ecuación teórica que caracteriza este cálculo es:
+
+**$U(s) = R(s, \pi(s)) + \gamma \sum_{s' \in S} P_{\pi(s)}(s'|s) U(s')$**
+
+Para ello, dividiremos el cálculo en tres pasos estructurados: determinar el rendimiento neto de cada estado, plantear el sistema de ecuaciones y resolverlo matemáticamente.
+
+### Paso 1: Rendimiento neto de aplicar la política en cada estado
+
+El rendimiento neto (o recompensa inmediata) de aplicar una acción en un estado se define restando el coste de la acción a la recompensa bruta del estado: $R(s, a) = R(s) - C(s, a)$.
+
+La política dada en el enunciado es $\pi(s_1) = a_1$, $\pi(s_2) = a_3$, $\pi(s_3) = a_2$ y $\pi(s_4) = a_1$. Aplicando los datos de recompensas y costes del ejercicio, calculamos el rendimiento neto para cada estado:
+
+- **Estado $s_1$:** $R(s_1, a_1) = R(s_1) - C(s_1, a_1) = -3 - 2 = \mathbf{-5}$
+- **Estado $s_2$:** $R(s_2, a_3) = R(s_2) - C(s_2, a_3) = -2 - 1 = \mathbf{-3}$
+- **Estado $s_3$:** $R(s_3, a_2) = R(s_3) - C(s_3, a_2) = 1 - 3 = \mathbf{-2}$
+- **Estado $s_4$:** $R(s_4, a_1) = R(s_4) - C(s_4, a_1) = 1 - 2 = \mathbf{-1}$
+
+### Paso 2: Planteamiento del sistema de ecuaciones
+
+Sustituyendo los rendimientos netos anteriores, el factor de descuento $\gamma = 0.5$ y las probabilidades de las tablas de transición $P$ dictadas por la política $\pi$, obtenemos el siguiente sistema de 4 ecuaciones con 4 incógnitas:
+
+1.  **Para $s_1$ (aplica $a_1$):**
+    $U(s_1) = -5 + 0.5 \cdot [0.2 \cdot U(s_3) + 0.8 \cdot U(s_4)]$
+    Simplificada: **$U(s_1) = -5 + 0.1 \cdot U(s_3) + 0.4 \cdot U(s_4)$**
+
+2.  **Para $s_2$ (aplica $a_3$):**
+    $U(s_2) = -3 + 0.5 \cdot [1.0 \cdot U(s_1)]$
+    Simplificada: **$U(s_2) = -3 + 0.5 \cdot U(s_1)$**
+
+3.  **Para $s_3$ (aplica $a_2$):**
+    $U(s_3) = -2 + 0.5 \cdot [\frac{1}{3} \cdot U(s_1) + \frac{1}{3} \cdot U(s_2) + \frac{1}{3} \cdot U(s_4)]$
+    Simplificada: **$U(s_3) = -2 + \frac{1}{6} \cdot U(s_1) + \frac{1}{6} \cdot U(s_2) + \frac{1}{6} \cdot U(s_4)$**
+
+4.  **Para $s_4$ (aplica $a_1$):**
+    $U(s_4) = -1 + 0.5 \cdot [0.5 \cdot U(s_3) + 0.5 \cdot U(s_4)]$
+    Simplificada: **$U(s_4) = -1 + 0.25 \cdot U(s_3) + 0.25 \cdot U(s_4)$**
+
+### Paso 3: Resolución matemática del sistema
+
+Para resolver el sistema, es más fácil operar utilizando fracciones matemáticas y despejar de abajo hacia arriba:
+
+- De la **Ecuación 4**, despejamos $U(s_4)$ agrupando sus términos:
+  $0.75 \cdot U(s_4) = -1 + 0.25 \cdot U(s_3) \rightarrow \frac{3}{4} U(s_4) = -1 + \frac{1}{4} U(s_3) \rightarrow \mathbf{U(s_4) = \frac{U(s_3) - 4}{3}}$
+
+- Sustituimos la variable $U(s_4)$ en la **Ecuación 1** para dejar $U(s_1)$ dependiendo exclusivamente de $U(s_3)$:
+  $U(s_1) = -5 + \frac{1}{10} U(s_3) + \frac{2}{5} \left(\frac{U(s_3) - 4}{3}\right) \rightarrow \mathbf{U(s_1) = -\frac{83}{15} + \frac{7}{30} U(s_3)}$
+
+- Sustituimos este valor de $U(s_1)$ en la **Ecuación 2**:
+  $U(s_2) = -3 + \frac{1}{2} \left(-\frac{83}{15} + \frac{7}{30} U(s_3)\right) \rightarrow \mathbf{U(s_2) = -\frac{173}{30} + \frac{7}{60} U(s_3)}$
+
+- Finalmente, sustituimos $U(s_1)$, $U(s_2)$ y $U(s_4)$ en la **Ecuación 3** y agrupamos todas las constantes y términos en $U(s_3)$:
+  $U(s_3) = -2 + \frac{1}{6}\left(-\frac{83}{15} + \frac{7}{30} U(s_3)\right) + \frac{1}{6}\left(-\frac{173}{30} + \frac{7}{60} U(s_3)\right) + \frac{1}{6}\left(\frac{U(s_3) - 4}{3}\right)$
+  $U(s_3) = -2 - \frac{83}{90} - \frac{173}{180} - \frac{4}{18} + \left(\frac{7}{180} + \frac{7}{360} + \frac{1}{18}\right) U(s_3)$
+  $U(s_3) = -\frac{739}{180} + \frac{41}{360} U(s_3)$
+
+Agrupando $U(s_3)$ y despejando:
+$\left(1 - \frac{41}{360}\right) U(s_3) = -\frac{739}{180} \rightarrow \frac{319}{360} U(s_3) = -\frac{1478}{360} \rightarrow \mathbf{U(s_3) = -\frac{1478}{319}}$
+
+Con el valor numérico exacto de $U(s_3)$, lo sustituimos en las funciones previas para desvelar el resto.
+
+### Resultados finales
+
+Las utilidades esperadas exactas (en forma de fracción para no perder precisión) y sus aproximaciones decimales para cada estado son:
+
+- **$U(s_1) = -\frac{2110}{319} \approx -6.614$**
+- **$U(s_2) = -\frac{2012}{319} \approx -6.307$**
+- **$U(s_3) = -\frac{1478}{319} \approx -4.633$**
+- **$U(s_4) = -\frac{918}{319} \approx -2.878$**
