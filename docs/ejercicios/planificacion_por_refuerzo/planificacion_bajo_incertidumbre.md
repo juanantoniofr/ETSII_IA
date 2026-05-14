@@ -212,14 +212,6 @@ $\pi(s_1) = a_1,\quad \pi(s_2) = a_3,\quad \pi(s_3) = a_2,\quad \pi(s_4) = a_1$
 
 1.  **Calcular $U_\pi(s)$** para cada $s \in S$ planteando y resolviendo el sistema de ecuaciones que caracteriza $U_\pi$
 
-2.  Dada la función de utilidad inicial:$U_0(s_1) = -2,\quad U_0(s_2) = -1,\quad U_0(s_3) = 1,\quad U_0(s_4) = 2$. Calcular la función de utilidad que se obtiene tras **una iteración del algoritmo de iteración de valores**.
-
-3.  Describir:
-    - Hasta cuándo el algoritmo anterior seguiría realizando iteraciones
-    - Cómo se obtendría entonces una **política óptima**
-
----
-
 ## Solución
 
 1.
@@ -292,3 +284,361 @@ Las utilidades esperadas exactas (en forma de fracción para no perder precisió
 - **$U(s_2) = -\frac{2012}{319} \approx -6.307$**
 - **$U(s_3) = -\frac{1478}{319} \approx -4.633$**
 - **$U(s_4) = -\frac{918}{319} \approx -2.878$**
+
+---
+
+## Se pide
+
+1.1 Plantear las **ecuaciones de Bellman** que caracterizan $U^*$.
+
+## solución
+
+La **idea fundamental de las ecuaciones de Bellman** es dar el salto desde la evaluación de una política fija a la búsqueda de la **política óptima**. Mientras que en tu cálculo anterior usabas una acción impuesta por una política $\pi$ dada, las ecuaciones de Bellman buscan caracterizar la **máxima utilidad esperada ($U^*$)** de un estado evaluando _todas_ las acciones aplicables y seleccionando estrictamente la que proporcione el mayor valor esperado.
+
+Matemáticamente, para cada estado $s$, la ecuación se define como:
+**$U(s) = \max_{a \in A(s)} \left( R(s,a) + \gamma \sum_{s' \in S} P_a(s'|s) U(s') \right)$**.
+
+Al introducir el operador $\max$, el sistema de ecuaciones deja de ser lineal y se convierte en un **sistema de ecuaciones no lineales**.
+
+### Cómo aplicar las ecuaciones al Ejercicio 2
+
+Para plantear las ecuaciones de Bellman de este ejercicio, debemos extraer de las tablas de transición qué acciones son ejecutables en cada estado y calcular su rendimiento neto ($R(s,a) = R(s) - C(s,a)$) utilizando $\gamma = 0.5$.
+
+El sistema de ecuaciones de Bellman quedaría planteado de la siguiente manera:
+
+**1. Para el estado $s_1$:**
+Tiene dos acciones aplicables ($a_1$ y $a_2$).
+
+- Rendimiento neto de $a_1$: $R(s_1) - C(s_1, a_1) = -3 - 2 = -5$.
+- Rendimiento neto de $a_2$: $R(s_1) - C(s_1, a_2) = -3 - 3 = -6$.
+- **Ecuación:**
+  $U(s_1) = \max \begin{cases} a_1: \mathbf{-5 + 0.5 \cdot [0.2 \cdot U(s_3) + 0.8 \cdot U(s_4)]} \\ a_2: \mathbf{-6 + 0.5 \cdot [\frac{1}{3} \cdot U(s_1) + \frac{1}{3} \cdot U(s_2) + \frac{1}{3} \cdot U(s_3)]} \end{cases}$
+
+**2. Para el estado $s_2$:**
+Solo tiene la acción $a_3$ aplicable.
+
+- Rendimiento neto de $a_3$: $R(s_2) - C(s_2, a_3) = -2 - 1 = -3$.
+- **Ecuación:**
+  $U(s_2) = \max \begin{cases} a_3: \mathbf{-3 + 0.5 \cdot [1.0 \cdot U(s_1)]} \end{cases}$
+  _(Como solo hay una opción ejecutable, el operador max es trivial)._
+
+**3. Para el estado $s_3$:**
+Tiene dos acciones aplicables ($a_2$ y $a_3$).
+
+- Las dos acciones tienen el mismo coste para este estado ($C = 3$) y además derivan en las mismas probabilidades de transición.
+- Rendimiento neto de ambas: $R(s_3) - C = 1 - 3 = -2$.
+- **Ecuación:**
+  $U(s_3) = \max \begin{cases} a_2: \mathbf{-2 + 0.5 \cdot [\frac{1}{3} \cdot U(s_1) + \frac{1}{3} \cdot U(s_2) + \frac{1}{3} \cdot U(s_4)]} \\ a_3: \mathbf{-2 + 0.5 \cdot [\frac{1}{3} \cdot U(s_1) + \frac{1}{3} \cdot U(s_2) + \frac{1}{3} \cdot U(s_4)]} \end{cases}$
+
+**4. Para el estado $s_4$:**
+Solo tiene la acción $a_1$ aplicable.
+
+- Rendimiento neto de $a_1$: $R(s_4) - C(s_4, a_1) = 1 - 2 = -1$.
+- **Ecuación:**
+  $U(s_4) = \max \begin{cases} a_1: \mathbf{-1 + 0.5 \cdot [0.5 \cdot U(s_3) + 0.5 \cdot U(s_4)]} \end{cases}$
+
+---
+
+## Se pide
+
+2.  Dada la función de utilidad inicial:$U_0(s_1) = -2,\quad U_0(s_2) = -1,\quad U_0(s_3) = 1,\quad U_0(s_4) = 2$. Calcular la función de utilidad que se obtiene tras **una iteración del algoritmo de iteración de valores**.
+
+## Solución
+
+Para resolver este apartado y calcular la función de utilidad tras **la primera iteración ($U_1$)**, debemos aplicar la ecuación principal del algoritmo de iteración de valores.
+
+Como recordamos de nuestra conversación anterior, la fórmula para actualizar la utilidad de un estado evaluando todas las acciones posibles es:
+**$U_{1}(s) = \max_{a \in A(s)} \left( R(s,a) + \gamma \sum_{s' \in S} P_a(s'|s) U_0(s') \right)$**.
+
+Para este cálculo usaremos los datos del Ejercicio 2:
+
+- **Factor de descuento:** $\gamma = 0.5$
+- **Utilidades iniciales dadas:** $U_0(s_1) = -2$, $U_0(s_2) = -1$, $U_0(s_3) = 1$, $U_0(s_4) = 2$
+- **Rendimiento neto de las acciones ($R(s,a) = R(s) - C(s,a)$)** que ya calculamos previamente:
+  - $R(s_1, a_1) = -5$ | $R(s_1, a_2) = -6$
+  - $R(s_2, a_3) = -3$
+  - $R(s_3, a_2) = -2$ | $R(s_3, a_3) = -2$
+  - $R(s_4, a_1) = -1$
+
+Vamos a calcular el valor iterado estado por estado:
+
+### 1. Estado $s_1$
+
+Tiene dos acciones aplicables ($a_1$ y $a_2$).
+
+- **Si aplicamos $a_1$:**
+  $= -5 + 0.5 \cdot [P_{a1}(s_3|s_1) \cdot U_0(s_3) + P_{a1}(s_4|s_1) \cdot U_0(s_4)]$
+  $= -5 + 0.5 \cdot [0.2 \cdot (1) + 0.8 \cdot (2)]$
+  $= -5 + 0.5 \cdot [0.2 + 1.6] = -5 + 0.5 \cdot [1.8] = -5 + 0.9 = \mathbf{-4.1}$
+- **Si aplicamos $a_2$:**
+  $= -6 + 0.5 \cdot [P_{a2}(s_1|s_1) \cdot U_0(s_1) + P_{a2}(s_2|s_1) \cdot U_0(s_2) + P_{a2}(s_3|s_1) \cdot U_0(s_3)]$
+  $= -6 + 0.5 \cdot [\frac{1}{3} \cdot (-2) + \frac{1}{3} \cdot (-1) + \frac{1}{3} \cdot (1)]$
+  $= -6 + 0.5 \cdot [-\frac{2}{3}]$ = $-6 - 0.333 = \mathbf{-6.333}$
+
+Buscamos el máximo entre ambas opciones: $\max(-4.1, -6.333)$.
+➔ **$U_1(s_1) = -4.1$**
+
+### 2. Estado $s_2$
+
+Solo tiene la acción $a_3$ aplicable.
+
+- **Si aplicamos $a_3$:**
+  $= -3 + 0.5 \cdot [P_{a3}(s_1|s_2) \cdot U_0(s_1)]$
+  $= -3 + 0.5 \cdot [1.0 \cdot (-2)]$
+  $= -3 + 0.5 \cdot [-2] = -3 - 1 = \mathbf{-4.0}$
+
+Como solo hay una opción, ese es su máximo.
+➔ **$U_1(s_2) = -4.0$**
+
+### 3. Estado $s_3$
+
+Tiene dos acciones aplicables ($a_2$ y $a_3$). Ambas tienen el mismo coste, recompensa y probabilidades de transición.
+
+- **Si aplicamos $a_2$ o $a_3$:**
+  $= -2 + 0.5 \cdot [P_{a2/a3}(s_1|s_3) \cdot U_0(s_1) + P_{a2/a3}(s_2|s_3) \cdot U_0(s_2) + P_{a2/a3}(s_4|s_3) \cdot U_0(s_4)]$
+  $= -2 + 0.5 \cdot [\frac{1}{3} \cdot (-2) + \frac{1}{3} \cdot (-1) + \frac{1}{3} \cdot (2)]$
+  $= -2 + 0.5 \cdot [-\frac{1}{3}] = -2 - \frac{1}{6} = \mathbf{-\frac{13}{6}}$ (aprox. **-2.167**)
+
+Buscamos el máximo entre ambas (que coinciden): $\max(-2.167, -2.167)$.
+➔ **$U_1(s_3) = -\frac{13}{6} \approx -2.167$**
+
+### 4. Estado $s_4$
+
+Solo tiene la acción $a_1$ aplicable.
+
+- **Si aplicamos $a_1$:**
+  $= -1 + 0.5 \cdot [P_{a1}(s_3|s_4) \cdot U_0(s_3) + P_{a1}(s_4|s_4) \cdot U_0(s_4)]$
+  $= -1 + 0.5 \cdot [0.5 \cdot (1) + 0.5 \cdot (2)]$
+  $= -1 + 0.5 \cdot [0.5 + 1.0] = -1 + 0.5 \cdot [1.5] = -1 + 0.75 = \mathbf{-0.25}$
+
+Como solo hay una opción, ese es su máximo.
+➔ **$U_1(s_4) = -0.25$**
+
+---
+
+### Resultado Final
+
+Tras ejecutar la primera iteración del algoritmo de iteración de valores, la nueva función de utilidad $U_1$ resultante es:
+
+- **$U_1(s_1) = -4.1$**
+- **$U_1(s_2) = -4.0$**
+- **$U_1(s_3) \approx -2.167$** ($-\frac{13}{6}$)
+- **$U_1(s_4) = -0.25$**
+
+El algoritmo continuaría comparando $U_1$ con $U_0$ para ver si la diferencia es menor que la tolerancia de parada $\epsilon$. Como las diferencias aún son notables, seguiría calculando una $U_2$ basándose en estos nuevos valores obtenidos.
+
+---
+
+## Se pide
+
+3.  Describir:
+    - Hasta cuándo el algoritmo anterior seguiría realizando iteraciones
+    - Cómo se obtendría entonces una **política óptima**
+
+## Solución
+
+Para responder a las dos preguntas teóricas del tercer apartado, basándonos en la teoría de la iteración de valores:
+
+### 1. ¿Hasta cuándo el algoritmo anterior seguiría realizando iteraciones?
+
+El algoritmo sigue iterando y calculando nuevas funciones de utilidad ($U_i$) hasta que el cambio entre los valores de una iteración y la siguiente sea lo suficientemente pequeño como para considerar que ha **convergido** hacia los valores óptimos.
+
+Matemáticamente, se utiliza un criterio de parada basado en un valor de tolerancia muy pequeño llamado $\epsilon$. El algoritmo se detiene exactamente cuando la máxima diferencia absoluta entre la utilidad de cualquier estado en la iteración actual y la iteración anterior es estrictamente menor que $\epsilon$:
+**$\max_{s \in S} |U_i(s) - U_{i-1}(s)| < \epsilon$**
+
+### 2. ¿Cómo se obtendría entonces una política óptima?
+
+Una vez que el algoritmo se ha detenido (es decir, cuando ya tenemos la función de utilidad estabilizada que aproxima a $U^*$), la **política óptima ($\pi^*$)** se deriva directamente de esos valores finales.
+
+Para obtenerla, simplemente se evalúa cada estado $s$ de forma independiente y se elige **la acción que maximice el valor esperado futuro**, utilizando las utilidades de la última iteración. La fórmula de la que se extrae la acción ganadora para cada estado es:
+**$\pi(s) \in \arg\max_{a \in A(s)} \left( R(s,a) + \gamma \sum_{s' \in S} P_a(s'|s) U_{final}(s') \right)$**
+
+---
+
+### Cálculo de la Segunda Iteración ($U_2$)
+
+Tal y como me has pedido, aquí tienes la iteración 2 partiendo de los valores de $U_1$ que calculamos en nuestro mensaje anterior:
+
+- **$U_1(s_1) = -4.1$**
+- **$U_1(s_2) = -4.0$**
+- **$U_1(s_3) = -13/6 \approx -2.167$**
+- **$U_1(s_4) = -0.25$**
+
+Aplicamos de nuevo la ecuación de Bellman $\max_{a \in A(s)} \left( R(s,a) + \gamma \sum P_a(s'|s) U_1(s') \right)$ usando $\gamma = 0.5$:
+
+**Estado $s_1$:**
+
+- **Si aplicamos $a_1$:**
+  $= -5 + 0.5 \cdot [0.2 \cdot U_1(s_3) + 0.8 \cdot U_1(s_4)]$
+  $= -5 + 0.5 \cdot [0.2 \cdot (-2.167) + 0.8 \cdot (-0.25)]$
+  $= -5 + 0.5 \cdot [-0.4334 - 0.2] = -5 + 0.5 \cdot [-0.6334] = \mathbf{-5.3167}$ (Valor exacto: $-319/60$)
+- **Si aplicamos $a_2$:**
+  $= -6 + 0.5 \cdot [\frac{1}{3} \cdot U_1(s_1) + \frac{1}{3} \cdot U_1(s_2) + \frac{1}{3} \cdot U_1(s_3)]$
+  $= -6 + 0.5 \cdot [\frac{1}{3} \cdot (-4.1) + \frac{1}{3} \cdot (-4.0) + \frac{1}{3} \cdot (-2.167)]$
+  $= -6 + 0.5 \cdot [\frac{1}{3} \cdot (-10.267)] = -6 + 0.5 \cdot [-3.4223] = \mathbf{-7.7112}$
+  Buscamos el máximo: $\max(-5.3167, -7.7112)$.
+  ➔ **$U_2(s_1) \approx -5.3167$**
+
+**Estado $s_2$:**
+
+- **Si aplicamos $a_3$:**
+  $= -3 + 0.5 \cdot [1.0 \cdot U_1(s_1)] = -3 + 0.5 \cdot [-4.1] = -3 - 2.05 = \mathbf{-5.05}$
+  ➔ **$U_2(s_2) = -5.05$**
+
+**Estado $s_3$:**
+
+- **Si aplicamos $a_2$ o $a_3$:**
+  $= -2 + 0.5 \cdot [\frac{1}{3} \cdot U_1(s_1) + \frac{1}{3} \cdot U_1(s_2) + \frac{1}{3} \cdot U_1(s_4)]$
+  $= -2 + 0.5 \cdot [\frac{1}{3} \cdot (-4.1) + \frac{1}{3} \cdot (-4.0) + \frac{1}{3} \cdot (-0.25)]$
+  $= -2 + 0.5 \cdot [\frac{1}{3} \cdot (-8.35)] = -2 + 0.5 \cdot [-2.7833] = \mathbf{-3.3917}$ (Valor exacto: $-407/120$)
+  ➔ **$U_2(s_3) \approx -3.3917$**
+
+**Estado $s_4$:**
+
+- **Si aplicamos $a_1$:**
+  $= -1 + 0.5 \cdot [0.5 \cdot U_1(s_3) + 0.5 \cdot U_1(s_4)]$
+  $= -1 + 0.5 \cdot [0.5 \cdot (-2.167) + 0.5 \cdot (-0.25)]$
+  $= -1 + 0.5 \cdot [-1.0835 - 0.125] = -1 + 0.5 \cdot [-1.2085] = \mathbf{-1.6042}$ (Valor exacto: $-53/48$)
+  ➔ **$U_2(s_4) \approx -1.6042$**
+
+**Resultado final de la función $U_2$:**
+
+- **$U_2(s_1) \approx -5.3167$**
+- **$U_2(s_2) = -5.05$**
+- **$U_2(s_3) \approx -3.3917$**
+- **$U_2(s_4) \approx -1.6042$**
+
+Si aplicamos la fórmula matemática del criterio de parada ($||U_i - U_{i-1}|| = \max_{s \in S} |U_i(s) - U_{i-1}(s)| < \epsilon$) a los valores que acabamos de calcular, veríamos las siguientes diferencias absolutas:
+
+- Para $s_1$: $|-5.3167 - (-4.1)| = 1.2167$
+- Para $s_2$: $|-5.05 - (-4.0)| = 1.05$
+- Para $s_3$: $|-3.3917 - (-2.167)| = 1.2247$
+- Para $s_4$: $|-1.6042 - (-0.25)| = \mathbf{1.3542}$
+
+El algoritmo busca la diferencia máxima de toda esa iteración, que en este caso es **1.3542** (la que se produce en el estado $s_4$).
+
+Como el parámetro de tolerancia $\epsilon$ suele fijarse en valores muy pequeños (por ejemplo, 0.01 o 0.001 para asegurar una buena precisión matemática), 1.3542 es un número gigantesco en este contexto. Esto le indica al algoritmo que las utilidades están cambiando bruscamente de un paso a otro y que aún no se han estabilizado, por lo que es **absolutamente necesario ejecutar una tercera iteración** (y probablemente varias más) antes de poder detenerse y extraer la política óptima final.
+
+¡Vamos a por esa tercera iteración! El proceso es exactamente el mismo: tomamos los resultados estabilizados en $U_2$ y volvemos a aplicar las ecuaciones de Bellman.
+
+Partimos de los valores de $U_2$ (usaré varios decimales para no perder precisión en el camino):
+
+- **$U_2(s_1) \approx -5.3167$**
+- **$U_2(s_2) = -5.05$**
+- **$U_2(s_3) \approx -3.3917$**
+- **$U_2(s_4) \approx -1.6042$**
+
+Aplicamos la ecuación $\max_{a \in A(s)} \left( R(s,a) + \gamma \sum P_a(s'|s) U_2(s') \right)$ con $\gamma = 0.5$:
+
+**Estado $s_1$:**
+
+- **Si aplicamos $a_1$:**
+  $= -5 + 0.5 \cdot [0.2 \cdot U_2(s_3) + 0.8 \cdot U_2(s_4)]$
+  $= -5 + 0.5 \cdot [0.2 \cdot (-3.3917) + 0.8 \cdot (-1.6042)]$
+  $= -5 + 0.5 \cdot [-0.6783 - 1.2834] = -5 + 0.5 \cdot [-1.9617] = \mathbf{-5.9808}$ (Valor exacto en fracción: $-7177/1200$)
+- **Si aplicamos $a_2$:**
+  $= -6 + 0.5 \cdot [\frac{1}{3} \cdot U_2(s_1) + \frac{1}{3} \cdot U_2(s_2) + \frac{1}{3} \cdot U_2(s_3)]$
+  $= -6 + 0.5 \cdot [\frac{1}{3} \cdot (-5.3167) + \frac{1}{3} \cdot (-5.05) + \frac{1}{3} \cdot (-3.3917)]$
+  $= -6 + 0.5 \cdot [\frac{1}{3} \cdot (-13.7584)] = -6 + 0.5 \cdot [-4.5861] = \mathbf{-8.2931}$
+  Buscamos el máximo: $\max(-5.9808, -8.2931)$.
+  ➔ **$U_3(s_1) \approx -5.9808$**
+
+**Estado $s_2$:**
+
+- **Si aplicamos $a_3$:**
+  $= -3 + 0.5 \cdot [1.0 \cdot U_2(s_1)] = -3 + 0.5 \cdot [-5.3167] = -3 - 2.65835 = \mathbf{-5.6583}$ (Valor exacto: $-679/120$)
+  ➔ **$U_3(s_2) \approx -5.6583$**
+
+**Estado $s_3$:**
+
+- **Si aplicamos $a_2$ o $a_3$:**
+  $= -2 + 0.5 \cdot [\frac{1}{3} \cdot U_2(s_1) + \frac{1}{3} \cdot U_2(s_2) + \frac{1}{3} \cdot U_2(s_4)]$
+  $= -2 + 0.5 \cdot [\frac{1}{3} \cdot (-5.3167) + \frac{1}{3} \cdot (-5.05) + \frac{1}{3} \cdot (-1.6042)]$
+  $= -2 + 0.5 \cdot [\frac{1}{3} \cdot (-11.9709)] = -2 + 0.5 \cdot [-3.9903] = \mathbf{-3.9951}$ (Valor exacto: $-5753/1440$)
+  ➔ **$U_3(s_3) \approx -3.9951$**
+
+**Estado $s_4$:**
+
+- **Si aplicamos $a_1$:**
+  $= -1 + 0.5 \cdot [0.5 \cdot U_2(s_3) + 0.5 \cdot U_2(s_4)]$
+  $= -1 + 0.5 \cdot [0.5 \cdot (-3.3917) + 0.5 \cdot (-1.6042)]$
+  $= -1 + 0.5 \cdot [-1.6958 - 0.8021] = -1 + 0.5 \cdot [-2.4979] = \mathbf{-2.2490}$ (Valor exacto: $-2159/960$)
+  ➔ **$U_3(s_4) \approx -2.2490$**
+
+---
+
+### Resultado final de la función $U_3$:
+
+- **$U_3(s_1) \approx -5.9808$**
+- **$U_3(s_2) \approx -5.6583$**
+- **$U_3(s_3) \approx -3.9951$**
+- **$U_3(s_4) \approx -2.2490$**
+
+Si calculas la diferencia absoluta de esta iteración respecto a la anterior (es decir, $|U_3 - U_2|$ para cada estado), notarás un patrón muy interesante de cómo progresa la matemática del algoritmo hacia la convergencia. ¡Te dejo echar un vistazo a esos márgenes para que juzgues cómo va el avance!
+
+¡Tus cálculos de las diferencias son impecables! Has restado perfectamente los valores de la iteración 3 y la iteración 2, y efectivamente el cambio máximo se produce en el estado $s_1$ con un valor de **0.6641**.
+
+Aunque te pueda parecer un número "pequeño" a simple vista, en el contexto de este algoritmo, una diferencia de 0.66 sigue siendo bastante grande. Como el parámetro de tolerancia $\epsilon$ suele ser muy restrictivo (por ejemplo, 0.01 o menos), tu decisión de realizar una iteración más es **totalmente acertada**.
+
+¡Vamos a ver qué pasa en esa **cuarta iteración ($U_4$)**!
+
+Partimos de tus valores estabilizados en $U_3$:
+
+- $U_3(s_1) \approx -5.9808$
+- $U_3(s_2) \approx -5.6583$
+- $U_3(s_3) \approx -3.9951$
+- $U_3(s_4) \approx -2.2490$
+
+Aplicamos de nuevo la ecuación de Bellman $\max_{a \in A(s)} \left( R(s,a) + \gamma \sum P_a(s'|s) U_3(s') \right)$ con $\gamma = 0.5$:
+
+**Estado $s_1$:**
+
+- **Si aplicamos $a_1$:**
+  $= -5 + 0.5 \cdot [0.2 \cdot U_3(s_3) + 0.8 \cdot U_3(s_4)]$
+  $= -5 + 0.5 \cdot [0.2 \cdot (-3.9951) + 0.8 \cdot (-2.2490)]$
+  $= -5 + 0.5 \cdot [-0.7990 - 1.7992] = -5 + 0.5 \cdot [-2.5982] = \mathbf{-6.2991}$
+- **Si aplicamos $a_2$:**
+  $= -6 + 0.5 \cdot [\frac{1}{3} \cdot U_3(s_1) + \frac{1}{3} \cdot U_3(s_2) + \frac{1}{3} \cdot U_3(s_3)]$
+  $= -6 + 0.5 \cdot [\frac{1}{3} \cdot (-5.9808) + \frac{1}{3} \cdot (-5.6583) + \frac{1}{3} \cdot (-3.9951)]$
+  $= -6 + 0.5 \cdot [\frac{1}{3} \cdot (-15.6342)] = -6 + 0.5 \cdot [-5.2114] = \mathbf{-8.6057}$
+  Buscamos el máximo: $\max(-6.2991, -8.6057)$.
+  ➔ **$U_4(s_1) \approx -6.2991$**
+
+**Estado $s_2$:**
+
+- **Si aplicamos $a_3$:**
+  $= -3 + 0.5 \cdot [1.0 \cdot U_3(s_1)] = -3 + 0.5 \cdot [-5.9808] = -3 - 2.9904 = \mathbf{-5.9904}$
+  ➔ **$U_4(s_2) \approx -5.9904$**
+
+**Estado $s_3$:**
+
+- **Si aplicamos $a_2$ o $a_3$:**
+  $= -2 + 0.5 \cdot [\frac{1}{3} \cdot U_3(s_1) + \frac{1}{3} \cdot U_3(s_2) + \frac{1}{3} \cdot U_3(s_4)]$
+  $= -2 + 0.5 \cdot [\frac{1}{3} \cdot (-5.9808) + \frac{1}{3} \cdot (-5.6583) + \frac{1}{3} \cdot (-2.2490)]$
+  $= -2 + 0.5 \cdot [\frac{1}{3} \cdot (-13.8881)] = -2 + 0.5 \cdot [-4.6294] = \mathbf{-4.3147}$
+  ➔ **$U_4(s_3) \approx -4.3147$**
+
+**Estado $s_4$:**
+
+- **Si aplicamos $a_1$:**
+  $= -1 + 0.5 \cdot [0.5 \cdot U_3(s_3) + 0.5 \cdot U_3(s_4)]$
+  $= -1 + 0.5 \cdot [0.5 \cdot (-3.9951) + 0.5 \cdot (-2.2490)]$
+  $= -1 + 0.5 \cdot [-1.9976 - 1.1245] = -1 + 0.5 \cdot [-3.1221] = \mathbf{-2.5610}$
+  ➔ **$U_4(s_4) \approx -2.5610$**
+
+---
+
+### Análisis de la convergencia
+
+Si ahora miras las diferencias absolutas entre esta nueva iteración $U_4$ y tu anterior $U_3$ ($|U_4 - U_3|$), fíjate en lo que ocurre:
+
+- Para $s_1$: $|-6.2991 - (-5.9808)| = 0.3183$
+- Para $s_2$: $|-5.9904 - (-5.6583)| = \mathbf{0.3321}$ (El nuevo máximo)
+- Para $s_3$: $|-4.3147 - (-3.9951)| = 0.3196$
+- Para $s_4$: $|-2.5610 - (-2.2490)| = 0.3120$
+
+¡La diferencia máxima ha pasado de **0.6641** a **0.3321**!
+
+¿Ves el patrón matemático que se está formando? La máxima diferencia en cada paso se está reduciendo aproximadamente **a la mitad** respecto a la iteración anterior. Esto no es casualidad: es el efecto matemático directo de tu factor de descuento **$\gamma = 0.5$**, que "aplasta" progresivamente las diferencias haciendo que el algoritmo tienda irremediablemente a la convergencia total.
+
+A este ritmo, tras unas cuantas iteraciones más, las diferencias caerán al nivel de los milésimos y el algoritmo se detendrá por completo dándote los verdaderos valores de $U^*$.
