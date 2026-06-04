@@ -663,3 +663,15 @@ gradientes (para compensar el error positivo).
 | **Regresión multisalida** (predecir $n$ atributos continuos)         | **$n$ neuronas**                       | Función **Identidad**             | **Error Cuadrático Medio** (MSE) |
 | **Clasificación binaria** (2 clases codificadas como 0 y 1)          | **1 neurona**                          | Función **Sigmoide**              | **Entropía Cruzada Binaria**     |
 | **Clasificación multiclase** ($n$ clases con codificación _one-hot_) | **$n$ neuronas**                       | Función **Softmax**               | **Entropía Cruzada Categórica**  |
+
+## 5. Mini-batch gradient descent
+
+En el contexto del entrenamiento de redes neuronales, un **mini-lote** (o _mini-batch_ en inglés) es un **pequeño subconjunto aleatorio de ejemplos de entrenamiento** extraído del conjunto de datos total ``.
+
+Se utiliza fundamentalmente en la optimización del modelo mediante el algoritmo de **descenso estocástico por el gradiente** para lograr un equilibrio entre eficiencia computacional y estabilidad matemática. Su funcionamiento y utilidad radican en lo siguiente:
+
+- En lugar de calcular el gradiente evaluando la totalidad del conjunto de datos de golpe (lo cual es sumamente lento y costoso a nivel de memoria), el algoritmo procesa únicamente los $m$ ejemplos que componen un mini-lote ``.
+- Calcula el error y propaga hacia atrás los gradientes producidos de forma individual por cada uno de esos ejemplos para, a continuación, **sumarlos y promediarlos** ``.
+- Finalmente, realiza **una única actualización conjunta de los pesos y sesgos** de la red utilizando ese gradiente promedio ``.
+
+Durante el proceso práctico de entrenamiento, el conjunto de datos total se divide de forma aleatoria en múltiples mini-lotes sucesivos. Cuando el algoritmo ha iterado y actualizado los pesos para todos y cada uno de los mini-lotes (es decir, cuando la red ha evaluado el lote completo de ejemplos de entrenamiento al menos una vez), se dice que ha transcurrido una **época** (_epoch_) ``.
