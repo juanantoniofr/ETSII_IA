@@ -357,7 +357,7 @@ S_INICIAL = { HAY_CARRETERA(L1, L3), HAY_CARRETERA(L2, L3), HAY_CAMINO(L1, L2), 
 -> BAJAR_DE(C2, F1, L1) => { CONDUCTOR_EN(C2, L1), SIN_CONDUCTOR(F1), **FURGONETA_EN(F1, L1)**, **PAQUETE_EN(P2, L3)**, SIN_CONDUCTOR(F2), **PAQUETE_EN(P1, L3)**, **CONDUCTOR_EN(C1, L3)**, FURGONETA_EN(F2, L3)}
 -> CAMINAR(C2, L1, L2) => { **CONDUCTOR_EN(C2, L2)**, SIN_CONDUCTOR(F1), **FURGONETA_EN(F1, L1)**, **PAQUETE_EN(P2, L3)**, SIN_CONDUCTOR(F2), **PAQUETE_EN(P1, L3)**, **CONDUCTOR_EN(C1, L3)**, FURGONETA_EN(F2, L3)}
 
-### Ejercicio 3
+## Ejercicio 3
 
 Consideremos un dominio de planificación automática consistente en un ascensor (que asumimos con capacidad infinita) que permite moverse a personas entre distintas plantas de un edificio.
 
@@ -387,17 +387,129 @@ Se pide:
 
 - **ENTRAR(pe, pl)**: representa que la persona $pe$ entra en el ascensor en la planta $pl$ en la que se encuentra inicialmente.
   - precondiciones: ASCENSOR_EN(pl), ORIGEN(pe, pl), FUERA_ASCENSOR(pe)
-  - lista de borrado: FUERA_ASCENSOR(pe), ORIGEN(pe, pl)
+  - lista de borrado: FUERA_ASCENSOR(pe)
   - lista de adición: DENTRO_ASCENSOR(pe)
 - **SALIR(pe, pl)**: representa que la persona $pe$ sale del ascensor en la planta $pl$ del edificio a la que desea ir.
   - precondiciones: ASCENSOR_EN(pl), DESTINO(pe, pl), DENTRO_ASCENSOR(pe)
   - lista de borrado: DENTRO_ASCENSOR(pe)
   - lista de adición: FUERA_ASCENSOR(pe), EN_DESTINO(pe)
 - **SUBIR(pl1, pl2)**: representa que el ascensor sube de la planta $pl\_{1}$ a la planta $pl\_{2}$ del edificio.
-  - precondiciones: SUPERIOR(pl1, pl2), ASCENSOR_EN(pl2)
-  - lista de borrado: ASCENSOR_EN(pl2)
-  - lista de adición: ASCENSOR_EN(pl1)
+  - precondiciones: SUPERIOR(pl2, pl1), ASCENSOR_EN(pl1)
+  - lista de borrado: ASCENSOR_EN(pl1)
+  - lista de adición: ASCENSOR_EN(pl2)
 - **BAJAR(pl1, pl2)**: representa que el ascensor baja de la planta $pl\_{1}$ a la planta $pl\_{2}$ del edificio.
   - precondiciones: SUPERIOR(pl1, pl2), ASCENSOR_EN(pl1)
   - lista de borrado: ASCENSOR_EN(pl1)
   - lista de adición: ASCENSOR_EN(pl2)
+
+#### Apartado 2
+
+- Estado inicicial -> S_i = {ASCENSOR_EN(PL1), ORIGEN(PE0, PL0), FUERA_ASCENSOR(PE0), DESTINO(PE0, PL2), ORIGEN(PE1, PL3), FUERA_ASCENSOR(PE1), DESTINO(PE1, PL0), SUPERIOR(PL1, PL0), SUPERIOR(PL2, PL0), SUPERIOR(PL3, PL0), SUPERIOR(PL2, PL1), SUPERIOR(PL3, PL1), SUPERIOR(PL3, PL2)}
+- Estado objetivo -> S_o = {EN_DESTINO(PE0), EN_DESTINO(PE1)}
+
+#### Apartado 3
+
+Plan = { BAJAR(PL1, PL0), ENTRAR(PE0, PL0), SUBIR(PL0, PL1), SUBIR(PL1, PL2), SALIR(PE0, PL2), SUBIR(PL2, PL3), ENTRAR(PE1, PL3), BAJAR(PL3, PL2), BAJAR(PL2, PL1), BAJAR(PL1, PL0), SALIR(PE1, PL0) }
+
+Ya que ORIGEN(PE0, PL0) y ORIGEN(PE1, PL3), y SUPERIOR(PL1, PL0), SUPERIOR(PL2, PL0), SUPERIOR(PL3, PL0), SUPERIOR(PL2, PL1), SUPERIOR(PL3, PL1), SUPERIOR(PL3, PL2), Y DESTINO(PE0, PL2), DESTINO(PE1, PL0) no están en ninguan lista de borrado ni de adición, sustituimos estos hechos por el simbolo H para claridad de la exposición.
+
+S_i = {ASCENSOR_EN(PL1), FUERA_ASCENSOR(PE0), FUERA_ASCENSOR(PE1), H}
+-> BAJAR(PL1, PL0) -> { ASCENSOR_EN(PL0), FUERA_ASCENSOR(PE0), , FUERA_ASCENSOR(PE1), H}
+-> ENTRAR(PE0, PL0) -> { ASCENSOR_EN(PL0), DENTRO_ASCENSOR(PE0), FUERA_ASCENSOR(PE1), H}
+-> SUBIR(PL0, PL1) -> { ASCENSOR_EN(PL1), DENTRO_ASCENSOR(PE0), FUERA_ASCENSOR(PE1), H}
+-> SUBIR(PL1, PL2) -> { ASCENSOR_EN(PL2), DENTRO_ASCENSOR(PE0), FUERA_ASCENSOR(PE1), H}
+-> SALIR(PE0, PL2) -> { ASCENSOR_EN(PL2), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), FUERA_ASCENSOR(PE1), H}
+-> SUBIR(PL2, PL3) -> { ASCENSOR_EN(PL3), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), FUERA_ASCENSOR(PE1), H}
+-> ENTRAR(PE1, PL3) -> { ASCENSOR_EN(PL3), DENTRO_ASCENSOR(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
+-> BAJAR(PL3, PL2) -> { ASCENSOR_EN(PL2), DENTRO_ASCENSOR(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
+-> BAJAR(PL2, PL1) -> { ASCENSOR_EN(PL1), DENTRO_ASCENSOR(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
+-> BAJAR(PL1, PL0) -> { ASCENSOR_EN(PL0), DENTRO_ASCENSOR(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
+-> SALIR(PE1, PL0) -> { ASCENSOR_EN(PL0), FUERA_ASCENSOR(PE1), EN_DESTINO(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
+
+## Ejercicio 4
+
+Aquí tienes el enunciado del **Ejercicio 4** en formato markdown:
+
+### Ejercicio 4
+
+Consideremos un dominio de planificación automática consistente en un conjunto de satélites que se pretenden usar para, con unos instrumentos a bordo de esos satélites, tomar una serie de distintos tipos de fotografías de ciertos fenómenos galácticos.
+
+En este dominio los hechos se especifican a partir de los siguientes predicados:
+
+- **SON_DISTINTOS($o\_1, o\_2$)**: representa que los objetos $o\_1$ y $o\_2$ son distintos.
+- **APUNTA_A($s, o$)**: representa que el satélite $s$ está orientado hacia el objeto $o$.
+- **A_BORDO($i, s$)**: representa que el instrumento $i$ se encuentra a bordo del satélite $s$.
+- **NO_CALIBRADO($i$)**: representa que el instrumento $i$ no está calibrado.
+- **CALIBRADO($i$)**: representa que el instrumento $i$ está calibrado.
+- **OBJETIVO_CALIBRACIÓN($i, o$)**: representa que el objeto $o$ se usa para calibrar el instrumento $i$.
+- **COMPATIBLE_CON($i, t$)**: representa que el instrumento $i$ puede tomar imágenes de tipo $t$.
+- **HAY_ENERGÍA($s$)**: representa que el satélite $s$ dispone de energía para encender un instrumento.
+- **ENCENDIDO($i$)**: representa que el instrumento $i$ está encendido.
+- **SIN_IMAGEN($o, t$)**: representa que no se tiene una imagen de tipo $t$ del objeto $o$.
+- **CON_IMAGEN($o, t$)**: representa que se tiene una imagen de tipo $t$ del objeto $o$.
+
+Se pide:
+
+1.  Representar en el formalismo **STRIPS** los siguientes esquemas de acciones:
+    - **GIRAR_HACIA($s, o\_1, o\_2$)**: representa que el satélite $s$ pasa de apuntar hacia el objeto $o\_1$ a apuntar hacia el objeto $o\_2$.
+    - **ENCENDER($i, s$)**: representa que se enciende el instrumento $i$ a bordo del satélite $s$. Para ello el satélite debe tener energía disponible, ya que en cada satélite no puede estar encendido más de un instrumento a la vez.
+    - **APAGAR($i, s$)**: representa que se apaga el instrumento $i$ a bordo del satélite $s$, volviendo a haber energía disponible en ese satélite para poder encender otro instrumento. Los instrumentos dejan de estar calibrados cuando se apagan.
+    - **CALIBRAR($i, s, o$)**: representa que se calibra el instrumento $i$ a bordo del satélite $s$ con el objetivo de calibración $o$ del instrumento. Para ello, el satélite debe apuntar hacia ese objetivo y el instrumento debe estar encendido.
+    - **TOMAR_IMAGEN($i, s, o, t$)**: representa que con el instrumento $i$ a bordo del satélite $s$ se toma una imagen de tipo $t$ del objeto $o$. Para ello, el satélite debe apuntar hacia ese objeto y el instrumento debe estar encendido y calibrado y debe poder tomar imágenes de ese tipo.
+
+2.  Representar el **estado inicial** y el **objetivo** de un problema en ese dominio en el que:
+    - Hay dos satélites, SATÉLITE0 y SATÉLITE1.
+    - Hay cuatro instrumentos, INSTRUMENTO0 a INSTRUMENTO3.
+    - Hay tres tipos de imágenes, VISIBLE, INFRARROJOS y ESPECTRÓGRAFO.
+    - Hay ocho objetos galácticos, ESTRELLA0 a ESTRELLA4 y NEBULOSA0 a NEBULOSA2.
+    - El INSTRUMENTO0 puede tomar imágenes de tipo INFRARROJOS y ESPECTRÓGRAFO y se calibra con ESTRELLA1.
+    - El INSTRUMENTO1 puede tomar imágenes de tipo VISIBLE y se calibra con ESTRELLA2.
+    - El INSTRUMENTO2 puede tomar imágenes de tipo VISIBLE e INFRARROJOS y se calibra con ESTRELLA0.
+    - El INSTRUMENTO3 puede tomar imágenes de tipo VISIBLE, INFRARROJOS y ESPECTRÓGRAFO y se calibra con ESTRELLA0.
+    - El satélite SATÉLITE0 tiene a bordo los instrumentos INSTRUMENTO0, INSTRUMENTO1 e INSTRUMENTO2, apagados, y apunta inicialmente a ESTRELLA4.
+    - El satélite SATÉLITE1 tiene a bordo el instrumento INSTRUMENTO3, apagado, y apunta inicialmente a ESTRELLA0.
+    - Se desean una imagen de infrarrojos de ESTRELLA3, una imagen de espectrógrafo de ESTRELLA4 y NEBULOSA0 y una imagen del visible y de espectrógrafo de NEBULOSA2.
+
+### Solución ejercicio 4
+
+#### Apartado 1
+
+- **GIRAR_HACIA($s, o\_1, o\_2$)**: representa que el satélite $s$ pasa de apuntar hacia el objeto $o\_1$ a apuntar hacia el objeto $o\_2$.
+  - precondiciones: SON_DISTINTOS($o\_1, o\_2$), APUNTA_A($s, o\_1$)
+  - lista de borrado: APUNTA_A($s, o\_1$)
+  - lista de adición: APUNTA_A($s, o\_2$)
+- **ENCENDER($i, s$)**: representa que se enciende el instrumento $i$ a bordo del satélite $s$. Para ello el satélite debe tener energía disponible, ya que en cada satélite no puede estar encendido más de un instrumento a la vez.
+  - precondiciones: HAY_ENERGÍA($s$), A_BORDO($i, s$), NO_CALIBRADO($i$)
+  - lista de borrado: HAY_ENERGÍA($s$)
+  - lista de adición: ENCENDIDO($i$)
+- **APAGAR($i, s$)**: representa que se apaga el instrumento $i$ a bordo del satélite $s$, volviendo a haber energía disponible en ese satélite para poder encender otro instrumento. Los instrumentos dejan de estar calibrados cuando se apagan.
+  - precondiciones: A_BORDO($i, s$), ENCENDIDO($i$)
+  - lista de borrado: ENCENDIDO($i$), CALIBRADO($i$)
+  - lista de adición: HAY_ENERGÍA($s$), NO_CALIBRADO($i$)
+- **CALIBRAR($i, s, o$)**: representa que se calibra el instrumento $i$ a bordo del satélite $s$ con el objetivo de calibración $o$ del instrumento. Para ello, el satélite debe apuntar hacia ese objetivo y el instrumento debe estar encendido.
+  - precondiciones: A_BORDO($i, s$), ENCENDIDO($i$), APUNTA_A($s, o$), OBJETIVO_CALIBRACIÓN($i, o$), NO_CALIBRADO($i$)
+  - lista de borrado: NO_CALIBRADO($i$)
+  - lista de adición: CALIBRADO($i$)
+- **TOMAR_IMAGEN($i, s, o, t$)**: representa que con el instrumento $i$ a bordo del satélite $s$ se toma una imagen de tipo $t$ del objeto $o$. Para ello, el satélite debe apuntar hacia ese objeto y el instrumento debe estar encendido y calibrado y debe poder tomar imágenes de ese tipo.
+  - precondiciones: A_BORDO($i, s$), APUNTA_A($s, o$), ENCENDIDO($i$), CALIBRADO($i$), COMPATIBLE_CON($i, t$), SIN_IMAGEN($o, t$)
+  - lista de borrado: SIN_IMAGEN($o, t$)
+  - lista de adición: CON_IMAGEN($o, t$)
+    `Nota`: Suponemos que, dado un objeto $o$, solo se puede tomar una imagen del tipo $t$.
+
+#### Apartado 2
+
+Estado Incial S_i = {
+
+- \(\text{SON_DISTINTOS}(o_1, o_2)\; \forall o_1, o_2 \in \{ESTRELLA_0,\ldots,ESTRELLA_4,\;NEBULOSA_0,\ldots,NEBULOSA_2\}\ \text{con}\ o_1 \neq o_2\)
+- APUNTA_A(SATÉLITE_1, ESTRELLA_0$), APUNTA_A(SATÉLITE_0, ESTRELLA_4)
+- A_BORDO(INTRUMENTO_i, SATÉLITE_0) \( i \in \{0,1,2\), A_BORDO(INTRUMENTO_3, SATÉLITE_1)
+- NO_CALIBRADO(INSTRUMENTO_i) \( i \in \{0,1,2,3\)
+- OBJETIVO_CALIBRACIÓN(INSTRUMENTO_0, ESTRELLA_1), OBJETIVO_CALIBRACIÓN(INSTRUMENTO_1, ESTRELLA_2), OBJETIVO_CALIBRACIÓN(INSTRUMENTO_2, ESTRELLA_0), OBJETIVO_CALIBRACIÓN(INSTRUMENTO_3, ESTRELLA_0)
+- COMPATIBLE_CON(INSTRUMENTO_0, INFRAROJOS), COMPATIBLE_CON(INSTRUMENTO_0, ESPECTÓGRAFO), COMPATIBLE_CON(INSTRUMENTO_1, VISIBLE), COMPATIBLE_CON(INSTRUMENTO_2, VISIBLE), COMPATIBLE_CON(INSTRUMENTO_2, INFRAROJOS), COMPATIBLE_CON(INSTRUMENTO_3, INFRAROJOS, COMPATIBLE_CON(INSTRUMENTO_3, ESPECTÓGRAFO), COMPATIBLE_CON(INSTRUMENTO_3, VISIBLE)
+- HAY_ENERGÍA(SATÉLITE_0), HAY_ENERGÍA(SATÉLITE_1),
+- SIN_IMAGEN(ESTRELLA_i, TIPO) \( i \in \{0,1,2,3,4\}, TIPO \in \{VISIBLE, INFRARROJOS, ESPECTRÓGRAFO\} ), SIN_IMAGEN(NEBULOSA_i, TIPO) \( i, j \in \{0,1,2\}, TIPO \in \{VISIBLE, INFRARROJOS, ESPECTRÓGRAFO\} \)
+  }
+
+Representar el **estado inicial** y el **objetivo** de un problema en ese dominio en el que: - Hay dos satélites, SATÉLITE0 y SATÉLITE1. - Hay cuatro instrumentos, INSTRUMENTO0 a INSTRUMENTO3. - Hay tres tipos de imágenes, VISIBLE, INFRARROJOS y ESPECTRÓGRAFO. - Hay ocho objetos galácticos, ESTRELLA0 a ESTRELLA4 y NEBULOSA0 a NEBULOSA2. - El INSTRUMENTO0 puede tomar imágenes de tipo INFRARROJOS y ESPECTRÓGRAFO y se calibra con ESTRELLA1. - El INSTRUMENTO1 puede tomar imágenes de tipo VISIBLE y se calibra con ESTRELLA2. - El INSTRUMENTO2 puede tomar imágenes de tipo VISIBLE e INFRARROJOS y se calibra con ESTRELLA0. - El INSTRUMENTO3 puede tomar imágenes de tipo VISIBLE, INFRARROJOS y ESPECTRÓGRAFO y se calibra con ESTRELLA0. - El satélite SATÉLITE0 tiene a bordo los instrumentos INSTRUMENTO0, INSTRUMENTO1 e INSTRUMENTO2, apagados, y apunta inicialmente a ESTRELLA4. - El satélite SATÉLITE1 tiene a bordo el instrumento INSTRUMENTO3, apagado, y apunta inicialmente a ESTRELLA0.
+
+    - Se desean una imagen de infrarrojos de ESTRELLA3, una imagen de espectrógrafo de ESTRELLA4 y NEBULOSA0 y una imagen del visible y de espectrógrafo de NEBULOSA2.
