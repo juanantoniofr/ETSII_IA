@@ -510,6 +510,100 @@ Estado Incial S_i = {
 - SIN_IMAGEN(ESTRELLA_i, TIPO) \( i \in \{0,1,2,3,4\}, TIPO \in \{VISIBLE, INFRARROJOS, ESPECTRÓGRAFO\} ), SIN_IMAGEN(NEBULOSA_i, TIPO) \( i, j \in \{0,1,2\}, TIPO \in \{VISIBLE, INFRARROJOS, ESPECTRÓGRAFO\} \)
   }
 
-Representar el **estado inicial** y el **objetivo** de un problema en ese dominio en el que: - Hay dos satélites, SATÉLITE0 y SATÉLITE1. - Hay cuatro instrumentos, INSTRUMENTO0 a INSTRUMENTO3. - Hay tres tipos de imágenes, VISIBLE, INFRARROJOS y ESPECTRÓGRAFO. - Hay ocho objetos galácticos, ESTRELLA0 a ESTRELLA4 y NEBULOSA0 a NEBULOSA2. - El INSTRUMENTO0 puede tomar imágenes de tipo INFRARROJOS y ESPECTRÓGRAFO y se calibra con ESTRELLA1. - El INSTRUMENTO1 puede tomar imágenes de tipo VISIBLE y se calibra con ESTRELLA2. - El INSTRUMENTO2 puede tomar imágenes de tipo VISIBLE e INFRARROJOS y se calibra con ESTRELLA0. - El INSTRUMENTO3 puede tomar imágenes de tipo VISIBLE, INFRARROJOS y ESPECTRÓGRAFO y se calibra con ESTRELLA0. - El satélite SATÉLITE0 tiene a bordo los instrumentos INSTRUMENTO0, INSTRUMENTO1 e INSTRUMENTO2, apagados, y apunta inicialmente a ESTRELLA4. - El satélite SATÉLITE1 tiene a bordo el instrumento INSTRUMENTO3, apagado, y apunta inicialmente a ESTRELLA0.
+Estado objetivo, S_o {
 
-    - Se desean una imagen de infrarrojos de ESTRELLA3, una imagen de espectrógrafo de ESTRELLA4 y NEBULOSA0 y una imagen del visible y de espectrógrafo de NEBULOSA2.
+- CON_IMAGEN(ESTRELLA_3, INFRAROJOS), CON_IMAGEN(ESTRELLA_4, ESPECTÓGRAFO), CON_IMAGEN(NEBULOSA_0, ESPECTÓGRAFO), CON_IMAGEN(NEBULOSA_2, VISIBLE), CON_IMAGEN(NEBULOSA_2, ESPECTÓGRAFO)  
+  }
+
+## Ejercicio 5
+
+Representar en el formalismo **STRIPS** el siguiente dominio: hay dos habitaciones conectadas en una de las cuales hay N pelotas y un robot; el robot dispone de dos pinzas, con cada una de las cuales puede sujetar una sola pelota a la vez; se desea trasladar todas las pelotas a la otra habitación.
+
+### Solución
+
+- Predicados
+  - **CONECTADAS(h_1, h_2)** - representa que las habitaciones $h_1$ y $h_2$ están conectadas.
+  - **PELOTA_EN(p,h)** - representa que la pelota $p$ está en la habitación $h$
+  - **ROBOT_EN(h)** - representa que el robot está en la habitación $h$
+  - **PINZA_LIBRE(pinza)** - representa que la pinza $pinza$ está libre.
+  - **PINZA_OCUPADA(pinza, p)** - representa que la pinza $pinza$ está ocupada con la pelota $p$.
+
+- Esquema de acciones
+  - **COGER($pinza, $p, $h)** - el robot coge una pelota $p con la pinza $pinza en la habotación $h.
+    - precondiciones: PINZA_LIBRE($pinza), ROBOT_EN($h), PELOTA_EN($h)
+    - lista de borrado: PINZA_LIBRE($pinza), PELOTA_EN($p,$h)
+    - lista de adición: PINZA_OCUPADA($pinza, $p)
+  - **SOLTAR($pinza, $p, $h)** - el robot suelta la pelota $p que sujeta con la pinza $pinza en la habotación $h.
+    - precondiciones: ROBOT_EN($h), PINZA_OCUPADA($pinza, $p)
+    - lista de borrado: PINZA_OCUPADA($pinza, $p)
+    - lista de adición: PINZA_LIBRE($pinza), PELOTA_EN($p,$h)
+  - **IR($h1,$h2)** - EL Robot va de la habitación $h1 a la habitación $h2
+    - precondiciones: ROBOT_EN($h1), CONECTADAS($h1, $h2)
+    - lista de borrado: ROBOT_EN($h1)
+    - lista de adición: ROBOT_EN($h2)
+
+**Estado inicial**
+
+- PELOTA_EN(P_i,HABITACIÓN_1) con i en {1,2,..., N}
+- ROBOT_EN(HABITACIÓN_1)
+- PINZA_LIBRE(PINZA_1), PINZA_LIBRE(PINZA_2)
+- CONECTADAS(HABITACIÓN_1, HABITACIÓN_2), CONECTADAS(HABITACIÓN_2, HABITACIÓN_1)
+
+**Objetivo**
+
+- PELOTA_EN(P_i,HABITACIÓN_2) con i en {1,2,..., N}
+
+## Ejercicio 6
+
+Representar en el formalismo **STRIPS** el siguiente dominio: hay varias ciudades, cada una de ellas conteniendo varias localizaciones, algunas de las cuales son aeropuertos; hay también camiones, que pueden moverse de una localización a otra dentro de una misma ciudad, y aviones, que pueden volar entre aeropuertos; el objetivo es transportar diversos paquetes de ciertas localizaciones de partida a ciertas localizaciones de llegada, que pueden estar en la misma o en otra ciudad.
+
+### Solución
+
+**HECHOS**
+
+- **EN_CIUDAD(l,c)** - Representa que la localización 'l' está contenida en la ciudad 'c'.
+- **ES_AEROPUERTO(l)** - Representa que la localización 'l' es un aeropuerto.
+- **PAQUETE_EN(p,l)** - Representa que el paquete 'p' está en la localización 'l'.
+- **VEHÍCULO_EN(v,l)** - Representa que el vehículo 'v' está en la localización 'l'.
+- **CARGADO(p,v)** - Representa que le paquete 'p' está cargado en el vehiculo 'v'.
+- **ES_AVIÓN(v)** - Representa que el vehículo 'v' es un avión.
+- **ES_CAMIÓN(v)** - Representa que el vehículo 'v' es un camión.
+
+**Esquemas de acciones**
+
+- CARGAR(p,v,l)
+  - precondiciones: PAQUETE_EN(p,l), VEHÍCULO_EN(v,l)
+  - lista de borrado: PAQUETE_EN(p,l)
+  - lista de adición: CARGADO(p,v)
+
+- DESCARGAR(p,v,l)
+  - precondiciones: CARGADO(p,v), VEHÍCULO_EN(v,l)
+  - lista de borrado: CARGADO(p,v)
+  - lista de adición: PAQUETE_EN(p,l)
+
+- CONDUCIR(v, l1, l2)
+  - precondiciones: CONECTADAS(l1,l2), ES_CAMIÓN(v), VEHÍCULO_EN(v,l1)
+  - lista de borrado: VEHÍCULO_EN(v,l1)
+  - lista de adición: VEHÍCULO_EN(v,l2)
+
+- VOLAR(v, l1, l2)
+  - precondiciones: ES_AVIÓN(v), VEHÍCULO_EN(v,l1), ES_AEROPUERTO(l1), ES_AEROPUERTO(l2)
+  - lista de borrado: VEHÍCULO_EN(v,l1)
+  - lista de adición: VEHÍCULO_EN(v,l2)
+
+**Estado Incial - I**
+Suponemos M ciudades, cada una de ellas con un número distinto de localizaciones N, y siendo CN el conjunto con todas las localizaciones posibles.
+Suponemos P paquetes.
+Suponemos K aeropuertos.
+
+- CONTENIDA_EN(L_i, C_m) Para cada m en {1,2,....M}, tomamos i en {1,2,...N} siendo N el número de localizaciones en la ciudad 'm'.
+- ES_AEROPUERTO(L_i) Para cada m en {1,2,....M}, tomamos i en {1,2,...K} siendo k el número de aeropuertos en la ciudad 'm'.
+- CONECTADAS(L_i, L_j), para cada m en {1,2,...M}, tomamos i, j en {1,2,....N}, con i != j, siendo N el número de localizaciones en la ciudad 'm'.
+- PAQUETE_EN(P_p, L_i), para cada p en {1,2,...P} y m en {1,2,...M}, tomamos i en {1,2,....N}, siendo N el número de localizaciones de salida en la ciudad 'm'.
+- ES_AVIÓN(V_v), con v en {1,2,... V}, siendo V el número de aviones.
+- ES_CAMIÓN(V_v), con v en {1,2,... C}, siendo C el número de camiones.
+- VEHÍCULO_EN(V_v,L_i), para cada v en {1,2,...V} y m en {1,2,...M}, tomamos i en {1,2,....N}, siendo N el número de localizaciones en la ciudad 'm'.
+
+**Estado objetivo - G**
+
+- PAQUETE_EN(P_p, L_i), para cada p en {1,2,...P} y m en {1,2,...M}, tomamos i en {1,2,....N}, siendo N el número de localizaciones de llegada en la ciudad 'm'.
