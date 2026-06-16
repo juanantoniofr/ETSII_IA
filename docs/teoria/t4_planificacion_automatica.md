@@ -208,8 +208,113 @@ Es decir, una heurística es admisible si tiene un comportamiento estrictamente 
 
 Esta propiedad es el pilar fundamental para que los algoritmos de búsqueda funcionen correctamente. Si un algoritmo como el $A^*$ es guiado por una heurística admisible, se asegura que el proceso de búsqueda sea:
 
-- **Completo:** Garantiza que, si el problema tiene solución, el algoritmo logrará encontrar un plan solución ``.
-- **Óptimo:** Garantiza que el plan devuelto por el algoritmo tendrá estrictamente el **coste mínimo posible** de entre todos los caminos existentes ``.
+- **Completo:** Garantiza que, si el problema tiene solución, el algoritmo logrará encontrar un plan solución.
+- **Óptimo:** Garantiza que el plan devuelto por el algoritmo tendrá estrictamente el **coste mínimo posible** de entre todos los caminos existentes.
+
+## Algoritmo voráz
+
+El **algoritmo voraz de cálculo de planes relajados** es un método diseñado para resolver una versión simplificada de un problema de planificación partiendo de un estado concreto, basándose en la premisa de que las acciones añaden nueva información al mundo pero nunca borran la anterior (relajación del borrado).
+
+El objetivo de este algoritmo es resolver el problema simplemente añadiendo cada vez nuevos hechos que se cumplen, sin preocuparse por las posibles interacciones o conflictos entre las acciones.
+
+El pseudocódigo y funcionamiento del algoritmo siguen estos pasos matemáticos estrictos:
+
+1. **Inicialización:** Se define un conjunto de hechos acumulados (llamado $S^+$) que arranca conteniendo exactamente los mismos hechos que el estado inicial $s$. Además, se inicializa una secuencia vacía $a^+$ que irá guardando las acciones del plan.
+2. **Bucle de búsqueda:** Mientras el objetivo del problema ($G$) no esté completamente contenido dentro del conjunto $S^+$, el algoritmo repite el siguiente proceso de selección.
+3. **Selección de la acción (el paso "voraz"):** El sistema busca dentro de todas las acciones del dominio una acción $a$ que cumpla simultáneamente dos condiciones:
+   - **Es aplicable:** Sus precondiciones ya existen dentro de $S^+$.
+   - **Aporta información útil:** Su lista de adición contiene algún hecho que todavía no está presente en $S^+$.
+4. **Actualización:** Si existe al menos una acción que cumpla esto (en los ejercicios teóricos se suele pedir desempatar escogiendo la primera por orden alfabético), se elige, se vuelcan todos los hechos de su lista de adición dentro de $S^+$ y se añade la acción al plan $a^+$.
+5. **Terminación:**
+   - Si a base de acumular hechos se alcanza un punto en el que $G \subseteq S^+$, el algoritmo termina con éxito y **devuelve la secuencia de acciones obtenida** como el plan relajado definitivo.
+   - Si, por el contrario, no se ha alcanzado el objetivo pero ya no queda ninguna acción aplicable que pueda aportar un hecho nuevo, el algoritmo se detiene y determina que **no existe ningún plan relajado** posible para ese estado.
+
+El enfoque se denomina "voraz" porque engulle de forma continua cualquier acción que le proporcione información nueva hasta tropezar con la meta. El tamaño o coste del plan ficticio que devuelve este algoritmo se utiliza posteriormente para **estimar matemáticamente (mediante la heurística $h^+$)** cuánto esfuerzo costaría encontrar la solución óptima en el problema real, guiando así al planificador verdadero `.El **algoritmo voraz de cálculo de planes relajados** es un método diseñado para resolver una versión simplificada de un problema de planificación partiendo de un estado concreto, basándose en la premisa de que las acciones añaden nueva información al mundo pero nunca borran la anterior (relajación del borrado) `.
+
+El objetivo de este algoritmo es resolver el problema simplemente añadiendo cada vez nuevos hechos que se cumplen, sin preocuparse por las posibles interacciones o conflictos entre las acciones ``.
+
+El pseudocódigo y funcionamiento del algoritmo siguen estos pasos matemáticos estrictos:
+
+1. **Inicialización:** Se define un conjunto de hechos acumulados (llamado $S^+$) que arranca conteniendo exactamente los mismos hechos que el estado inicial $s$. Además, se inicializa una secuencia vacía $a^+$ que irá guardando las acciones del plan.
+2. **Bucle de búsqueda:** Mientras el objetivo del problema ($G$) no esté completamente contenido dentro del conjunto $S^+$, el algoritmo repite el siguiente proceso de selección.
+3. **Selección de la acción (el paso "voraz"):** El sistema busca dentro de todas las acciones del dominio una acción $a$ que cumpla simultáneamente dos condiciones:
+   - **Es aplicable:** Sus precondiciones ya existen dentro de $S^+$.
+   - **Aporta información útil:** Su lista de adición contiene algún hecho que todavía no está presente en $S^+$.
+4. **Actualización:** Si existe al menos una acción que cumpla esto (en los ejercicios teóricos se suele pedir desempatar escogiendo la primera por orden alfabético), se elige, se vuelcan todos los hechos de su lista de adición dentro de $S^+$ y se añade la acción al plan $a^+$.
+5. **Terminación:**
+   - Si a base de acumular hechos se alcanza un punto en el que $G \subseteq S^+$, el algoritmo termina con éxito y **devuelve la secuencia de acciones obtenida** como el plan relajado definitivo.
+   - Si, por el contrario, no se ha alcanzado el objetivo pero ya no queda ninguna acción aplicable que pueda aportar un hecho nuevo, el algoritmo se detiene y determina que **no existe ningún plan relajado** posible para ese estado.
+
+El enfoque se denomina "voraz" porque engulle de forma continua cualquier acción que le proporcione información nueva hasta tropezar con la meta. El tamaño o coste del plan ficticio que devuelve este algoritmo se utiliza posteriormente para **estimar matemáticamente (mediante la heurística $h^+$)** cuánto esfuerzo costaría encontrar la solución óptima en el problema real, guiando así al planificador verdadero `.El **algoritmo voraz de cálculo de planes relajados** es un método diseñado para resolver una versión simplificada de un problema de planificación partiendo de un estado concreto, basándose en la premisa de que las acciones añaden nueva información al mundo pero nunca borran la anterior (relajación del borrado) `.
+
+El objetivo de este algoritmo es resolver el problema simplemente añadiendo cada vez nuevos hechos que se cumplen, sin preocuparse por las posibles interacciones o conflictos entre las acciones ``.
+
+El pseudocódigo y funcionamiento del algoritmo siguen estos pasos matemáticos estrictos:
+
+1. **Inicialización:** Se define un conjunto de hechos acumulados (llamado $S^+$) que arranca conteniendo exactamente los mismos hechos que el estado inicial $s$. Además, se inicializa una secuencia vacía $a^+$ que irá guardando las acciones del plan.
+2. **Bucle de búsqueda:** Mientras el objetivo del problema ($G$) no esté completamente contenido dentro del conjunto $S^+$, el algoritmo repite el siguiente proceso de selección.
+3. **Selección de la acción (el paso "voraz"):** El sistema busca dentro de todas las acciones del dominio una acción $a$ que cumpla simultáneamente dos condiciones:
+   - **Es aplicable:** Sus precondiciones ya existen dentro de $S^+$.
+   - **Aporta información útil:** Su lista de adición contiene algún hecho que todavía no está presente en $S^+$.
+4. **Actualización:** Si existe al menos una acción que cumpla esto (en los ejercicios teóricos se suele pedir desempatar escogiendo la primera por orden alfabético), se elige, se vuelcan todos los hechos de su lista de adición dentro de $S^+$ y se añade la acción al plan $a^+$.
+5. **Terminación:**
+   - Si a base de acumular hechos se alcanza un punto en el que $G \subseteq S^+$, el algoritmo termina con éxito y **devuelve la secuencia de acciones obtenida** como el plan relajado definitivo.
+   - Si, por el contrario, no se ha alcanzado el objetivo pero ya no queda ninguna acción aplicable que pueda aportar un hecho nuevo, el algoritmo se detiene y determina que **no existe ningún plan relajado** posible para ese estado.
+
+El enfoque se denomina "voraz" porque engulle de forma continua cualquier acción que le proporcione información nueva hasta tropezar con la meta. El tamaño o coste del plan ficticio que devuelve este algoritmo se utiliza posteriormente para **estimar matemáticamente (mediante la heurística $h^+$)** cuánto esfuerzo costaría encontrar la solución óptima en el problema real, guiando así al planificador verdadero.
+
+## Cómo calcular $h^{max}$ y $h^{add}$
+
+Como hemos visto, calcular la heurística óptima $h^+$ exige aplicar el algoritmo voraz generando todos los planes relajados posibles y compararlos, lo cual resulta computacionalmente muy costoso (el abanico de planes crece de forma exponencial según el número de acciones del dominio).
+
+Para solucionar este cuello de botella, $h^{max}$ y $h^{add}$ actúan como **aproximaciones eficientes** que no construyen ninguna secuencia de acciones (no hay planes). En su lugar, el sistema **utiliza un algoritmo de programación dinámica** puramente matemático.
+
+Este algoritmo funciona rellenando una tabla de valores numéricos, donde calcula el coste iterativo de alcanzar cada hecho individual del dominio basándose en una gran simplificación: **asumir la independencia entre los objetivos**.
+
+Dependiendo de la heurística que elijas, el cálculo final al evaluar esa tabla cambia:
+
+- **$h^{max}$:** Asume que, para lograr un conjunto de objetivos, es suficiente con lograr **el objetivo individual más costoso**. Toma el valor máximo de entre los objetivos aislados, asumiendo (de forma optimista) que en el esfuerzo de lograr el más difícil se habrán completado los demás.
+- **$h^{add}$:** Asume que los objetivos se deben lograr por separado de forma aislada, por lo que su valor es la **suma de los costes individuales** de cada objetivo. Al ignorar que ciertas acciones pueden servir para varios objetivos a la vez, esta heurística suele ser demasiado pesimista.
+
+En resumen: no tienes que trazar ni un solo plan relajado. El sistema simplemente rellena una tabla actualizando de forma matemática el coste estimado de cada hecho a partir del coste de sus precondiciones, deteniéndose en cuanto los números dejan de cambiar. Esto hace que calcular $h^{max}$ y $h^{add}$ sea **drásticamente más rápido** en la práctica computacional.
+
+## El problema de transportes
+
+Las características y restricciones exactas de este problema son las siguientes:
+
+- **Topología:** Existe una red de cuatro lugares o localizaciones denominadas **$L_0$, $L_1$, $L_2$ y $L_3$** `. Las rutas (conexiones bidireccionales) que unen estos lugares son: entre $L_0$ y $L_1$, entre $L_1$ y $L_2$, entre $L_2$ y $L_3$, y adicionalmente existe una ruta directa entre **$L_1$ y $L_3$** `.
+- **Elementos móviles:** Se cuenta con un único camión **$C$** y un único paquete **$P$**. A efectos de la planificación, se asume que tanto el camión como los lugares tienen capacidad infinita.
+- **Estado Inicial:** El camión $C$ comienza su jornada físicamente en el lugar **$L_0$**, mientras que el paquete $P$ se encuentra esperando en el lugar **$L_1$**.
+- **Objetivo:** El sistema de planificación debe lograr dos condiciones simultáneas: el paquete debe ser transportado hasta el lugar **$L_3$**, y el camión debe regresar para finalizar en su posición original **$L_0$**.
+
+Para moverse y operar en este mundo, el modelo dispone de tres **esquemas de acciones** estructuradas en STRIPS:
+
+1.  **`IR(c, l1, l2)`**: Permite trasladar el camión de un lugar a otro, siempre y cuando la precondición `CONECTADOS(l1, l2)` se cumpla.
+2.  **`CARGAR_PAQUETE(p, c, l)`**: Permite introducir el paquete en el camión si ambos coinciden en la misma localización.
+3.  **`DESCARGAR_PAQUETE(p, c, l)`**: Permite depositar el paquete en la ubicación actual del camión.
+
+## Dado un problema de planificación y su representación en el formalismo STRIPS ¿Qué estrategia se debe seguir para encontrar el `plan óptimo`?
+
+Para abordar el problema de encontrar el **"Plan óptimo"**, existen dos enfoques complementarios: la estrategia algorítmica (cómo lo resuelve matemáticamente un planificador) y la estrategia de razonamiento lógico (cómo debes trazarlo tú para responder al Ejercicio 8).
+
+**1. Estrategia algorítmica (Enfoque del sistema)**
+Computacionalmente, la estrategia consiste en transformar el problema en una **búsqueda dentro de un grafo de espacio de estados**, donde los vértices son las posibles situaciones del mundo y los arcos son las acciones.
+Para asegurar la optimalidad sin tener que explorar todas las combinaciones posibles, la estrategia a seguir es utilizar el **algoritmo de búsqueda A\***. Este algoritmo avanza evaluando en cada paso la función $f(s) = g(s) + h(s)$, que suma el coste real acumulado hasta el momento y la estimación heurística hasta la meta. La clave teórica es que si se alimenta al algoritmo A\* con una **heurística admisible** (una estimación que nunca sea mayor que el coste real, como $h^+$ o $h^{max}$), se **garantiza matemáticamente encontrar el plan de menor coste**. Si las acciones no tuvieran una heurística disponible pero tuvieran costes asignados, la alternativa sería usar el **algoritmo de Dijkstra**.
+
+**2. Estrategia de razonamiento lógico (Para resolver el Ejercicio 8)**
+El enunciado te pide expresamente "razonar" el plan, lo que significa deducir la ruta más corta aprovechando la topología de la red. La estrategia humana es dividir la meta en tres fases lógicas: ida, descarga y regreso.
+
+- **Ida y Recogida:** El camión parte de $L_0$ y el paquete está en $L_1$. La única opción lógica es moverse e introducir la carga:
+  1. `IR(C, L0, L1)`
+  2. `CARGAR_PAQUETE(P, C, L1)`
+- **Transporte (Búsqueda del atajo):** El objetivo de la carga es $L_3$. Aunque la red conecta $L_1$ con $L_2$ y luego $L_2$ con $L_3$, el enunciado establece explícitamente que **existe una conexión directa entre $L_1$ y $L_3$**. Para que el plan sea óptimo, debemos usar esta conexión directa y evitar el rodeo, para luego dejar la carga: 3. `IR(C, L1, L3)` 4. `DESCARGAR_PAQUETE(P, C, L3)`
+- **Regreso a la base:** Una de las condiciones del objetivo es que el camión debe terminar su recorrido donde empezó (en $L_0$). Como $L_3$ y $L_0$ no tienen conexión directa, el camino óptimo de vuelta consiste en deshacer la ruta transitada: 5. `IR(C, L3, L1)` 6. `IR(C, L1, L0)`
+
+**Plan solución óptimo definitivo:**
+`⟨ IR(C, L0, L1), CARGAR_PAQUETE(P, C, L1), IR(C, L1, L3), DESCARGAR_PAQUETE(P, C, L3), IR(C, L3, L1), IR(C, L1, L0) ⟩`
+
+**Cálculo del coste:**
+Dado que el enunciado general del problema no especifica costes individuales para las acciones, en planificación clásica se asume un coste unitario (valor 1) para cada paso. Al constar de 6 acciones estrictamente necesarias, **el coste de este plan óptimo es 6**. _(Nota: En apartados teóricos más avanzados se aplican costes asimétricos, como 3 para viajar entre L1 y L3, lo que cambiaría el valor numérico total, pero esta es la secuencia fundamental más corta)_.
 
 # Ejercicios
 
@@ -607,3 +712,419 @@ Suponemos K aeropuertos.
 **Estado objetivo - G**
 
 - PAQUETE_EN(P_p, L_i), para cada p en {1,2,...P} y m en {1,2,...M}, tomamos i en {1,2,....N}, siendo N el número de localizaciones de llegada en la ciudad 'm'.
+
+## Ejercicio 7
+
+Consideremos la instancia del dominio del mundo de los bloques en la que hay dos bloques A y B, que inicialmente se hallan en la disposición A sobre la mesa y B sobre A, y que se pretenden llevar a una disposición en la que A esté sobre B.
+
+Se pide obtener un plan relajado para el problema. Para ello aplicar el algoritmo voraz de cálculo de planes relajados, eligiendo en cada paso, de entre todas las acciones aplicables que proporcionen hechos nuevos, aquella cuyo nombre sea el primero por orden alfabético.
+
+### Solución
+
+**Estado inicial - I**: SOBRE_LA_MESA(A), SOBRE(B,A), DESPEJADO(B), BRAZO_LIBRE()
+**Estado Objetivo - G**: SOBRE(A,B)
+
+En el dominio estándar del mundo de los bloques, el sistema cuenta con **cuatro esquemas de acciones posibles** que modelan los movimientos del brazo robótico:
+
+- **AGARRAR(b):** El brazo robótico coge el bloque `b` que se encuentra directamente apoyado sobre la mesa.
+- **APILAR(b1, b2):** El brazo robótico deja el bloque `b1` (que tiene agarrado) colocándolo encima del bloque `b2`.
+- **BAJAR(b):** El brazo robótico deja el bloque `b` (que tenía previamente agarrado) directamente sobre la mesa.
+- **DESAPILAR(b1, b2):** El brazo robótico coge el bloque `b1` cuando este se encuentra apoyado encima del bloque `b2`.
+
+**PLAN RELAJADO**:
+-> DESAPILAR(B, A) -> { SOBRE_LA_MESA(A), SOBRE(B,A), DESPEJADO(B), BRAZO_LIBRE(), AGARRADO(B), DESPEJADO(A) }
+-> AGARRAR(A) -> { SOBRE_LA_MESA(A), SOBRE(B,A), DESPEJADO(B), BRAZO_LIBRE(), AGARRADO(B), DESPEJADO(A), AGARRADO(A)}
+-> APILAR(A,B) -> { SOBRE_LA_MESA(A), SOBRE(B,A), DESPEJADO(B), BRAZO_LIBRE(), AGARRADO(B), DESPEJADO(A), AGARRADO(A), SOBRE(A,B)}
+
+## Ejercicio 8
+
+Consideremos el problema del transporte de paquetes descrito en el tema. Se pide lo siguiente:
+
+1.  Razonar cuál sería un plan solución óptimo del problema y calcular su coste.
+
+Si algoritmos, solo razonando el plan óptimo es: ⟨ IR(C, L0, L1), CARGAR_PAQUETE(P, C, L1), IR(C, L1, L3), DESCARGAR_PAQUETE(P, C, L3), IR(C, L3, L1), IR(C, L1, L0) ⟩
+
+2.  Determinar todos los posibles planes relajados para el estado inicial del problema y calcular el valor de la heurística $h^{+}$ para ese estado.
+
+Para resolver este apartado, debemos aplicar la técnica de **relajación del borrado**. Esto implica que al ejecutar las acciones relajadas (indicadas con el superíndice $+$), estas solo añaden nuevos hechos al estado, pero **ningún hecho deja de cumplirse jamás**.
+
+El estado inicial es $I = \{CAMI\acute{O}N\_EN(C, L_0), PAQUETE\_EN(P, L_1)\}$ y el objetivo es $G = \{CAMI\acute{O}N\_EN(C, L_0), PAQUETE\_EN(P, L_3)\}$ ``.
+
+El detalle fundamental para resolver este ejercicio es darte cuenta de que, como los hechos nunca se borran, **el hecho objetivo $CAMI\acute{O}N\_EN(C, L_0)$ ya se cumple desde el principio** porque forma parte del estado inicial `. Por lo tanto, en el problema relajado **no es necesario planificar el viaje de vuelta** del camión; solo nos interesa lograr $PAQUETE\_EN(P, L_3)$ `.
+
+Al aplicar el algoritmo voraz eligiendo acciones de todas las maneras posibles para alcanzar la meta, obtenemos distintas ramificaciones o **posibles planes relajados** :
+
+**1. Plan relajado óptimo (Ruta directa):**
+Se elige el camino más corto posible aprovechando la conexión directa entre $L_1$ y $L_3$.
+`⟨ IR(C, L0, L1)⁺, CARGAR_PAQUETE(P, C, L1)⁺, IR(C, L1, L3)⁺, DESCARGAR_PAQUETE(P, C, L3)⁺ ⟩`
+_Coste: 4 acciones._
+
+**2. Plan relajado subóptimo (Ruta por L2):**
+El algoritmo decide explorar moviendo el camión a través del lugar intermedio $L_2$.
+`⟨ IR(C, L0, L1)⁺, CARGAR_PAQUETE(P, C, L1)⁺, IR(C, L1, L2)⁺, IR(C, L2, L3)⁺, DESCARGAR_PAQUETE(P, C, L3)⁺ ⟩`
+_Coste: 5 acciones._
+
+**3. Planes relajados con acciones irrelevantes (Derivados del algoritmo voraz ciego):**
+Dado que el algoritmo voraz coge cualquier acción aplicable que aporte información nueva, puede generar múltiples combinaciones con acciones inútiles, como descargar el paquete en lugares intermedios para luego volver a cargarlo. Un ejemplo explícito de esto (detallado en la teoría) es:
+`⟨ IR(C, L0, L1)⁺, CARGAR_PAQUETE(P, C, L1)⁺, DESCARGAR_PAQUETE(P, C, L0)⁺, IR(C, L1, L3)⁺, DESCARGAR_PAQUETE(P, C, L3)⁺ ⟩` ``.
+_Coste: 5 o más acciones (dependiendo de cuántas acciones inútiles encadene)._
+
+**Cálculo de la heurística $h^+$:**
+
+Por definición, el valor de la heurística **$h^+(s)$ equivale al coste del plan relajado óptimo** (es decir, el de menor coste de entre todos los planes relajados posibles para ese estado).
+
+Revisando todos los planes anteriores, el plan de menor coste es el "Plan relajado óptimo (Ruta directa)". Asumiendo un coste unitario de valor 1 para cada acción (estándar en planificación clásica), el cálculo es el siguiente:
+**$h^+(I) = 1 + 1 + 1 + 1 = 4$**.
+
+## Ejercicio 9
+
+Consideremos el siguiente problema de planificación automática:
+
+- **Hechos:** $H\_i$ para $i=1,...,6$
+- **Acciones:**
+
+| Acción | Precondiciones | Lista de borrado   | Lista de adición    | Coste |
+| :----- | :------------- | :----------------- | :------------------ | :---- |
+| **A**  | $H\_5, H\_6$   | $H\_4, H\_5, H\_6$ | $H\_1, H\_2$        | 5     |
+| **B**  | $H\_1, H\_6$   | $H\_1, H\_2, H\_6$ | $H\_3, H\_5$        | 1     |
+| **C**  | $H\_2, H\_3$   | $H\_3, H\_6$       | $H\_1, H\_4, $H\_5$ | 3     |
+| **D**  | $H\_1, H\_5$   | $H\_5, H\_6$       | $H\_3$              | 3     |
+| **E**  | $H\_3, H\_5$   | $H\_2, H\_6$       | $H\_1, H\_4$        | 2     |
+
+- **Estado inicial:** $H\_5, H\_6$
+- **Objetivo:** $H\_1, H\_3, H\_4$
+
+Se pide determinar todos los posibles planes relajados para el estado inicial del problema y calcular el valor de la heurística $h^+$ para ese estado.
+
+### Solución.
+
+Aplicando el algoritmo voraz al estado inicial s, definimos:
+$S^+$ = { $H\_5, H\_6$ }
+$a^+$ = <>
+
+- Paso 1: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **A** >
+  Al aplicar **A**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_5, H\_6$ }, y $a^+$ = < **A** >
+- Paso 2: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **B** y **D** >
+  Al aplicar **B**, tenemos $S^+$ = { $H\_1$, $H\_2$m $H\_3$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **B** >
+- Paso 3: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **C** , **E**>
+  Al aplicar **C**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_3$, $H\_4$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **B**, **C** >
+
+- Paso 1: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **A** >
+  Al aplicar **A**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_5, H\_6$ }, y $a^+$ = < **A** >
+- Paso 2: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **B** y **D** >
+  Al aplicar **D**, tenemos $S^+$ = { $H\_1$, $H\_2$m $H\_3$, $H\_5, H\_6$, }, y $a^+$ = < **A**, **D** >
+- Paso 3: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **C**, **E** >
+  Al aplicar **C**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_3$, $H\_4$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **D**, **C** >
+
+- Paso 1: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **A** >
+  Al aplicar **A**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_5, H\_6$ }, y $a^+$ = < **A** >
+- Paso 2: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **B** y **D** >
+  Al aplicar **D**, tenemos $S^+$ = { $H\_1$, $H\_2$m $H\_3$, $H\_5, H\_6$, }, y $a^+$ = < **A**, **D** >
+- Paso 3: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **C**, **E** >
+  Al aplicar **C**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_3$, $H\_4$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **D**, **C** >
+
+- Paso 1: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **A** >
+  Al aplicar **A**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_5, H\_6$ }, y $a^+$ = < **A** >
+- Paso 2: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **B** y **D** >
+  Al aplicar **B**, tenemos $S^+$ = { $H\_1$, $H\_2$m $H\_3$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **B** >
+- Paso 3: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **C** , **E**>
+  Al aplicar **E**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_3$, $H\_4$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **B**, **E** >
+
+- Paso 1: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ ->< **A** >
+  Al aplicar **A**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_5, H\_6$ }, y $a^+$ = < **A** >
+- Paso 2: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **B** y **D** >
+  Al aplicar **D**, tenemos $S^+$ = { $H\_1$, $H\_2$m $H\_3$, $H\_5, H\_6$, }, y $a^+$ = < **A**, **D** >
+- Paso 3: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **C**, **E** >
+  Al aplicar **E**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_3$, $H\_4$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **D**, **E** >
+
+Tenemos 4 posibles planes relajados
+
+- P_1 = < **A**, **B**, **C** >
+- P_2 = < **A**, **D**, **C** >
+- P_3 = < **A**, **B**, **E** >
+- P_4 = < **A**, **D**, **E** >
+
+Como $h^+$ sería el plan de menos coste y tenemos
+
+- P_1 = 5 + 1 + 3 = 9
+- P_2 = 5 + 3 + 3 = 11
+- P_3 = 5 + 1 + 2 = 8
+- P_4 = 5 + 3 + 2 = 10
+
+$h^+$ = P_3 = < **A**, **B**, **E** >
+
+## Ejercicio 10
+
+Consideremos el siguiente problema de planificación automática:
+
+- **Hechos:** $H\_i$ para $i=1,...,9$
+- **Acciones:**
+
+| Acción | Precondiciones     | Lista de borrado | Lista de adición   | Coste |
+| :----: | :----------------- | :--------------- | :----------------- | :---: |
+| **A**  | $H\_9$             | $H\_2$           | $H\_3, H\_5, H\_8$ |   1   |
+| **B**  | $H\_1, H\_6, H\_8$ | $H\_4$           | $H\_9$             |   3   |
+| **C**  | $H\_3$             | $H\_3, H\_5$     | $H\_4, H\_6, H\_8$ |   4   |
+| **D**  | $H\_1, H\_2, H\_3$ | $H\_1, H\_2$     | $H\_6$             |   5   |
+| **E**  | $H\_1$             | $H\_1, H\_2$     | $H\_6$             |   0   |
+
+- **Estado inicial:** ${H\_1}$
+- **Objetivo:** ${H\_2, H\_5, H\_8}$
+
+Para cada estado $s$ siguiente se pide determinar todos los posibles planes relajados para $s$ y calcular el valor de $h^+(s)$:
+
+1.  ${H\_1, H\_2, H\_3}$
+2.  ${H\_1, H\_3, H\_6, H\_8}$
+
+### Solución
+
+Empecemos por el estado incicial 1. s = ${H\_1, H\_2, H\_3}$
+
+- S^+ = ${H\_1, H\_2, H\_3}$, acciones candidatas (Aportan hechos nuevos a <S^+> y cumplen las precondiciones) -> { C, D, E }
+- Añadimos C a a^+ -> a^+ = { **C** }, y S^+ = ${H\_1, H\_2, H\_3, H\_4, H\_6, H\_8}$ -> acciones candidatas -> { B }
+- Añadimos B a a^+ -> a^+ = { **C**, **B** }, y S^+ = ${H\_1, H\_2, H\_3, H\_4, H\_6, H\_8, H\_9}$ -> acciones candidatas -> { A }
+- Añadimos A a a^+ -> a^+ = { **C**, **B**, **A** }, y S^+ = ${H\_1, H\_2, H\_3, H\_4, H\_5, H\_6, H\_8, H\_9}$ -> este estado contiene al objetivo, por lo tanto el primer plan relajado P_1 = < **C**, **B**, **A** >
+
+- S^+ = ${H\_1, H\_2, H\_3}$, acciones candidatas (Aportan hechos nuevos a <S^+> y cumplen las precondiciones) -> { C, D, E }
+- Añadimos D a a^+ -> a^+ = { **D** }, y S^+ = ${H\_1, H\_2, H\_3, H\_6}$ -> acciones candidatas -> { C }
+- Añadimos C a a^+ -> a^+ = { **D**, **C** }, y S^+ = ${H\_1, H\_2, H\_3, H\_4, H\_6, H\_8}$ -> acciones candidatas -> { B }
+- Añadimos B a a^+ -> a^+ = { **D**, **C**, **B** }, y S^+ = ${H\_1, H\_2, H\_3, H\_4, H\_6, H\_8, H\_9}$ -> acciones candidatas -> { A }
+- Añadimos A a a^+ -> a^+ = { **D**, **C**, **B**, **A** }, y S^+ = ${H\_1, H\_2, H\_3, H\_4, H\_5, H\_6, H\_8, H\_9}$ -> este estado contiene al objetivo, por lo tanto el primer plan relajado P_2 = < **D**, **C**, **B**, **A** >
+
+- S^+ = ${H\_1, H\_2, H\_3}$, acciones candidatas (Aportan hechos nuevos a <S^+> y cumplen las precondiciones) -> { C, D, E }
+- Añadimos E a a^+ -> a^+ = { **E** }, y S^+ = ${H\_1, H\_2, H\_3, H\_6}$ -> acciones candidatas -> { C }
+- Añadimos C a a^+ -> a^+ = { **E**, **C** }, y S^+ = ${H\_1, H\_2, H\_3, H\_4, H\_6, H\_8}$ -> acciones candidatas -> { B }
+- Añadimos B a a^+ -> a^+ = { **E**, **C**, **B** }, y S^+ = ${H\_1, H\_2, H\_3, H\_4, H\_6, H\_8, H\_9}$ -> acciones candidatas -> { A }
+- Añadimos A a a^+ -> a^+ = { **E**, **C**, **B**, **A** }, y S^+ = ${H\_1, H\_2, H\_3, H\_4, H\_5, H\_6, H\_8, H\_9}$ este estado contiene al objetivo, por lo tanto el primer plan relajado P_3 = < **E**, **C**, **B**, **A** >
+
+Calculemos los costes para encontrar h^+ como aquél plan con coste mínimo.
+
+P_1 = 4 + 3 + 1 = 8
+P_2 = 5 + 4 + 3 + 1 = 13
+P_3 = 0 + 4 + 3 + 1 = 8
+
+Tanto P_1 como P_3 podemos tomarlo como h^+, es este caso, tomamos P_1 por tener menor número de acciones
+
+--
+
+Seguimos con el segundo estado 2. s = ${H\_1, H\_3, H\_6, H\_8}$
+
+Como $H\_2$ no estáen ninguna lista de adición, nunca vamos a llegar a obtener un estado S^+ que contenga al estado objetivo, por lo que el algoritmo voraz nunca encontrara un plan relajado.
+
+La consecuencia teórica y matemática de tu deducción, y lo que cierra el ejercicio de forma sobresaliente, es que cuando no existe un plan relajado para un estado, el valor de la heurística estimada tiende a infinito. Por lo tanto, la respuesta final a este apartado es h^+(s)=+∞
+
+## Ejercicio 11
+
+Consideremos el siguiente problema de planificación automática:
+
+- **Hechos:** $H\_i$ para $i=1,...,5$.
+- **Acciones:**
+
+| Acción | Precondiciones | Lista de borrado | Lista de adición | Coste |
+| :----- | :------------- | :--------------- | :--------------- | :---- |
+| **A**  | $H\_5$         | $H\_4$           | $H\_3$           | 0     |
+| **B**  | $H\_3$         | $H\_1$           | $H\_4, H\_5$     | 4     |
+| **C**  | $H\_5$         | $H\_5$           | $H\_3$           | 2     |
+| **D**  | $H\_5$         | $H\_3$           | $H\_2, H\_4$     | 2     |
+| **E**  | $H\_2$         | $H\_3$           | $H\_1, H\_5$     | 1     |
+
+- **Estado inicial:** ${H\_2, H\_3}$
+- **Objetivo:** ${H\_1, H\_4, H\_5}$
+
+Se pide calcular, mediante el algoritmo de programación dinámica, el valor de $h^{max}$ y de $h^{add}$ para el estado inicial del problema.
+
+### Solución
+
+Para resolver el **Ejercicio 11**, vamos a aplicar el algoritmo de programación dinámica paso a paso.
+
+Antes de empezar, hay un detalle matemático clave en este problema: **todas las acciones del dominio (A, B, C, D, E) tienen exactamente una única precondición**. Como el coste de las precondiciones es el máximo (para $h^{max}$) o la suma (para $h^{add}$) de los costes de los hechos individuales, al haber solo un hecho en cada precondición, **la tabla de costes calculada será exactamente idéntica para ambas heurísticas**. La única diferencia radicará en el cálculo final sobre el conjunto objetivo.
+
+El estado inicial es $I = \{H_2, H_3\}$ y el objetivo es $G = \{H_1, H_4, H_5\}$.
+
+**Paso 0: Inicialización ($T_0$)**
+Asignamos coste 0 a los hechos del estado inicial y $\infty$ al resto.
+
+- $T_0(H_1) = \infty$
+- $T_0(H_2) = 0$
+- $T_0(H_3) = 0$
+- $T_0(H_4) = \infty$
+- $T_0(H_5) = \infty$
+
+**Paso 1: Iteración 1 ($T_1$)**
+Evaluamos cuánto costaría aplicar las acciones basándonos en $T_0$:
+
+- **Acción A** (pre: $H_5$): Coste base = $T_0(H_5) + 0 = \infty + 0 = \infty$
+- **Acción B** (pre: $H_3$): Coste base = $T_0(H_3) + 4 = 0 + 4 = 4$. (Añade $H_4$ y $H_5$).
+- **Acción C** (pre: $H_5$): Coste base = $T_0(H_5) + 2 = \infty + 2 = \infty$
+- **Acción D** (pre: $H_5$): Coste base = $T_0(H_5) + 2 = \infty + 2 = \infty$
+- **Acción E** (pre: $H_2$): Coste base = $T_0(H_2) + 1 = 0 + 1 = 1$. (Añade $H_1$ y $H_5$).
+
+Actualizamos los costes mínimos para cada hecho ($T_1$):
+
+- $T_1(H_1) = \min(\infty, 1 \text{ [por E]}) = 1$
+- $T_1(H_2) = \min(0, \infty) = 0$
+- $T_1(H_3) = \min(0, \infty) = 0$
+- $T_1(H_4) = \min(\infty, 4 \text{ [por B]}) = 4$
+- $T_1(H_5) = \min(\infty, 1 \text{ [por E]}, 4 \text{ [por B]}) = 1$
+
+**Paso 2: Iteración 2 ($T_2$)**
+Repetimos el proceso usando los nuevos valores de $T_1$:
+
+- **Acción A** (pre: $H_5$): Coste base = $T_1(H_5) + 0 = 1 + 0 = 1$. (Añade $H_3$).
+- **Acción B** (pre: $H_3$): Coste base = $T_1(H_3) + 4 = 0 + 4 = 4$. (Añade $H_4$ y $H_5$).
+- **Acción C** (pre: $H_5$): Coste base = $T_1(H_5) + 2 = 1 + 2 = 3$. (Añade $H_3$).
+- **Acción D** (pre: $H_5$): Coste base = $T_1(H_5) + 2 = 1 + 2 = 3$. (Añade $H_2$ y $H_4$).
+- **Acción E** (pre: $H_2$): Coste base = $T_1(H_2) + 1 = 0 + 1 = 1$. (Añade $H_1$ y $H_5$).
+
+Actualizamos de nuevo:
+
+- $T_2(H_1) = \min(1, 1 \text{ [por E]}) = 1$
+- $T_2(H_2) = \min(0, 3 \text{ [por D]}) = 0$
+- $T_2(H_3) = \min(0, 1 \text{ [por A]}, 3 \text{ [por C]}) = 0$
+- $T_2(H_4) = \min(4 \text{ [anterior]}, 4 \text{ [por B]}, 3 \text{ [por D]}) = 3$ _(El coste baja porque ahora D es aplicable)_.
+- $T_2(H_5) = \min(1 \text{ [anterior]}, 4 \text{ [por B]}, 1 \text{ [por E]}) = 1$
+
+**Paso 3: Iteración 3 ($T_3$)**
+Si recalculamos basándonos en $T_2$:
+
+- $C_A = 1+0=1$, $C_B = 0+4=4$, $C_C = 1+2=3$, $C_D = 1+2=3$, $C_E = 0+1=1$.
+  Al buscar los mínimos, ningún coste logra superar los registros anteriores. Como $T_3 = T_2$, **el algoritmo se estabiliza y termina**.
+
+Los costes definitivos para alcanzar cada hecho son: **$\{H_1=1, H_2=0, H_3=0, H_4=3, H_5=1\}$**.
+
+**Cálculo final de las heurísticas**
+Sabiendo que nuestro objetivo global es $G = \{H_1, H_4, H_5\}$, aplicamos las fórmulas correspondientes:
+
+- Para **$h^{max}$**, se asume que basta con el coste del objetivo más caro:
+  $h^{max}(I) = \max(T(H_1), T(H_4), T(H_5)) = \max(1, 3, 1)$
+  **$h^{max}(I) = 3$**
+
+- Para **$h^{add}$**, se asume que los objetivos son independientes y se suman todos sus costes:
+  $h^{add}(I) = T(H_1) + T(H_4) + T(H_5) = 1 + 3 + 1$
+  **$h^{add}(I) = 5$**
+
+## Ejercicio 12
+
+Consideremos el siguiente problema de planificación automática:
+
+- **Hechos:** $H\_i$ para $i=1,...,6$.
+- **Acciones:**
+
+| Acción | Precondiciones | Lista de borrado |  Lista de adición  | Coste |
+| :----: | :------------: | :--------------: | :----------------: | :---: |
+| **A**  |     $H\_1$     |      $H\_1$      |    $H\_3, H\_4$    |   3   |
+| **B**  |  $H\_3, H\_4$  |      $H\_4$      | $H\_2, H\_5, H\_6$ |   2   |
+| **C**  |     $H\_4$     |      $H\_5$      |    $H\_3, H\_6$    |   2   |
+| **D**  |     $H\_2$     |      $H\_1$      | $H\_4, H\_5, H\_6$ |   3   |
+| **E**  |  $H\_4, H\_6$  |      $H\_3$      | $H\_1, H\_2, H\_5$ |   3   |
+| **F**  |     $H\_3$     |      $H\_3$      | $H\_1, H\_2, H\_6$ |   3   |
+
+- **Estado inicial:** ${H\_2}$
+- **Objetivo:** ${H\_3, H\_4, H\_5}$
+
+Se pide calcular, mediante el algoritmo de programación dinámica, el valor de $h^{max}$ y de $h^{add}$ para el estado inicial del problema.
+
+### Solución
+
+Empecemos por $h^{max}$
+**Paso 1: Iteración 1 ($T_0$)**
+
+- Inicializamos la tabla dinámica de costes ($T_0$), asignamos coste 0 a los hechos del estado inicial y $\infty$ al resto.
+
+$T_0(H_1)$ = $\infty$
+$T_0(H_2)$ = 0
+$T_0(H_3)$ = $\infty$
+$T_0(H_4)$ = $\infty$
+$T_0(H_5)$ = $\infty$
+$T_0(H_6)$ = $\infty$
+
+**Paso 1: Iteración 1 ($T_1$)**
+
+- Evaluamos cuánto costaría aplicar las acciones basándonos en $T_0$:
+
+- **Acción A** (pre: $H_1$): Coste base = $T_0(H_1)$ + 3 = $\infty$ + 3 = $\infty$
+- **Acción B** (pre: $H_3$ y $H_4$): Coste base = \max(T(H_3), T(H_4)) + 2 = $\infty$ + 2 = $\infty$
+- **Acción C** (pre: $H_4$): Coste base = $\infty$ + 2 = $\infty$
+- **Acción D** (pre: $H_2$): Coste base = 0 + 3 = 3 **Añade $H\_4, H\_5, H\_6$**
+- **Acción E** (pre: $H_4$ y $H_6$): Coste base = \max(T(H_3), T(H_6)) + 3 = $\infty$ + 3 = $\infty$
+- **Acción F** (pre: $H_3$): Coste base = $\infty$ + 3 = $\infty$
+
+Actualizamos los costes mínimos para cada hecho ($T_1$):
+
+- $T_1(H_1) = \min(\infty, \infty) = \infty$
+- $T_1(H_2) = \min(0, \infty) = 0$
+- $T_1(H_3) = \min(\infty, \infty) = \infty$
+- $T_1(H_4) = \min(\infty, 3 \text{ [por D]}) = 3$
+- $T_1(H_5) = \min(\infty, 3 \text{ [por D]}) = 3$
+- $T_1(H_6) = \min(\infty, 3 \text{ [por D]}) = 3$
+
+**Paso 2: Iteración 2 ($T_2$)**
+
+- Evaluamos cuánto costaría aplicar las acciones basándonos en $T_1$:
+
+- **Acción A** (pre: $H_1$): Coste base = $T_1(H_1)$ + 3 = $\infty$ + 3 = $\infty$
+- **Acción B** (pre: $H_3$ y $H_4$): Coste base = \max(T(H_3), T(H_4)) + 2 = $\infty$ + 2 = $\infty$
+- **Acción C** (pre: $H_4$): Coste base = 3 + 2 = 5 **Añade $H\_3, H\_6$**
+- **Acción D** (pre: $H_2$): Coste base = 0 + 3 = 3 **Añade $H\_4, H\_5, H\_6$**
+- **Acción E** (pre: $H_4$ y $H_6$): Coste base = \max(T(H_3), T(H_6)) + 3 = $\infty$ + 3 = $\infty$
+- **Acción F** (pre: $H_3$): Coste base = $\infty$ + 3 = $\infty$
+
+Actualizamos los costes mínimos para cada hecho ($T_2$):
+
+- $T_2(H_1) = \min(\infty, \infty) = \infty$
+- $T_2(H_2) = \min(0, \infty) = 0$
+- $T_2(H_3) = \min(\infty, 5 \text{ [por C]}) = 5$
+- $T_2(H_4) = \min(3, 3 \text{ [por D]}) = 3$
+- $T_2(H_5) = \min(3, 3 \text{ [por D]}) = 3$
+- $T_2(H_6) = \min(3, \max(3 \text{ [por D], 5 \text{ [por C]}})) = 3$
+
+**Paso 3: Iteración 3 ($T_3$)**
+
+- Evaluamos cuánto costaría aplicar las acciones basándonos en $T_2$:
+
+- **Acción A** (pre: $H_1$): Coste base = $T_2(H_1)$ + 3 = $\infty$ + 3 = $\infty$
+- **Acción B** (pre: $H_3$ y $H_4$): Coste base = \max(T(H_3), T(H_4)) + 2 = 5 + 2 = 7 **Añade $H\_2, H\_5, H\_6$**
+- **Acción C** (pre: $H_4$): Coste base = 3 + 2 = 5 **Añade $H\_3, H\_6$**
+- **Acción D** (pre: $H_2$): Coste base = 0 + 3 = 3 **Añade $H\_4, H\_5, H\_6$**
+- **Acción E** (pre: $H_4$ y $H_6$): Coste base = \max(T(H_3), T(H_6)) + 3 = 3 + 3 = 6 **Añade $H\_1, H\_2, H\_5$**
+- **Acción F** (pre: $H_3$): Coste base = 5 + 3 = 8 **Añade $H\_1, H\_2, H\_6$**
+
+Actualizamos los costes mínimos para cada hecho ($T_3$):
+
+- $T_3(H_1) = \min(\infty, \max(6 \text{ [por E]}, 8 \text{ [por F]})) = 8$
+- $T_3(H_2) = \min(0, \max(7 \text{ [por B]}, 6 \text{ [por E]}, 8 \text{ [por F]})) = 0$
+- $T_3(H_3) = \min(5, 5 \text{ [por C]}) = 5$
+- $T_3(H_4) = \min(3, 3 \text{ [por D]}) = 3$
+- $T_3(H_5) = \min(3, \max(7 \text{ [por B]}, 3 \text{ [por D]}, 6 \text{ [por E]})) = 3$
+- $T_3(H_6) = \min(3, \max(7 \text{ [por B]}, 5 \text{ [por C]}, 5 \text{ [por D]}, 8 \text{ [por F]})) = 3$
+
+**Paso 4: Iteración 3 ($T_4$)**
+
+- Evaluamos cuánto costaría aplicar las acciones basándonos en $T_3$:
+
+- **Acción A** (pre: $H_1$): Coste base = $T_3(H_1)$ + 3 = 8 + 3 = 11 **Añade $H\_3, H\_4$**
+- **Acción B** (pre: $H_3$ y $H_4$): Coste base = \max(T(H_3), T(H_4)) + 2 = 5 + 2 = 7 **Añade $H\_2, H\_5, H\_6$**
+- **Acción C** (pre: $H_4$): Coste base = 3 + 2 = 5 **Añade $H\_3, H\_6$**
+- **Acción D** (pre: $H_2$): Coste base = 0 + 3 = 3 **Añade $H\_4, H\_5, H\_6$**
+- **Acción E** (pre: $H_4$ y $H_6$): Coste base = \max(T(H_3), T(H_6)) + 3 = 3 + 3 = 6 **Añade $H\_1, H\_2, H\_5$**
+- **Acción F** (pre: $H_3$): Coste base = 5 + 3 = 8 **Añade $H\_1, H\_2, H\_6$**
+
+Actualizamos los costes mínimos para cada hecho ($T_3$):
+
+- $T_3(H_1) = \min(11, \max(6 \text{ [por E]}, 8 \text{ [por F]})) = 8$
+- $T_3(H_2) = \min(0, \max(7 \text{ [por B]}, 6 \text{ [por E]}, 8 \text{ [por F]})) = 0$
+- $T_3(H_3) = \min(5, \max(11 \text{ [por A]}, 5 \text{ [por C]})) = 5$
+- $T_3(H_4) = \min(3, \max(11 \text{ [por A]}, 3 \text{ [por D]})) = 3$
+- $T_3(H_5) = \min(3, \max(7 \text{ [por B]}, 3 \text{ [por D]}, 6 \text{ [por E]})) = 3$
+- $T_3(H_6) = \min(3, \max(7 \text{ [por B]}, 5 \text{ [por C]}, 5 \text{ [por D]}, 8 \text{ [por F]})) = 3$
+
+A partir de esta iteración los valores se establizan, tenemos entoces los costes de cada hecho como:
+
+- $C(H_1) = 8$
+- $C(H_2) = 0$
+- $C(H_3) = 5$
+- $C(H_4) = 3$
+- $C(H_5) = 3$
+- $C(H_6) = 3$
+
+Por lo tanto h^{max}(I) = max(C(H_3), C(H_4), C(H_5)) = max(5, 3, 3) = 5
