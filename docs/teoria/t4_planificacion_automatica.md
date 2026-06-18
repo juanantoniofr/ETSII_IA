@@ -387,16 +387,16 @@ Se pide:
 
 - **ENTRAR(pe, pl)**: representa que la persona $pe$ entra en el ascensor en la planta $pl$ en la que se encuentra inicialmente.
   - precondiciones: ASCENSOR_EN(pl), ORIGEN(pe, pl), FUERA_ASCENSOR(pe)
-  - lista de borrado: FUERA_ASCENSOR(pe), ORIGEN(pe, pl)
+  - lista de borrado: FUERA_ASCENSOR(pe)
   - lista de adición: DENTRO_ASCENSOR(pe)
 - **SALIR(pe, pl)**: representa que la persona $pe$ sale del ascensor en la planta $pl$ del edificio a la que desea ir.
   - precondiciones: ASCENSOR_EN(pl), DESTINO(pe, pl), DENTRO_ASCENSOR(pe)
   - lista de borrado: DENTRO_ASCENSOR(pe)
   - lista de adición: FUERA_ASCENSOR(pe), EN_DESTINO(pe)
 - **SUBIR(pl1, pl2)**: representa que el ascensor sube de la planta $pl\_{1}$ a la planta $pl\_{2}$ del edificio.
-  - precondiciones: SUPERIOR(pl1, pl2), ASCENSOR_EN(pl2)
-  - lista de borrado: ASCENSOR_EN(pl2)
-  - lista de adición: ASCENSOR_EN(pl1)
+  - precondiciones: SUPERIOR(pl2, pl1), ASCENSOR_EN(pl1)
+  - lista de borrado: ASCENSOR_EN(pl1)
+  - lista de adición: ASCENSOR_EN(pl2)
 - **BAJAR(pl1, pl2)**: representa que el ascensor baja de la planta $pl\_{1}$ a la planta $pl\_{2}$ del edificio.
   - precondiciones: SUPERIOR(pl1, pl2), ASCENSOR_EN(pl1)
   - lista de borrado: ASCENSOR_EN(pl1)
