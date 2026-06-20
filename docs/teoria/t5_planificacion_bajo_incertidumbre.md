@@ -114,3 +114,30 @@ Se refiere al término de la derecha: **$\gamma \sum P_a(s'|s) U_i(s')$**. Una a
 
 **En resumen:**
 Para saber si una acción es la mejor, el algoritmo pone dos cosas en una balanza: **"¿Qué gano o sufro en este preciso instante por ejecutarla?"** (recompensa inmediata) sumado a **"¿En qué posición me deja esta acción para seguir jugando mañana, según lo que he calculado hasta ahora?"** (futuro descontado estimado). Sumando ambas mitades, obtiene el valor total de esa acción y ya puede compararla con las demás aplicando el operador máximo ($m\hat{a}x$).
+
+#### Resumen: algortimo de iteración de políticas
+
+El truco para entender la iteración de políticas es pensar en ella como un ciclo constante de **"evaluar y mejorar"**.
+
+La secuencia mental del algoritmo funciona así:
+
+**1. Evaluación (El paso que ya tienes)**
+Comenzaste con una política aleatoria inicial (llamémosla $\pi_0$). Al resolver el sistema de ecuaciones lineales para esa política en concreto, has obtenido como resultado una **tabla de valores numéricos ($U_0$)**. Esa tabla te dice exactamente qué utilidad conseguirás si el agente sigue estrictamente esa política $\pi_0$ hacia el futuro.
+
+**2. Mejora de la política (El siguiente paso)**
+Ahora te preguntas: _"Sabiendo que el futuro vale lo que dice mi tabla $U_0$, ¿puedo tomar mejores decisiones?"_.
+Para responderlo, el algoritmo evalúa estado por estado aplicando el operador **$arg\ m\hat{a}x$**, exactamente igual que hacíamos al final del algoritmo de iteración de valores.
+
+Para un estado $s$, pruebas **todas las acciones posibles** aplicando la fórmula interna de Bellman pero utilizando tu recién calculada tabla $U_0$:
+$R(s,a) + \gamma \sum P_a(s'|s) U_0(s')$
+
+Te quedas con la acción que te dé el valor más alto. Al repetir esto para todos los estados, habrás generado una **nueva política de acciones actualizada (llamémosla $\pi_1$)**.
+
+**3. Criterio de parada (¿Qué hacemos ahora?)**
+Aquí el algoritmo compara la nueva política ($\pi_1$) con la vieja ($\pi_0$) y pueden ocurrir dos cosas:
+
+- **Si son diferentes ($\pi_1 \neq \pi_0$):** Significa que el algoritmo ha descubierto un plan de acción mejor. Entonces, **el bucle vuelve a empezar**. Tomas tu nueva política $\pi_1$, planteas un **nuevo sistema de ecuaciones lineales** basado únicamente en estas nuevas acciones, lo resuelves para obtener una nueva tabla numérica ($U_1$), y usas $U_1$ para intentar extraer una política aún mejor ($\pi_2$).
+- **Si son exactamente iguales ($\pi_1 = \pi_0$):** ¡El algoritmo termina! `. Si después de reevaluar todos los estados con tus nuevos números, resulta que la lista de acciones ganadoras es idéntica a la que ya tenías, significa que has llegado a un punto de estabilización temporal donde la política ya no puede mejorar más. Has encontrado matemáticamente la **política óptima ($\pi^*$)**`.
+
+**En resumen visual de la diferencia:**
+Mientras que la _iteración de valores_ daba miles de vueltas actualizando una tabla de números y solo sacaba la política de acciones al final del todo, la **iteración de políticas** da vueltas actualizando directamente la lista de acciones, deteniéndose a resolver un sistema de ecuaciones completo en cada salto para comprobar si esa lista ha dejado de cambiar.
