@@ -69,9 +69,8 @@ up.model.Problem?
 
 3. **El operador `??` (Código fuente):** Si la documentación no es clara y quieres ver exactamente el código fuente en Python de cómo programaron ese método, usas dos signos.
 
-```python
-up.model.Problem.add_goal??
-
-```
+````python
+up.model.Problem.add_go```
 
 Cualquiera de estas tres opciones te permitirá hacer ingeniería inversa a la biblioteca `unified_planning` directamente desde VSCode. Te sugiero probar IPython, ya que su autocompletado con la tecla `Tab` responde perfectamente a tu necesidad de explorar qué contiene cada módulo rápidamente.
+````
