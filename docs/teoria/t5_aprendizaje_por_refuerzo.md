@@ -32,6 +32,33 @@ El agente juega un episodio hasta el final $\rightarrow$ Calcula exactamente cu�
 
 Repitiendo este proceso de experimentar, promediar ganancias y ajustar la política miles de veces, el agente termina descubriendo empíricamente la política óptima $\pi^*$ sin haber conocido jamás las reglas ocultas del entorno.
 
+### Montecarlo explicadpo a mi forma
+
+**1. El Escenario (Sin modelo del entorno)**
+Buscamos encontrar la política óptima ($\pi^*$) pero **no conocemos la dinámica del sistema**: ignoramos las probabilidades de transición ($P(s'|s,a)$) y la función de recompensas exactas ($R(s,a)$) `. Solo conocemos el conjunto de estados, las acciones aplicables y asumimos que existe un **estado terminal** (absorbente) al que siempre se acaba llegando para finalizar las partidas `.
+
+**2. El Cambio de Enfoque (De la función $U$ a la función $q$)**
+Al estar "ciegos" y no disponer del mapa de probabilidades para proyectar el futuro mediante las ecuaciones de Bellman, **abandonamos el uso de la utilidad de los estados $U(s)$** para tomar decisiones. En su lugar, el método estima directamente la tabla **$q(s,a)$**: la utilidad esperada de aplicar una acción concreta $a$ estando en un determinado estado $s$.
+
+**3. Inicialización**
+Se inicializa una política arbitraria ($\pi$) y una tabla $q(s,a)$ con valores aleatorios o ceros para cada par estado-acción. Además, se crea una memoria en forma de lista vacía llamada `Racum(s,a)` para cada par, donde iremos guardando el historial de sus rendimientos acumulados empíricos.
+
+**4. Generación de la Historia (Experiencia)**
+Partiendo de un estado inicial cualquiera, el agente genera un episodio completo hasta chocar con el estado terminal, produciendo una secuencia real de experiencia: $(s_0, a_0, R_0), (s_1, a_1, R_1), \dots, s_T$.
+
+- _Clave de exploración:_ Para generar esta historia, el agente no sigue ciegamente su política actual. Usa **inicios exploratorios o una política $\epsilon$-voraz** (con probabilidad $\epsilon$ elige una acción al azar) para garantizar la exploración de rutas nuevas y evitar quedarse atascado en soluciones subóptimas.
+
+**5. Análisis Retrospectivo y Actualización**
+Una vez finalizada la historia, el algoritmo la recorre **desde el final hacia el principio**, actualizando el conocimiento paso a paso:
+
+- _(Opcional)_: Si usamos la variante de "primera visita", comprobamos si es la **primera vez** que el par $s_i, a_i$ aparece en este episodio concreto. Si ya había aparecido antes en la misma partida, ignoramos este cálculo.
+- **Cálculo de la utilidad real acumulada ($U_i$):** Calculamos la variable temporal que mide el rendimiento exacto obtenido desde ese paso en adelante, usando la fórmula recursiva con el factor de descuento: **$U_i = R_i + \gamma U_{i+1}$** (la teoría lo define como la suma descontada $U \leftarrow \sum \gamma^{j-i} R_j$).
+- **Actualización de listas:** Añadimos ese valor $U_i$ recién calculado a la lista histórica `Racum(s_i, a_i)`.
+- **Actualización de la tabla $q$:** Para ese mismo par $s_i, a_i$, actualizamos su valor en la tabla $q$ calculando la **media aritmética** de todos los números que hay actualmente en su lista `Racum`.
+- **Mejora de la política:** Actualizamos al instante la política para ese estado $s_i$ mediante el criterio voraz, asignándole la acción que hace que la función $q$ sea **máxima** ($\pi(s_i) \leftarrow arg\ m\hat{a}x_a q(s_i, a)$).
+
+Repitiendo este proceso miles de veces (generar episodio $\rightarrow$ retrospectiva $\rightarrow$ promediar $\rightarrow$ actualizar política voraz), las estimaciones empíricas convergen por la Ley Fuerte de los Grandes Números y la política se vuelve óptima.
+
 ## Método de las difereferencias temporales
 
 ¡Exactamente! Has dado con la clave del funcionamiento del algoritmo. El método **"inventa"** temporalmente ese valor futuro, algo que en la teoría formal se denomina usar una **estimación** ``.
@@ -119,3 +146,20 @@ $q(s_4, a_1) = 0 + 0.5 \cdot [70 + 0.9 \cdot (\mathbf{5}) - 0]$
 $q(s_4, a_1) = 0.5 \cdot [70 + 4.5] = \mathbf{37.25}$
 
 Como puedes ver claramente en este último paso, el algoritmo Q-learning **no ha necesitado esperar a que acabe el juego**, ni necesita conocer las probabilidades de transición. Simplemente ha cogido la recompensa enorme que acaba de descubrir hoy ($R=70$) y le ha sumado un "préstamo" del valor futuro que él mismo había aprendido tres pasos atrás ($q=5$), actualizando al instante su tabla para saber que hacer $a_1$ estando en $s_4$ es una decisión fantástica (valor de 37.25).
+
+### ¿Cuándo se actualiza la política óptima $\pi$?
+
+¡Tienes toda la razón y es una observación excelente! Si te fijas estrictamente en el pseudocódigo formal del algoritmo Q-learning, **no hay ninguna línea dentro del bucle que actualice explícitamente una política $\pi$**, a diferencia de métodos como la Iteración de Políticas o Montecarlo.
+
+**¿Por qué no se actualiza la política durante el bucle?**
+Porque el enfoque principal de Q-learning es aprender de forma _off-policy_ (independiente de la política). Su único objetivo durante las miles de iteraciones es perfeccionar la tabla de utilidades de los pares estado-acción hasta que esos números converjan hacia la verdad absoluta, es decir, hacia los valores óptimos ($q^*$).
+
+Para poder avanzar por el entorno, el agente no necesita guardar y mantener una política estricta en memoria. Simplemente, cada vez que llega a un estado, evalúa su tabla $q$ actual y genera una decisión "al vuelo" usando una estrategia $\epsilon$-voraz (es decir, calculando la mejor acción en ese instante pero incluyendo una pequeña probabilidad de explorar al azar).
+
+**Entonces, ¿cómo se obtiene la política óptima $\pi^*$?**
+La política óptima se extrae **una única vez al final del proceso**, justo cuando el bucle de aprendizaje termina al cumplirse la condición de parada (línea 12 del pseudocódigo: _"devolver política voraz derivada de q"_).
+
+Una vez que la tabla $q$ está completamente estabilizada con los valores definitivos, el algoritmo simplemente la recorre estado por estado y le aplica el **criterio voraz ($arg\ m\hat{a}x$)**. Para cada estado $s$, extrae la acción que tiene el valor numérico más alto:
+$\pi^*(s) = arg\ m\hat{a}x_a q(s,a)$
+
+Es exactamente la misma filosofía de ahorro de recursos que estudiamos en el algoritmo de _Iteración de Valores_: el sistema prefiere operar a ciegas solo con números durante todo el entrenamiento y gastar el esfuerzo de deducir cuáles son las mejores acciones una sola vez al final, cuando ya tiene la garantía de que su tabla matemática es perfecta.
