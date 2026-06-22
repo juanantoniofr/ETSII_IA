@@ -34,8 +34,9 @@ Dada la política
 
 $\pi(s_1) = a_3,\quad \pi(s_2) = a_3,\quad \pi(s_3) = a_2$
 
-<div style="border-left: 2px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
-<b>1. ¿Cuál es la `probabilidad inducida` por $\pi$ de la historia (parcial) $\langle s_3, s_3, s_3, s_2, s_2 \rangle?</b>
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+
+<b>1. ¿Cuál es la probabilidad inducida por $\pi$ de la historia (parcial) $\langle s_3, s_3, s_3, s_2, s_2 \rangle$?</b>
 
 Para calcular la probabilidad inducida por la política $\pi$ para esa historia parcial, debes aplicar la fórmula matemática del modelo, que consiste en multiplicar las probabilidades individuales de cada salto de estado: $\mathbb{P}(h|\pi) = \prod_{i\ge0} P_{\pi(s_i)}(s_{i+1}|s_i)$.
 
@@ -52,7 +53,7 @@ Al multiplicar todas las probabilidades encadenadas de cada transición, el cál
 
 </div>
 
-<div style="border-left: 2px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
   
 <b>2. ¿Cuál es la _utilidad inducida_ por $\pi$ de esa historia?</b>
 
@@ -83,7 +84,9 @@ El concepto clave aquí es que **cada recompensa se descuenta según su posició
 
 </div>
 
-### Plantear el sistema de ecuaciones` que caracteriza $U_\pi$.
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+
+<b> 3. Plantear el sistema de ecuaciones que caracteriza $U_\pi$ (Utilidad de la política $\pi$).</b>
 
 **El sistema debe tener tres ecuaciones con tres incógnitas**. Como comentamos anteriormente al analizar la fórmula teórica, la condición $\forall s \in S$ exige que plantees una ecuación por cada estado posible del sistema. Como este ejercicio tiene los estados $S = \{s_1, s_2, s_3\}$, es obligatorio calcular $U(s_1)$, $U(s_2)$ y $U(s_3)$ simultáneamente.
 
@@ -120,56 +123,73 @@ El sistema de ecuaciones lineales que te pide el ejercicio y que debes resolver 
 - **$U(s_1) - 0.27 \cdot U(s_2) - 0.63 \cdot U(s_3) = -1$**
 - **$-0.72 \cdot U(s_1) + 0.82 \cdot U(s_2) = -0.04$**
 - **$-0.45 \cdot U(s_2) + 0.55 \cdot U(s_3) = 1$**
+</div>
 
----
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
 
-- Plantear las **ecuaciones de Bellman** que caracterizan $U^*$.
+**4. Plantear las _ecuaciones de Bellman_ que caracterizan $U^*$.**
 
-- Supongamos que hemos resuelto las ecuaciones anteriores y que conocemos $U^*$.  
-  **Describir cómo podríamos obtener una política óptima.**
+Para plantear las ecuaciones de Bellman que caracterizan la utilidad óptima ($U^*$) para el Ejercicio 1, debemos aplicar la fórmula teórica general a cada uno de los estados del sistema:
+$U(s) = \max_{a \in A(s)} (R(s, a) + \gamma \sum_{s' \in S} P_a(s'|s) U(s'))$.
+
+Del enunciado del ejercicio extraemos los siguientes datos fundamentales:
+
+- **Factor de descuento:** $\gamma = 0.9$.
+- **Coste nulo:** Como el coste de las acciones es 0, la recompensa neta es directamente la del estado: $R(s_1) = -1$, $R(s_2) = -0.04$, y $R(s_3) = 1$.
+- **Acciones ejecutables ($A(s)$):** Observando las tablas de probabilidad $P_a$, una acción solo es aplicable en un estado si tiene una fila definida para él. Por tanto, en $s_1$ podemos aplicar $\{a_2, a_3\}$; en $s_2$ podemos aplicar $\{a_1, a_3\}$; y en $s_3$ podemos aplicar $\{a_1, a_2\}$.
+
+Sustituyendo estos valores, obtenemos el siguiente **sistema de ecuaciones no lineales**:
+
+Para el estado **$s_1$**:
+$U(s_1) = \max \begin{cases} \mathbf{a_2:} & -1 + 0.9 \cdot (0.0 \cdot U(s_1) + 0.3 \cdot U(s_2) + 0.7 \cdot U(s_3)) \\ \mathbf{a_3:} & -1 + 0.9 \cdot (0.0 \cdot U(s_1) + 0.3 \cdot U(s_2) + 0.7 \cdot U(s_3)) \end{cases}$
+
+Para el estado **$s_2$**:
+$U(s_2) = \max \begin{cases} \mathbf{a_1:} & -0.04 + 0.9 \cdot (0.4 \cdot U(s_1) + 0.1 \cdot U(s_2) + 0.5 \cdot U(s_3)) \\ \mathbf{a_3:} & -0.04 + 0.9 \cdot (0.8 \cdot U(s_1) + 0.2 \cdot U(s_2) + 0.0 \cdot U(s_3)) \end{cases}$
+
+Para el estado **$s_3$**:
+$U(s_3) = \max \begin{cases} \mathbf{a_1:} & 1 + 0.9 \cdot (0.5 \cdot U(s_1) + 0.0 \cdot U(s_2) + 0.5 \cdot U(s_3)) \\ \mathbf{a_2:} & 1 + 0.9 \cdot (0.0 \cdot U(s_1) + 0.5 \cdot U(s_2) + 0.5 \cdot U(s_3)) \end{cases}$
+
+</div>
+
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+
+<b>5. Supongamos que hemos resuelto las ecuaciones anteriores y que conocemos $U^*$: Describir cómo podríamos obtener una política óptima.</b>
+
+La forma matemática de proceder es la siguiente:
+
+Una vez que hemos resuelto el sistema y tenemos los números definitivos para $U^*(s_1)$, $U^*(s_2)$ y $U^*(s_3)$, la política óptima $\pi^*$ se obtiene aplicando el **criterio voraz**. Esto consiste en sustituir las utilidades descubiertas en las ecuaciones de arriba y, para cada estado, simplemente **elegir la acción concreta que produjo el valor máximo** en esa evaluación.
+
+Matemáticamente, esto se denota cambiando el operador $max$ por el operador **$arg\ max$**: $\pi^*(s) \in arg\ max_{a \in A(s)} (R(s,a) + \gamma \sum_{s' \in S} P_a(s'|s) U^*(s'))$.
+
+</div>
 
 ## Ejercicio 2
 
-Consideremos el proceso de decisión de Markov tal que $S = \{s_1, s_2, s_3, s_4\}, \quad A = \{a_1, a_2, a_3\}$
+Consideremos el proceso de decisión de Markov tal que $S = \{s_1, s_2, s_3, s_4\}, \quad A = \{a_1, a_2, a_3\}$, con las siguientes **probabilidades de transición**
 
----
-
-### Probabilidades de transición
-
-#### Acción $a_1$
+- Acción $a_1$
 
 |         | $$s_1$$ | $$s_2$$ | $$s_3$$ | $$s_4$$ |
 | ------- | ------- | ------- | ------- | ------- |
 | $$s_1$$ | 0.0     | 0.0     | 0.2     | 0.8     |
 | $$s_4$$ | 0.0     | 0.0     | 0.5     | 0.5     |
 
----
-
-#### Acción $a_3$
+- Acción $a_3$
 
 |         | $$s_1$$ | $$s_2$$ | $$s_3$$ | $$s_4$$ |
 | ------- | ------- | ------- | ------- | ------- |
 | $$s_2$$ | 1.0     | 0.0     | 0.0     | 0.0     |
 | $$s_3$$ | 1/3     | 1/3     | 0.0     | 1/3     |
 
----
-
-#### Acción $a_2$
+- Acción $a_2$
 
 |         | $$s_1$$ | $$s_2$$ | $$s_3$$ | $$s_4$$ |
 | ------- | ------- | ------- | ------- | ------- |
 | $$s_1$$ | 1/3     | 1/3     | 1/3     | 0.0     |
 | $$s_3$$ | 1/3     | 1/3     | 0.0     | 1/3     |
 
----
-
-### Recompensas
-
-$(s_1) = -3,\quad R(s_2) = -2,\quad R(s_3) = 1,\quad R(s_4) = 1$
-
----
-
-### Costes de acciones
+- y las **recompensas**: $\quad R(s_1) = -3,\quad R(s_2) = -2,\quad R(s_3) = 1,\quad R(s_4) = 1$
+- y los costes de las acciones y el factor de descuento que se indican a continuación.
 
 $
 \begin{aligned}
@@ -179,29 +199,12 @@ C(s_3, a_3) &= 3, \quad C(s_2, a_3) = 1
 \end{aligned}
 $
 
----
+- Factor de descuento = $\gamma = 0.5$
+- Política dada: $\pi(s_1) = a_1,\quad \pi(s_2) = a_3,\quad \pi(s_3) = a_2,\quad \pi(s_4) = a_1$
 
-### Factor de descuento
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
 
-$
-\gamma = 0.5
-$
-
----
-
-### Política dada
-
-$\pi(s_1) = a_1,\quad \pi(s_2) = a_3,\quad \pi(s_3) = a_2,\quad \pi(s_4) = a_1$
-
----
-
-### Se pide
-
-1.  **Calcular $U_\pi(s)$** para cada $s \in S$ planteando y resolviendo el sistema de ecuaciones que caracteriza $U_\pi$
-
-### Solución
-
-1.
+<b> 1. Calcular $U_\pi(s)$ para cada $s \in S$ planteando y resolviendo el sistema de ecuaciones que caracteriza $U_\pi$</b>
 
 Para calcular la utilidad esperada de cada estado $s$ del conjunto de estados $S$ bajo la política dictada, debemos plantear y resolver un sistema de ecuaciones lineales. Basándonos en la teoría de los Procesos de Decisión de Markov, la ecuación teórica que caracteriza este cálculo es:
 
@@ -209,7 +212,7 @@ Para calcular la utilidad esperada de cada estado $s$ del conjunto de estados $S
 
 Para ello, dividiremos el cálculo en tres pasos estructurados: determinar el rendimiento neto de cada estado, plantear el sistema de ecuaciones y resolverlo matemáticamente.
 
-### Paso 1: Rendimiento neto de aplicar la política en cada estado
+**Paso 1: Rendimiento neto de aplicar la política en cada estado**
 
 El rendimiento neto (o recompensa inmediata) de aplicar una acción en un estado se define restando el coste de la acción a la recompensa bruta del estado: $R(s, a) = R(s) - C(s, a)$.
 
@@ -220,7 +223,7 @@ La política dada en el enunciado es $\pi(s_1) = a_1$, $\pi(s_2) = a_3$, $\pi(s_
 - **Estado $s_3$:** $R(s_3, a_2) = R(s_3) - C(s_3, a_2) = 1 - 3 = \mathbf{-2}$
 - **Estado $s_4$:** $R(s_4, a_1) = R(s_4) - C(s_4, a_1) = 1 - 2 = \mathbf{-1}$
 
-### Paso 2: Planteamiento del sistema de ecuaciones
+**Paso 2: Planteamiento del sistema de ecuaciones**
 
 Sustituyendo los rendimientos netos anteriores, el factor de descuento $\gamma = 0.5$ y las probabilidades de las tablas de transición $P$ dictadas por la política $\pi$, obtenemos el siguiente sistema de 4 ecuaciones con 4 incógnitas:
 
@@ -240,7 +243,7 @@ Sustituyendo los rendimientos netos anteriores, el factor de descuento $\gamma =
     $U(s_4) = -1 + 0.5 \cdot [0.5 \cdot U(s_3) + 0.5 \cdot U(s_4)]$
     Simplificada: **$U(s_4) = -1 + 0.25 \cdot U(s_3) + 0.25 \cdot U(s_4)$**
 
-### Paso 3: Resolución matemática del sistema
+**Paso 3: Resolución matemática del sistema**
 
 Para resolver el sistema, es más fácil operar utilizando fracciones matemáticas y despejar de abajo hacia arriba:
 
@@ -263,7 +266,7 @@ $\left(1 - \frac{41}{360}\right) U(s_3) = -\frac{739}{180} \rightarrow \frac{319
 
 Con el valor numérico exacto de $U(s_3)$, lo sustituimos en las funciones previas para desvelar el resto.
 
-### Resultados finales
+**Resultados finales**
 
 Las utilidades esperadas exactas (en forma de fracción para no perder precisión) y sus aproximaciones decimales para cada estado son:
 
@@ -272,13 +275,11 @@ Las utilidades esperadas exactas (en forma de fracción para no perder precisió
 - **$U(s_3) = -\frac{1478}{319} \approx -4.633$**
 - **$U(s_4) = -\frac{918}{319} \approx -2.878$**
 
----
+</div>
 
-## Se pide
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
 
-1.1 Plantear las **ecuaciones de Bellman** que caracterizan $U^*$.
-
-## solución
+<b> 2. Plantear las **ecuaciones de Bellman** que caracterizan $U^*$.</b>
 
 La **idea fundamental de las ecuaciones de Bellman** es dar el salto desde la evaluación de una política fija a la búsqueda de la **política óptima**. Mientras que en tu cálculo anterior usabas una acción impuesta por una política $\pi$ dada, las ecuaciones de Bellman buscan caracterizar la **máxima utilidad esperada ($U^*$)** de un estado evaluando _todas_ las acciones aplicables y seleccionando estrictamente la que proporcione el mayor valor esperado.
 
@@ -287,11 +288,7 @@ Matemáticamente, para cada estado $s$, la ecuación se define como:
 
 Al introducir el operador $\max$, el sistema de ecuaciones deja de ser lineal y se convierte en un **sistema de ecuaciones no lineales**.
 
-### Cómo aplicar las ecuaciones al Ejercicio 2
-
 Para plantear las ecuaciones de Bellman de este ejercicio, debemos extraer de las tablas de transición qué acciones son ejecutables en cada estado y calcular su rendimiento neto ($R(s,a) = R(s) - C(s,a)$) utilizando $\gamma = 0.5$.
-
-El sistema de ecuaciones de Bellman quedaría planteado de la siguiente manera:
 
 **1. Para el estado $s_1$:**
 Tiene dos acciones aplicables ($a_1$ y $a_2$).
@@ -324,18 +321,15 @@ Solo tiene la acción $a_1$ aplicable.
 - **Ecuación:**
   $U(s_4) = \max \begin{cases} a_1: \mathbf{-1 + 0.5 \cdot [0.5 \cdot U(s_3) + 0.5 \cdot U(s_4)]} \end{cases}$
 
----
+</div>
 
-## Se pide
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
 
-2.  Dada la función de utilidad inicial:$U_0(s_1) = -2,\quad U_0(s_2) = -1,\quad U_0(s_3) = 1,\quad U_0(s_4) = 2$. Calcular la función de utilidad que se obtiene tras **una iteración del algoritmo de iteración de valores**.
-
-## Solución
+<b>2. Dada la función de utilidad inicial:$U_0(s_1) = -2,\quad U_0(s_2) = -1,\quad U_0(s_3) = 1,\quad U_0(s_4) = 2$. Calcular la función de utilidad que se obtiene tras **una iteración del algoritmo de iteración de valores**.</b>
 
 Para resolver este apartado y calcular la función de utilidad tras **la primera iteración ($U_1$)**, debemos aplicar la ecuación principal del algoritmo de iteración de valores.
 
-Como recordamos de nuestra conversación anterior, la fórmula para actualizar la utilidad de un estado evaluando todas las acciones posibles es:
-**$U_{1}(s) = \max_{a \in A(s)} \left( R(s,a) + \gamma \sum_{s' \in S} P_a(s'|s) U_0(s') \right)$**.
+Como recordamos de nuestra conversación anterior, la fórmula para actualizar la utilidad de un estado evaluando todas las acciones posibles es: **$U_{1}(s) = \max_{a \in A(s)} \left( R(s,a) + \gamma \sum_{s' \in S} P_a(s'|s) U_0(s') \right)$**.
 
 Para este cálculo usaremos los datos del Ejercicio 2:
 
@@ -349,7 +343,7 @@ Para este cálculo usaremos los datos del Ejercicio 2:
 
 Vamos a calcular el valor iterado estado por estado:
 
-### 1. Estado $s_1$
+1. Estado $s_1$
 
 Tiene dos acciones aplicables ($a_1$ y $a_2$).
 
@@ -365,7 +359,7 @@ Tiene dos acciones aplicables ($a_1$ y $a_2$).
 Buscamos el máximo entre ambas opciones: $\max(-4.1, -6.333)$.
 ➔ **$U_1(s_1) = -4.1$**
 
-### 2. Estado $s_2$
+2. Estado $s_2$
 
 Solo tiene la acción $a_3$ aplicable.
 
@@ -377,7 +371,7 @@ Solo tiene la acción $a_3$ aplicable.
 Como solo hay una opción, ese es su máximo.
 ➔ **$U_1(s_2) = -4.0$**
 
-### 3. Estado $s_3$
+3. Estado $s_3$
 
 Tiene dos acciones aplicables ($a_2$ y $a_3$). Ambas tienen el mismo coste, recompensa y probabilidades de transición.
 
@@ -389,7 +383,7 @@ Tiene dos acciones aplicables ($a_2$ y $a_3$). Ambas tienen el mismo coste, reco
 Buscamos el máximo entre ambas (que coinciden): $\max(-2.167, -2.167)$.
 ➔ **$U_1(s_3) = -\frac{13}{6} \approx -2.167$**
 
-### 4. Estado $s_4$
+4. Estado $s_4$
 
 Solo tiene la acción $a_1$ aplicable.
 
@@ -401,9 +395,7 @@ Solo tiene la acción $a_1$ aplicable.
 Como solo hay una opción, ese es su máximo.
 ➔ **$U_1(s_4) = -0.25$**
 
----
-
-### Resultado Final
+**Resultado Final**
 
 Tras ejecutar la primera iteración del algoritmo de iteración de valores, la nueva función de utilidad $U_1$ resultante es:
 
@@ -414,35 +406,34 @@ Tras ejecutar la primera iteración del algoritmo de iteración de valores, la n
 
 El algoritmo continuaría comparando $U_1$ con $U_0$ para ver si la diferencia es menor que la tolerancia de parada $\epsilon$. Como las diferencias aún son notables, seguiría calculando una $U_2$ basándose en estos nuevos valores obtenidos.
 
----
+</div>
 
-## Se pide
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
 
-3.  Describir:
-    - Hasta cuándo el algoritmo anterior seguiría realizando iteraciones
-    - Cómo se obtendría entonces una **política óptima**
-
-## Solución
+<b>3. Describir: - Hasta cuándo el algoritmo anterior seguiría realizando iteraciones - Cómo se obtendría entonces una **política óptima**
+</b>
 
 Para responder a las dos preguntas teóricas del tercer apartado, basándonos en la teoría de la iteración de valores:
 
-### 1. ¿Hasta cuándo el algoritmo anterior seguiría realizando iteraciones?
+1. ¿Hasta cuándo el algoritmo anterior seguiría realizando iteraciones?
 
 El algoritmo sigue iterando y calculando nuevas funciones de utilidad ($U_i$) hasta que el cambio entre los valores de una iteración y la siguiente sea lo suficientemente pequeño como para considerar que ha **convergido** hacia los valores óptimos.
 
 Matemáticamente, se utiliza un criterio de parada basado en un valor de tolerancia muy pequeño llamado $\epsilon$. El algoritmo se detiene exactamente cuando la máxima diferencia absoluta entre la utilidad de cualquier estado en la iteración actual y la iteración anterior es estrictamente menor que $\epsilon$:
 **$\max_{s \in S} |U_i(s) - U_{i-1}(s)| < \epsilon$**
 
-### 2. ¿Cómo se obtendría entonces una política óptima?
+2. ¿Cómo se obtendría entonces una política óptima?
 
 Una vez que el algoritmo se ha detenido (es decir, cuando ya tenemos la función de utilidad estabilizada que aproxima a $U^*$), la **política óptima ($\pi^*$)** se deriva directamente de esos valores finales.
 
 Para obtenerla, simplemente se evalúa cada estado $s$ de forma independiente y se elige **la acción que maximice el valor esperado futuro**, utilizando las utilidades de la última iteración. La fórmula de la que se extrae la acción ganadora para cada estado es:
 **$\pi(s) \in \arg\max_{a \in A(s)} \left( R(s,a) + \gamma \sum_{s' \in S} P_a(s'|s) U_{final}(s') \right)$**
 
----
+</div>
 
-### Cálculo de la Segunda Iteración ($U_2$)
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+
+<b>Cálculo de la Segunda Iteración ($U_2$)</b>
 
 Tal y como me has pedido, aquí tienes la iteración 2 partiendo de los valores de $U_1$ que calculamos en nuestro mensaje anterior:
 
@@ -552,9 +543,7 @@ Aplicamos la ecuación $\max_{a \in A(s)} \left( R(s,a) + \gamma \sum P_a(s'|s) 
   $= -1 + 0.5 \cdot [-1.6958 - 0.8021] = -1 + 0.5 \cdot [-2.4979] = \mathbf{-2.2490}$ (Valor exacto: $-2159/960$)
   ➔ **$U_3(s_4) \approx -2.2490$**
 
----
-
-### Resultado final de la función $U_3$:
+**Resultado final de la función $U_3$:**
 
 - **$U_3(s_1) \approx -5.9808$**
 - **$U_3(s_2) \approx -5.6583$**
@@ -613,9 +602,7 @@ Aplicamos de nuevo la ecuación de Bellman $\max_{a \in A(s)} \left( R(s,a) + \g
   $= -1 + 0.5 \cdot [-1.9976 - 1.1245] = -1 + 0.5 \cdot [-3.1221] = \mathbf{-2.5610}$
   ➔ **$U_4(s_4) \approx -2.5610$**
 
----
-
-### Análisis de la convergencia
+**Análisis de la convergencia**
 
 Si ahora miras las diferencias absolutas entre esta nueva iteración $U_4$ y tu anterior $U_3$ ($|U_4 - U_3|$), fíjate en lo que ocurre:
 
@@ -629,3 +616,82 @@ Si ahora miras las diferencias absolutas entre esta nueva iteración $U_4$ y tu 
 ¿Ves el patrón matemático que se está formando? La máxima diferencia en cada paso se está reduciendo aproximadamente **a la mitad** respecto a la iteración anterior. Esto no es casualidad: es el efecto matemático directo de tu factor de descuento **$\gamma = 0.5$**, que "aplasta" progresivamente las diferencias haciendo que el algoritmo tienda irremediablemente a la convergencia total.
 
 A este ritmo, tras unas cuantas iteraciones más, las diferencias caerán al nivel de los milésimos y el algoritmo se detendrá por completo dándote los verdaderos valores de $U^*$.
+
+</div>
+
+## Ejercicio 3: Consideremos el proceso de decisión de Markov tal que $S={s\_{1},s\_{2},s\_{3},s\_{4}}$, $A={a\_{1},a\_{2}}$ y $P$ viene dado por
+
+$
+P_{a_1}(\cdot \mid \cdot) =
+\begin{array}{c|cccc}
+ & s_1 & s_2 & s_3 & s_4 \\
+\hline
+s_1 & 0.0 & 0.5 & 0.5 & 0.0 \\
+s_2 & 0.0 & 0.0 & 1.0 & 0.0 \\
+s_3 & 1.0 & 0.0 & 0.0 & 0.0 \\
+s_4 & 0.0 & 0.0 & 0.0 & 1.0
+\end{array}
+$
+
+$
+P_{a_2}(\cdot \mid \cdot) =
+\begin{array}{c|cccc}
+ & s_1 & s_2 & s_3 & s_4 \\
+\hline
+s_2 & 0.0 & 0.5 & 0.0 & 0.5
+\end{array}
+$
+
+Consideremos $R(s\_{1})=1$, $R(s\_{2})=2$, $R(s\_{3})=3$ y $R(s\_{4})=10$ como recompensas de los estados, 0 como coste de aplicar las acciones y 0.9 como factor de descuento. Se pide lo siguiente:
+
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+  
+<b>1. Determinar cuántas políticas distintas es posible especificar para este sistema.</b>
+
+El número de políticas distintas es igual al número de acciones elevado al número de estados: $2^{4} = 16$ políticas distintas.
+
+</div>
+
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+  
+<b>2. Dada la política $\pi$ que aplica la acción $a1$ en cada estado, plantear y resolver el sistema de ecuaciones que caracteriza U<sub>&pi;</sub> </b>
+
+Planteamos el sistema de ecuaciones
+
+1. Para el estado $s_1$ aplicamos la acción $a_1$: U(s*1) = 1 + 0.9 (0.5 * U(s*2) + 0.5 * U(s_3))
+2. Para el estado $s_2$ aplicamos la acción $a_1$: U(s_2) = 2 + 0.9 (1.0 \* U(s_3))
+3. Para el estado $s_3$ aplicamos la acción $a_1$: U(s_3) = 3 + 0.9 (1.0 \* U(s_1))
+4. Para el estado $s_4$ aplicamos la acción $a_1$: U(s_4) = 10 + 0.9 (1.0 \* U(s_4))
+
+Obtenemos el valor de U(s_4) de la ecuación 4: U(s_4) = 10 + 0.9 U(s_4) => U(s_4) - 0.9 U(s_4) = 10 => 0.1 U(s_4) = 10 => **U(s_4) = 100**.
+Simplificamos las ecuaciones 2 y 3:
+
+- U(s_2) = 2 + 0.9 U(s_3)
+- U(s\*3) = 3 + 0.9 U(s_1)
+- Sustituimos U(s_3) en la ecuación de U(s_2): U(s_2) = 2 + 0.9 (3 + 0.9 U(s_1)) = 2 + 2.7 + 0.81 U(s_1) = 4.7 + 0.81 U(s_1)
+- Sustituimos en la ecuación de U(s*1): U(s_1) = 1 + 0.9 (0.5 * (4.7 + 0.81 U(s*1)) + 0.5 * (3 + 0.9 U(s*1))) = 1 + 0.9 (0.5 \* 4.7 + 0.5 * 3 + 0.5 \_ 0.81 U(s*1) + 0.5 * 0.9 U(s\*1)) = 1 + 0.9 (3.85 + 0.855 U(s_1)) = 1 + 3.465 + 0.7695 U(s_1) = 4.465 + 0.7695 U(s_1)
+- Despejamos U(s_1): U(s_1) - 0.7695 U(s_1) = 4.465 => 0.2305 U(s_1) = 4.465 => **U(s_1) ≈ 19.37**
+- Sustituimos U(s_1) en la ecuación de U(s_3): U(s_3) = 3 + 0.9 \* 19.37 ≈ 3 + 17.433 => **U(s_3) ≈ 20.433**
+- Sustituimos U(s*3) en la ecuación de U(s_2): U(s_2) = 2 + 0.9 * 20.433 ≈ 2 + 18.39 => **U(s_2) ≈ 20.39**
+
+</div>
+
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+
+<b>Plantear las ecuaciones de Bellman que caracterizan U\*.</b>
+
+Para el estado $s_1$ tenemos solo una acción aplicable, $a_1$, por lo que la ecuación de Bellman es:
+$$U(s_1) = \max \begin{cases} R(s_1, a_1) + γ [ P*{a_1}(s_2|s_1) U(s_2) + P*{a_1}(s_3|s_1) U(s_3) ] = 1 + 0.9 \cdot (0.5 \cdot U(s_2) + 0.5 \cdot U(s_3)) \end{cases}$$
+
+Para el estado $s_2$ tenemos dos acciones aplicables, $a_1$ y $a_2$, por lo que la ecuación de Bellman es:
+$$U(s_2) = \max \begin{cases} \mathbf{a_1:} & R(s_2, a_1) + γ [ P*{a_1}(s_3|s_2) U(s_3) ] = 2 + 0.9 \cdot U(s_3) \\ \mathbf{a_2:} & R(s_2, a_2) + γ [ P*{a_2}(s_1|s_2) U(s_1) + P*{a_2}(s_4|s_2) U(s_4) ] = 2 + 0.9 \cdot (0.5 \cdot U(s_2) + 0.5 \cdot U(s_4)) \end{cases}$$
+
+Para el estado $s_3$ tenemos solo una acción aplicable, $a_1$, por lo que la ecuación de Bellman es:
+$$U(s_3) = \max \begin{cases} R(s_3, a_1) + γ [ P*{a_1}(s_1|s_3) U(s_1) ] = 3 + 0.9 \cdot U(s_1) \end{cases}$$
+
+Para el estado $s_4$ tenemos solo una acción aplicable, $a_1$, por lo que la ecuación de Bellman es:
+$$U(s_4) = \max \begin{cases} R(s_4, a_1) + γ [ P*{a_1}(s_4|s_4) U(s_4) ] = 10 + 0.9 \cdot U(s_4) \end{cases}$$
+
+</div>
+
+- Considerando como función de utilidad inicial la que asocia 0 a cada estado, calcular la función de utilidad que se obtiene al ejecutar dos iteraciones del algoritmo de iteración de valores.
