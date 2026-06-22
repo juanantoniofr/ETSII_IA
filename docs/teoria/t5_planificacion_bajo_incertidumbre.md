@@ -1,4 +1,34 @@
-# Conceptos sobre planificación bajo incertidumbre
+# Planificación bajo incertidumbre
+
+## Algunos conceptos fundamentales
+
+### A. Diferencias fundamentales con la planificación clásica:
+
+- Paso a contemplar **efectos no deterministas de las acciones**.
+- Los **planes se conciben como políticas de acciones**, no como secuencias estáticas.
+- El objetivo es la **optimización de políticas** maximizando funciones de utilidad.
+
+### B. Procesos de decisión de Markov (MDP):
+
+- Definición basada en una tupla **(S, A, P)**: estados finitos, acciones finitas y una distribución de probabilidad de transición $P_a(s'|s)$.
+- **Políticas ($\pi$)**: Asignación que indica qué acción aplicar en cada posible estado.
+- **Historias ($h$)**: Sucesión infinita de estados generada en la ejecución de una política, y cálculo de su probabilidad inducida asumiendo la propiedad de Markov.
+
+### C. Utilidades y Recompensas:
+
+- Definición de funciones de **recompensa ($R$) y costes ($C$)** de las acciones.
+- Introducción de un **factor de descuento ($\gamma$)** para asegurar que los valores de las utilidades futuras se mantengan acotados y no tiendan al infinito.
+- **Utilidad esperada de un estado ($U_\pi(s)$)**, calculada como solución a un sistema de ecuaciones lineales.
+
+### D. Búsqueda de la Optimalidad:
+
+- Concepto de máxima utilidad esperada ($U^*(s)$) regida por las **Ecuaciones de Bellman** (ecuaciones no lineales).
+- Cómo derivar una **política óptima ($\pi^*$)** a partir de las utilidades máximas.
+
+### E. Algoritmos de cálculo con conocimiento completo del sistema:
+
+- **Algoritmo de iteración de valores**: Genera funciones de utilidad de manera iterativa hasta cumplir un criterio de parada matemático.
+- **Algoritmo de iteración de políticas**: Genera una secuencia de políticas que va mejorando mediante la resolución sucesiva de sistemas de ecuaciones lineales.
 
 ## Resumen de la lógica matemática del modelo de planificación bajo incertidumbre
 

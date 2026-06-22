@@ -1,5 +1,50 @@
 # Aprendizaje por refuerzo
 
+## Algunos conceptos clave:
+
+### A. Bases del Aprendizaje:
+
+- Se aplica cuando **se desconoce la dinámica del sistema** (se ignoran las probabilidades de transición y las funciones de recompensa).
+- Se basa en el ensayo y error a través de la **interacción directa con el entorno**.
+- Gestión del equilibrio necesario entre la **explotación** (repetir las acciones que se saben buenas) y la **exploración** (descubrir nuevas alternativas), utilizando mecanismos como la **política $\epsilon$-voraz**.
+
+### B. Método de Montecarlo:
+
+- Aproximación de la utilidad calculando el promedio empírico de las recompensas acumuladas tras simular episodios hasta estados terminales.
+- Variantes del método: **Montecarlo de primera visita** y **Montecarlo de cada visita**.
+- Estimación de la utilidad para cada par estado-acción **$q_\pi(s,a)$** mediante el uso de **inicios exploratorios** para garantizar la variedad.
+
+### C. Método de las Diferencias Temporales (DT):
+
+- Combina las ventajas de estimaciones locales (como la programación dinámica) y el aprendizaje basado en la experiencia sin modelo (como Montecarlo).
+- Uso del **error DT ($\delta_t$)** para actualizar las estimaciones basándose en la recompensa inmediata y la utilidad esperada del paso siguiente.
+
+### D. Algoritmo Q-learning:
+
+- Método independiente de la política que aproxima directamente la función de utilidad óptima de pares estado-acción ($q^*$) utilizando un **factor de aprendizaje ($\alpha$)**.
+
+### E. Probabilidad inducida
+
+La **probabilidad inducida** se refiere a la probabilidad de que ocurra una secuencia específica de estados (denominada historia) al ejecutar una política determinada en un sistema.
+
+### F. Definición propiedad de Markov
+
+En un Proceso de Decisión de Markov, la ejecución de una política $\pi$ genera una historia $h = {s_0, s_1, s_2, \dots}$, que es una **sucesión infinita de estados**. La probabilidad de esta historia está condicionada por la política seguida y se basa en la **propiedad de Markov**, la cual **establece que la probabilidad de estar en un estado solo depende del estado anterior y de la acción realizada**.
+
+### G. Cálculo de la probabilidad de una historia inducida por una política
+
+La probabilidad de una historia $h$ inducida por una política $\pi$ se calcula mediante el producto de las probabilidades de transición de cada paso de la secuencia:
+
+$$
+P(h \mid \pi) = \prod_{i \ge 0} P_{\pi(s_i)}(s_{i+1} \mid s_i)
+$$
+
+Donde:
+
+- **$s_i$**: Es el estado en el instante $i$.
+- **$\pi(s_i)$**: Es la acción que la política prescribe realizar cuando se está en el estado $s_i$.
+- **$P_{\pi(s_i)}(s_{i+1}|s_i)$**: Es la probabilidad de que, al aplicar la acción indicada por la política en el estado actual, el sistema transicione al siguiente estado de la historia.
+
 ## Método de montecarlo
 
 Has entendido perfectamente el escenario del problema: al no tener el "mapa interno del entorno" (las funciones de probabilidad de transición $P$ ni las recompensas $R$), el agente está ciego y los algoritmos clásicos que usaban ecuaciones matemáticas interconectadas ya no sirven.
