@@ -90,7 +90,11 @@ El concepto clave aquí es que **cada recompensa se descuenta según su posició
 
 **El sistema debe tener tres ecuaciones con tres incógnitas**. Como comentamos anteriormente al analizar la fórmula teórica, la condición $\forall s \in S$ exige que plantees una ecuación por cada estado posible del sistema. Como este ejercicio tiene los estados $S = \{s_1, s_2, s_3\}$, es obligatorio calcular $U(s_1)$, $U(s_2)$ y $U(s_3)$ simultáneamente.
 
-Vamos a desglosar las ecuaciones correctas paso a paso aplicando la fórmula $U(s) = R(s, \pi(s)) + \gamma \sum P_{\pi(s)}(s'|s) U(s')$:
+<div style="color: #121212; font-weight: bold; background: #da8177; padding: 20px; margin-bottom: 20px; border-radius: 5px">
+
+Vamos a desglosar las ecuaciones correctas paso a paso aplicando la fórmula: $U(s) = R(s, \Pi(s)) + \gamma \sum_{s'} P_{\Pi(s)}(s'|s) U(s')$
+
+</div>
 
 **1. La ecuación para $s_1$:**
 
@@ -694,4 +698,90 @@ $$U(s_4) = \max \begin{cases} R(s_4, a_1) + γ [ P*{a_1}(s_4|s_4) U(s_4) ] = 10 
 
 </div>
 
-- Considerando como función de utilidad inicial la que asocia 0 a cada estado, calcular la función de utilidad que se obtiene al ejecutar dos iteraciones del algoritmo de iteración de valores.
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+
+<b>Considerando como función de utilidad inicial la que asocia 0 a cada estado, calcular la función de utilidad que se obtiene al ejecutar dos iteraciones del algoritmo de iteración de valores.</b>
+
+Considerando $R(s\_{1})=1$, $R(s\_{2})=2$, $R(s\_{3})=3$ y $R(s\_{4})=10$ como recompensas de los estados, 0 como coste de aplicar las acciones y 0.9 como factor de descuento.
+
+**Primera Iteración:**
+Calculamos U<sub>1</sub>(s) = 0 para todo s ∈ S.
+
+- U<sub>1</sub>(s*1) = 1 + 0.9 * (0.5 _ U<sub>0</sub>(s_2) + 0.5 _ U<sub>0</sub>(s*3)) = 1 + 0.9 * (0.5 _ 0 + 0.5 _ 0) = 1
+- U<sub>1</sub>(s*2) = max{ 2 + 0.9 * U<sub>0</sub>(s*3), 2 + 0.9 * (0.5 _ U<sub>0</sub>(s_2) + 0.5 _ U<sub>0</sub>(s*4))} = max{ 2 + 0.9 * 0, 2 + 0.9 _ (0.5 _ 0 + 0.5 \_ 0) } = 2
+- U<sub>1</sub>(s*3) = 3 + 0.9 * U<sub>0</sub>(s*1) = 3 + 0.9 * 0 = 3
+- U<sub>1</sub>(s*4) = 10 + 0.9 * U<sub>0</sub>(s*4) = 10 + 0.9 * 0 = 10
+
+**Segunda Iteración:**
+Calculamos U<sub>2</sub>(s) usando los valores de U<sub>1</sub>(s).
+
+- U<sub>2</sub>(s*1) = 1 + 0.9 * (0.5 _ U<sub>1</sub>(s_2) + 0.5 _ U<sub>1</sub>(s*3)) = 1 + 0.9 * (0.5 _ 2 + 0.5 _ 3) = 1 + 0.9 \* (2.5) = 1 + 2.25 = 3.25
+- U<sub>2</sub>(s*2) = max{ 2 + 0.9 * U<sub>1</sub>(s*3), 2 + 0.9 * (0.5 _ U<sub>1</sub>(s_2) + 0.5 _ U<sub>1</sub>(s*4))} = max{ 2 + 0.9 * 3, 2 + 0.9 _ (0.5 _ 2 + 0.5 _ 10) } = max{ 2 + 2.7, 2 + 0.9 _ (1 + 5) } = max{ 4.7, 2 + 0.9 \_ 6 } = max{ 4.7, 2 + 5.4 } = max{ 4.7, 7.4 } = 7.4
+- U<sub>2</sub>(s*3) = 3 + 0.9 * U<sub>1</sub>(s*1) = 3 + 0.9 * 1 = 3 + 0.9 = 3.9
+- U<sub>2</sub>(s*4) = 10 + 0.9 * U<sub>1</sub>(s*4) = 10 + 0.9 * 10 = 10 + 9 = 19
+
+</div>
+
+## Ejercicio 4
+
+Consideremos el proceso de decisión de Markov tal que $S={s\_{1},s\_{2},s\_{3},s\_{4}}$, $A={a\_{1},a\_{2},a\_{3}}$ y $P$ viene dado por:
+
+P<sub>a1​</sub>(⋅∣⋅)
+
+|     | s1  | s2  | s3  | s4  |
+| --- | --- | --- | --- | --- |
+| s1  | 0.0 | 1.0 | 0.0 | 0.0 |
+| s2  | 1.0 | 0.0 | 0.0 | 0.0 |
+
+P<sub>a2</sub>(⋅∣⋅)
+
+|     | s1  | s2  | s3  | s4  |
+| --- | --- | --- | --- | --- |
+| s1  | 1/3 | 1/3 | 1/3 | 0.0 |
+| s4  | 1/3 | 1/3 | 1/3 | 0.0 |
+
+P<sub>a3​</sub>(⋅∣⋅)
+
+|     | s1   | s2  | s3  | s4   |
+| --- | ---- | --- | --- | ---- |
+| s2  | 0.75 | 0.0 | 0.0 | 0.25 |
+| s3  | 0.5  | 0.5 | 0.0 | 0.0  |
+
+Consideremos:
+
+- $R(s\_{1})=3$, $R(s\_{2})=0$, $R(s\_{3})=0$ y $R(s\_{4})=2$ como recompensas de los estados.
+- $C(s\_{1},a\_{1})=C(s\_{2},a\_{1})=1$, $C(s\_{1},a\_{2})=C(s\_{4},a\_{2})=2$ y $C(s\_{2},a\_{3})=C(s\_{3},a\_{3})=3$ como costes de aplicar las acciones y
+- $0.5$ como factor de descuento.
+
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+
+<b>Determinar cuántas políticas distintas es posible especificar para este sistema</b>.
+
+El número de políticas distintas es igual al número de acciones elevado al número de estados: $3^{4} = 81$.
+
+</div>
+
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+
+<b>Dada la política &Pi;(s<sub>1</sub>)=a<sub>1</sub>, &Pi;(s<sub>2</sub>)=a<sub>1</sub>, &Pi;(s<sub>3</sub>)=a<sub>3</sub> y &Pi;(s<sub>4</sub>)=a<sub>2</sub>, plantear y resolver el sistema de ecuaciones que caracteriza U<sub>π</sub>.</b>
+
+La formula que caracteriza la función de utilidad para una política π es:
+
+$$U_{\pi}(s) = R(s) - C(s, \pi(s)) + \gamma \sum_{s' \in S} P_{\pi(s)}(s'|s) U_{\pi}(s')$$
+
+Aplicandola tenemos:
+
+- Para el estado $s_1$ aplicamos la acción $a_1$:$U_{\pi}(s_1) = (3 - 1) + 0.5 \cdot [1.0 \cdot U_{\pi}(s_2)] = 2 + 0.5 \cdot U_{\pi}(s_2)$
+- Para el estado $s_2$ aplicamos la acción $a_1$:$U_{\pi}(s_2) = (0 - 1) + 0.5 \cdot [1.0 \cdot U_{\pi}(s_1)] = -1 + 0.5 \cdot U_{\pi}(s_1)$
+- Para el estado $s_3$ aplicamos la acción $a_3$:$U_{\pi}(s_3) = (0 - 3) + 0.5 \cdot [0.5 \cdot U_{\pi}(s_1) + 0.5 \cdot U_{\pi}(s_2)] = -3 + 0.25 \cdot U_{\pi}(s_1) + 0.25 \cdot U_{\pi}(s_2)$
+- Para el estado $s_4$ aplicamos la acción $a_2$:$U_{\pi}(s_4) = (2 - 2) + 0.5 \cdot [1/3 \cdot U_{\pi}(s_1) + 1/3 \cdot U_{\pi}(s_2) + 1/3 \cdot U_{\pi}(s_3)] = 0 + 0.5 \cdot (1/3 \cdot U_{\pi}(s_1) + 1/3 \cdot U_{\pi}(s_2) + 1/3 \cdot U_{\pi}(s_3)) = 0.5 \cdot (1/3 \cdot U_{\pi}(s_1) + 1/3 \cdot U_{\pi}(s_2) + 1/3 \cdot U_{\pi}(s_3))$
+
+</div>
+
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+
+<b>Plantear las ecuaciones de Bellman que caracterizan $U^{\*}$.</b>
+
+</div>
+
+- Considerando $\\pi$ como política inicial, calcular la política que se obtiene al ejecutar una iteración del algoritmo de iteración de políticas.
