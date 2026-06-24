@@ -1,0 +1,20 @@
+.highlight {
+  border-left: 4px solid #0dcaf0;
+  padding: 30px 20px;
+  margin-bottom: 40px;
+  border-radius: 5px;
+}
+.info {
+  background: #eef7fb;
+  color: #222;
+}
+
+.summary {
+  color: #16191b;
+  font-weight: bold;
+  background: #dbf2fa;
+  border-left: 4px solid #f00d15;
+  padding: 30px 20px;
+  margin-bottom: 40px;
+  border-radius: 15px;
+}

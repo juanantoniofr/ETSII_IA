@@ -88,15 +88,17 @@ Esto logra que la ecuación se comporte como una serie geométrica convergente. 
 
 Gracias a esto, llegará inevitablemente una iteración en la que el impacto numérico de mirar un paso extra hacia el futuro será tan minúsculo que la diferencia entre $U_i$ y $U_{i-1}$ pasará a ser menor que tu margen de error prefijado $\epsilon$ `. En ese instante, los valores se estabilizan, asegurándole al algoritmo que ha chocado con el techo óptimo y puede terminar con éxito `.
 
-#### Resumen: Algoritmo de Iteración de Valores en Procesos de Decisión de Markov
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+
+**Resumen: Algoritmo de Iteración de Valores en Procesos de Decisión de Markov**
 
 Este algoritmo es un método de programación dinámica para encontrar la política óptima ($\pi^*$) en entornos bajo incertidumbre, basándose en la actualización progresiva del valor de utilidad de cada estado.
 
-##### 1. El Concepto Principal: Ecuaciones de Bellman
+**1. El Concepto Principal: Ecuaciones de Bellman**
 
 A diferencia del algoritmo de Iteración de Políticas (que resuelve sistemas cerrados de ecuaciones lineales en cada ciclo evaluando una lista de acciones concreta), la iteración de valores utiliza las **Ecuaciones de Bellman** `. Estas son **ecuaciones no lineales** porque introducen el operador de maximización (max) directamente en la fórmula, evitando resolver sistemas complejos paso a paso `.
 
-##### 2. El Bucle Iterativo (Mirando al Futuro)
+**2. El Bucle Iterativo (Mirando al Futuro)**
 
 El algoritmo procesa iterativamente una tabla de números, donde cada paso expande el "horizonte de cálculo" del agente un paso más hacia el futuro:
 
@@ -104,14 +106,14 @@ El algoritmo procesa iterativamente una tabla de números, donde cada paso expan
 - **Actualización ($U_{i+1}$):** Para cada estado, prueba todas las acciones sumando la recompensa inmediata de aplicarla hoy y el futuro descontado estimado (basado en la tabla de la iteración anterior $U_i$).
 - **Operador $m\hat{a}x$:** El sistema evalúa el sumatorio de todas las acciones y **se queda únicamente con el valor numérico más alto**. Para maximizar la eficiencia computacional en memoria, durante esta fase **el algoritmo olvida qué acción generó ese número**, actualizando solo el diccionario de utilidades.
 
-##### 3. La Convergencia y el Factor de Descuento ($\gamma$)
+**3. La Convergencia y el Factor de Descuento ($\gamma$)**
 
 El proceso iterativo no explota hacia el infinito gracias al **factor de descuento ($0 < \gamma < 1$)**.
 
 - Este factor reduce exponencialmente el peso de las recompensas futuras, acotando el valor esperado máximo de cualquier historia al límite matemático finito de $\frac{R_{max}}{1-\gamma}$.
 - **Criterio de parada:** Gracias a esta cota geométrica, llegará un momento en el que proyectarse un paso más al futuro aportará un impacto numérico minúsculo. Cuando el cambio máximo entre la iteración $U_{i}$ y $U_{i-1}$ es estrictamente menor a un umbral prefijado ($\epsilon$), **la tabla de utilidades se estabiliza** y el bucle termina.
 
-##### 4. Extracción de la Política Óptima ($\pi^*$)
+**4. Extracción de la Política Óptima ($\pi^*$)**
 
 El error más común es intentar deducir las mejores acciones revisando el comportamiento en iteraciones tempranas ($U_0, U_1$).
 
@@ -119,11 +121,11 @@ El error más común es intentar deducir las mejores acciones revisando el compo
 - El algoritmo fija la **única tabla final estabilizada** y ejecuta un cálculo aislado.
 - **Operador $arg\ m\hat{a}x$:** Se vuelven a evaluar todas las acciones posibles en la ecuación de Bellman utilizando exclusivamente los valores de la tabla definitiva. En este momento sí nos quedamos con la **"identidad de la acción"** que da el valor máximo, configurando así la política final.
 
-##### 💡 Truco de comprobación para ejercicios escritos
+**Truco de comprobación para ejercicios escritos**
 
 Dado que la ecuación interna de evaluación es idéntica en el bucle y en el cierre, los resultados deben ser coherentes: **La acción que selecciones en tu $arg\ m\hat{a}x$ final tiene que coincidir obligatoriamente con la acción que te proporcionó el valor numérico máximo en tu última iteración manual**. Si no coincide (y no hay empate matemático), es garantía de que se ha cometido un error aritmético al calcular esa fila.
 
-##### Desglose de la ecuación de Bellman
+**Desglose de la ecuación de Bellman**
 
 Cuando decimos "**Actualización ($U_{i+1}$):** Para cada estado, prueba todas las acciones sumando la recompensa inmediata de aplicarla hoy y el futuro descontado estimado (basado en la tabla de la iteración anterior $U_i$).", estamos describiendo la ecuación de Bellman:
 
@@ -145,21 +147,25 @@ Se refiere al término de la derecha: **$\gamma \sum P_a(s'|s) U_i(s')$**. Una a
 **En resumen:**
 Para saber si una acción es la mejor, el algoritmo pone dos cosas en una balanza: **"¿Qué gano o sufro en este preciso instante por ejecutarla?"** (recompensa inmediata) sumado a **"¿En qué posición me deja esta acción para seguir jugando mañana, según lo que he calculado hasta ahora?"** (futuro descontado estimado). Sumando ambas mitades, obtiene el valor total de esa acción y ya puede compararla con las demás aplicando el operador máximo ($m\hat{a}x$).
 
-#### Resumen: algortimo de iteración de políticas
+</div>
+
+<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+
+**Algoritmo de iteración de políticas**
 
 El truco para entender la iteración de políticas es pensar en ella como un ciclo constante de **"evaluar y mejorar"**.
 
 La secuencia mental del algoritmo funciona así:
 
 **1. Evaluación (El paso que ya tienes)**
-Comenzaste con una política aleatoria inicial (llamémosla $\pi_0$). Al resolver el sistema de ecuaciones lineales para esa política en concreto, has obtenido como resultado una **tabla de valores numéricos ($U_0$)**. Esa tabla te dice exactamente qué utilidad conseguirás si el agente sigue estrictamente esa política $\pi_0$ hacia el futuro.
+Comenzaste con una política aleatoria inicial (llamémosla $\pi_0$). Al resolver el sistema de ecuaciones lineales para esa política en concreto, has obtenido como resultado una **tabla de valores numéricos ($U_0$)**. Esa tabla te dice exactamente qué utilidad conseguirás si el agente sigue estrictamente esa política &pi; hacia el futuro.
 
 **2. Mejora de la política (El siguiente paso)**
-Ahora te preguntas: _"Sabiendo que el futuro vale lo que dice mi tabla $U_0$, ¿puedo tomar mejores decisiones?"_.
-Para responderlo, el algoritmo evalúa estado por estado aplicando el operador **$arg\ m\hat{a}x$**, exactamente igual que hacíamos al final del algoritmo de iteración de valores.
+Ahora te preguntas: _"Sabiendo que el futuro vale lo que dice mi tabla U<sub>0</sub>, ¿puedo tomar mejores decisiones?"_.
+Para responderlo, el algoritmo evalúa estado por estado aplicando el operador **$arg max$**, exactamente igual que hacíamos al final del algoritmo de iteración de valores.
 
-Para un estado $s$, pruebas **todas las acciones posibles** aplicando la fórmula interna de Bellman pero utilizando tu recién calculada tabla $U_0$:
-$R(s,a) + \gamma \sum P_a(s'|s) U_0(s')$
+Para un estado $s$, pruebas **todas las acciones posibles** aplicando la fórmula interna de Bellman pero utilizando tu recién calculada tabla U<sub>0</sub>:
+$R(s,a) + \gamma \sum P_a(s'|s) U\_0(s')$
 
 Te quedas con la acción que te dé el valor más alto. Al repetir esto para todos los estados, habrás generado una **nueva política de acciones actualizada (llamémosla $\pi_1$)**.
 
@@ -171,3 +177,5 @@ Aquí el algoritmo compara la nueva política ($\pi_1$) con la vieja ($\pi_0$) y
 
 **En resumen visual de la diferencia:**
 Mientras que la _iteración de valores_ daba miles de vueltas actualizando una tabla de números y solo sacaba la política de acciones al final del todo, la **iteración de políticas** da vueltas actualizando directamente la lista de acciones, deteniéndose a resolver un sistema de ecuaciones completo en cada salto para comprobar si esa lista ha dejado de cambiar.
+
+</div>
