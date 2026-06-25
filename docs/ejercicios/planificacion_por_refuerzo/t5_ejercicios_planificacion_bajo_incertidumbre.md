@@ -1050,9 +1050,60 @@ Consideremos $R(s\_{1})=R(s\_{2})=-1$ y $R(s\_{3})=0$ como recompensas de los es
 
 - Dada $\\pi(s\_{1})=a\_{2}, \\pi(s\_{2})=a\_{2}$ y $\\pi(s\_{3})=a\_{3}$ como política inicial, aplicar el algoritmo de iteración de políticas para obtener una política óptima del proceso.
 
-- Supongamos que no se conocen las funciones $P$ ni $R$ y que se desea aplicar el algoritmo de Montecarlo de primera visita con inicios exploratorios para aprender una política. Para ello se considera la política $\\pi$ anterior como política inicial, se inicializa la tabla $q$ con el valor 0 y se genera como primer episodio (secuencia de estados, acciones y recompensas hasta alcanzar el estado terminal):
-  $$s\_{2} \\quad a\_{1} \\quad -1 \\quad s\_{2} \\quad a\_{2} \\quad -1 \\quad s\_{1} \\quad a\_{2} \\quad -1 \\quad s\_{2} \\quad a\_{2} \\quad -1 \\quad s\_{1} \\quad a\_{2} \\quad -1 \\quad s\_{2} \\quad a\_{2} \\quad -1 \\quad s\_{3}$$
-  Actualizar a partir de ese episodio la tabla $q$ y derivar a partir de ella una nueva política según el criterio voraz.
+<div class="highlight">
+Supongamos que no se conocen las funciones $P$ ni $R$ y que se desea aplicar el algoritmo de Montecarlo de primera visita con inicios exploratorios para aprender una política. Para ello se considera la política $\pi$ anterior como política inicial, se inicializa la tabla $q$ con el valor 0 y se genera como primer episodio (secuencia de estados, acciones y recompensas hasta alcanzar el estado terminal):
+$$ <s\_{2},a\_{1},-1>, <s\_{2},a\_{2},-1>, <s\_{1},a\_{2},-1>, <s\_{2},a\_{2},-1>, <s\_{1},a\_{2},-1>, <s\_{2},a\_{2},-1>, <s\_{3},a\_{3},0> $$
+
+<b>Actualizar a partir de ese episodio la tabla $q$ y derivar a partir de ella una nueva política según el criterio voraz.</b>
+
+No, tu resolución **no es correcta**, aunque por una coincidencia matemática hayas llegado a la política final acertada. Tienes dos errores conceptuales graves en tu planteamiento:
+
+**1. Has aplicado "Montecarlo de cada visita" en lugar de "primera visita":**
+El enunciado te pide específicamente usar el algoritmo de **primera visita** `. La teoría indica que en este algoritmo el cálculo de la utilidad ($U$) y la actualización de la tabla $q$ se realizan **solo la primera vez** que un par estado-acción ocurre en la secuencia `. Tú has actualizado $(s_2, a_2)$ tres veces y $(s_1, a_2)$ dos veces. Eso se corresponde con el algoritmo de "cada visita", que es el que se te pedirá en un apartado posterior del ejercicio ``.
+
+**2. Has aplicado mal la fórmula de la utilidad descontada:**
+Para calcular la utilidad a partir del instante temporal $t$, la fórmula correcta de los apuntes es $U = \sum_{i=t}^T \gamma^{i-t} R_i$ ``. Esto significa que el contador del factor de descuento siempre se "resetea", elevando a $0$ (es decir, multiplicando por 1) la recompensa inmediata. 
+Tú has mantenido el descuento del tiempo absoluto original. Por ejemplo, en tu segundo ítem ($t=1$), empezaste la suma como `0.9 _ (-1) + 0.9^2 _ (-1)...`, cuando lo correcto es que esa primera recompensa se multiplique por 1: `-1 + 0.9 \* (-1)...`. Estás calculando literalmente la fórmula equivocada ($\gamma^t \cdot U_t$) en lugar de la utilidad real ($U_t$).
+
+---
+
+### Resolución correcta paso a paso
+
+Basándonos en la norma de la **primera visita**, solo debemos calcular la utilidad y actualizar la tabla en los instantes **t=0**, **t=1**, **t=2** y **t=6** (que es cuando ocurren de forma inédita los pares $(s_2,a_1), (s_2,a_2), (s_1,a_2)$ y $(s_3,a_3)$). La tabla $q$ parte con todos los valores a 0.
+
+- **Para t=0 (Primera y única visita de $s_2, a_1$):**
+  $U_0 = R_0 + 0.9 R_1 + 0.9^2 R_2 + 0.9^3 R_3 + 0.9^4 R_4 + 0.9^5 R_5$
+  $U_0 = -1 + 0.9(-1) + 0.81(-1) + 0.729(-1) + 0.6561(-1) + 0.59049(-1) = \mathbf{-4.68559}$
+  Actualizamos la tabla: **$q(s_2, a_1) = -4.68559$**
+
+- **Para t=1 (Primera visita de $s_2, a_2$):**
+  $U_1 = R_1 + 0.9 R_2 + 0.9^2 R_3 + 0.9^3 R_4 + 0.9^4 R_5$
+  $U_1 = -1 - 0.9 - 0.81 - 0.729 - 0.6561 = \mathbf{-4.0951}$
+  Actualizamos la tabla: **$q(s_2, a_2) = -4.0951$**
+
+- **Para t=2 (Primera visita de $s_1, a_2$):**
+  $U_2 = R_2 + 0.9 R_3 + 0.9^2 R_4 + 0.9^3 R_5$
+  $U_2 = -1 - 0.9 - 0.81 - 0.729 = \mathbf{-3.439}$
+  Actualizamos la tabla: **$q(s_1, a_2) = -3.439$**
+
+- **Para t=6 (Primera visita de $s_3, a_3$):**
+  $U_6 = R_6 = \mathbf{0}$
+  Actualizamos la tabla: **$q(s_3, a_3) = 0$**
+
+_(El resto de pares, como $q(s_1,a_1)$, mantienen su valor inicial de $0$)._
+
+### Derivar la nueva política (Criterio voraz)
+
+Ahora aplicamos el operador $arg\ m\hat{a}x$ estado por estado usando los valores reales de nuestra tabla $q$ ``:
+
+- Para **$s_1$**: $\arg\max \{q(s_1, a_1), q(s_1, a_2)\} = \arg\max \{0, -3.439\} \Rightarrow$ **Acción $a_1$**.
+- Para **$s_2$**: $\arg\max \{q(s_2, a_1), q(s_2, a_2)\} = \arg\max \{-4.68559, -4.0951\} \Rightarrow$ **Acción $a_2$** _(es mayor porque es el negativo más cercano a 0)_.
+- Para **$s_3$**: $\arg\max \{q(s_3, a_3)\} = \arg\max \{0\} \Rightarrow$ **Acción $a_3$**.
+
+**Conclusión:**
+Llegaste al mismo resultado final de la política (**$\pi(s_1)=a_1, \pi(s_2)=a_2, \pi(s_3)=a_3$**) por pura coincidencia: el error de multiplicar toda la fórmula por $\gamma^t$ encogió tus números numéricamente, pero casualmente mantuvo intacto el orden relativo de los máximos, ocultando el error metodológico.
+
+</div>
 
 - Generar aleatoriamente 5 nuevos episodios. Para ello, elegir según una distribución uniforme $s\_{1}$ o $s\_{2}$ como estado inicial y $a\_{1}$ o $a\_{2}$ como primera acción a aplicar y seguir la política actual a partir de ahí. Actualizar a partir de cada episodio la tabla $q$ y derivar a partir de ella una nueva política según el criterio voraz.
 
