@@ -1020,27 +1020,29 @@ Empezamos con el estado inicial de la política $\pi$ que consiste en invertir s
 - Si cambiamos a **$a_2$**: $0 + 0.9 \cdot U(s_4) = 0 + 0.9(0) = 0$.
 - _El máximo entre ambas es 0, por lo que la mejor elección sigue siendo $a_1$._
 
+La nueva política obtenida al maximizar las utilidades ($\pi_1$) es: **$\pi_1(s_1) = a_2, \pi_1(s_2) = a_2, \pi_1(s_3) = a_2, \pi_1(s_4) = a_1$**.
+
 </div>
 
 ## Ejercicio 6
 
 Consideremos el proceso de decisión de Markov tal que $S={s\_{1},s\_{2},s\_{3}}$, $A={a\_{1},a\_{2},a\_{3}}$ y $P$ viene dado por (obsérvese que $s\_{3}$ es un estado terminal):
 
-### $P\_{a\_{1}}(\\cdot|\\cdot)$
+**$P\_{a\_{1}}(\cdot|\cdot)$**
 
 |              | $s\_{1}$ | $s\_{2}$ | $s\_{3}$ |
 | :----------- | :------- | :------- | :------- |
 | **$s\_{1}$** | 0.9      | 0.0      | 0.1      |
 | **$s\_{2}$** | 0.0      | 0.8      | 0.2      |
 
-### $P\_{a\_{2}}(\\cdot|\\cdot)$
+**$P\_{a\_{2}}(\cdot|\cdot)$**
 
 |              | $s\_{1}$ | $s\_{2}$ | $s\_{3}$ |
 | :----------- | :------- | :------- | :------- |
 | **$s\_{1}$** | 0.0      | 0.9      | 0.1      |
 | **$s\_{2}$** | 0.9      | 0.0      | 0.1      |
 
-### $P\_{a\_{3}}(\\cdot|\\cdot)$
+**$P\_{a\_{3}}(\cdot|\cdot)$**
 
 |              | $s\_{1}$ | $s\_{2}$ | $s\_{3}$ |
 | :----------- | :------- | :------- | :------- |
@@ -1048,9 +1050,56 @@ Consideremos el proceso de decisión de Markov tal que $S={s\_{1},s\_{2},s\_{3}}
 
 Consideremos $R(s\_{1})=R(s\_{2})=-1$ y $R(s\_{3})=0$ como recompensas de los estados, 0 como coste de aplicar las acciones y 0.9 como factor de descuento. Se pide:
 
-- Dada $\\pi(s\_{1})=a\_{2}, \\pi(s\_{2})=a\_{2}$ y $\\pi(s\_{3})=a\_{3}$ como política inicial, aplicar el algoritmo de iteración de políticas para obtener una política óptima del proceso.
+<div class="highlight">
 
-- Supongamos que no se conocen las funciones $P$ ni $R$ y que se desea aplicar el algoritmo de Montecarlo de primera visita con inicios exploratorios para aprender una política. Para ello se considera la política $\\pi$ anterior como política inicial, se inicializa la tabla $q$ con el valor 0 y se genera como primer episodio (secuencia de estados, acciones y recompensas hasta alcanzar el estado terminal):
+<b>Dada $\pi(s\_{1})=a\_{2}, \pi(s\_{2})=a\_{2}$ y $\pi(s\_{3})=a\_{3}$ como política inicial, aplicar el algoritmo de iteración de políticas para obtener una política óptima del proceso.</b>
+
+- Primero planteamos y resolvemos el sistema de ecuaciones lineales que caracteriza a $U\_{\pi}$:
+
+U(s\_{1}) = -1 + 0.9 _ (0.9 _ U(s\_{2}) + 0.1 _ U(s\_{3})) = -1 + 0.81 _ U(s\_{2}) + 0.09 _ U(s\_{3})
+U(s\_{2}) = -1 + 0.9 _ (0.9 _ U(s\_{1}) + 0.1 _ U(s\_{3})) = -1 + 0.81 _ U(s\_{1}) + 0.09 _ U(s\_{3})
+U(s\_{3}) = 0
+
+Sustituimos U(s\_{3}) = 0 en las dos primeras ecuaciones:
+U(s\_{1}) = -1 + 0.81 _ U(s\_{2})
+U(s\_{2}) = -1 + 0.81 _ U(s\_{1})
+
+Sustituimos la segunda ecuación en la primera:
+U(s\_{1}) = -1 + 0.81 _ (-1 + 0.81 _ U(s\_{1})) = -1 - 0.81 + 0.6561 _ U(s\_{1})
+U(s\_{1}) - 0.6561 _ U(s\_{1}) = -1.81
+0.3439 _ U(s\_{1}) = -1.81
+U(s\_{1}) = -1.81 / 0.3439 ≈ -5.26
+Sustituimos U(s\_{1}) en la segunda ecuación:
+U(s\_{2}) = -1 + 0.81 _ (-5.26) = -1 - 4.26 ≈ -5.26
+U(s\_{3}) = 0
+
+Solución del sistema de ecuaciones lineales:
+
+- U(s\_{1}) ≈ -5.26
+- U(s\_{2}) ≈ -5.26
+- U(s\_{3}) = 0
+
+- Segundo, para cada estado, aplicamos el operador arg max para obtener la nueva política $\pi'$:
+
+Para el estado $s\_{1}$, podemos aplicar $a\_{1}$ o $a\_{2}$:
+
+- Si aplicamos $a\_{1}: -1 + 0.9 * (0.8 * U(s\_{1}) + 0.2  U(s\_{3})) = -1 + 0.9 * (0.8 * (-5.26) + 0.2 * 0) = -1 + 0.9 * (-4.208) = -1 - 3.7872 ≈ -4.79$
+- Si aplicamos $a\_{2}$: ≈ -5.26
+- El máximo entre ambas es -4.79, por lo que la mejor elección es cambiar a $a\_{1}$.
+
+Para el estado $s\_{2}$, podemos aplicar $a\_{1}$ o $a\_{2}$:
+
+- Si aplicamos $a\_{1}: -1 + 0.9 * (0.9 * U(s\_{1}) + 0.1 * U(s\_{3})) = -1 + 0.9 * (0.9 * (-5.26) + 0.1 * 0) = -1 + 0.9 * (-4.734) = -1 - 4.2606 ≈ -5.26$
+- Si aplicamos $a\_{2}: -1 + 0.9 * (0.9 * U(s\_{2}) + 0.1 * U(s\_{3})) = -1 + 0.9 * (0.9 * (-5.26) + 0.1 * 0) = -1 + 0.9 * (-4.734) = -1 - 4.2606 ≈ -5.26$
+- Ambas acciones dan el mismo valor, por lo que podemos mantener la acción $a\_{2}$.
+
+Para el estado $s\_{3}$, solo podemos aplicar $a\_{3}$, por lo que la acción se mantiene.
+
+La nueva política $\pi'$ es la misma que la política inicial $\pi$, por lo que hemos alcanzado la convergencia y la política óptima es: $\pi(s\_{1})=a\_{1}, \pi(s\_{2})=a\_{2}, \pi(s\_{3})=a\_{3}$.
+
+</div>
+
+- Supongamos que no se conocen las funciones $P$ ni $R$ y que se desea aplicar el algoritmo de Montecarlo de primera visita con inicios exploratorios para aprender una política. Para ello se considera la política $\pi$ anterior como política inicial, se inicializa la tabla $q$ con el valor 0 y se genera como primer episodio (secuencia de estados, acciones y recompensas hasta alcanzar el estado terminal):
   $$s\_{2} \\quad a\_{1} \\quad -1 \\quad s\_{2} \\quad a\_{2} \\quad -1 \\quad s\_{1} \\quad a\_{2} \\quad -1 \\quad s\_{2} \\quad a\_{2} \\quad -1 \\quad s\_{1} \\quad a\_{2} \\quad -1 \\quad s\_{2} \\quad a\_{2} \\quad -1 \\quad s\_{3}$$
   Actualizar a partir de ese episodio la tabla $q$ y derivar a partir de ella una nueva política según el criterio voraz.
 
