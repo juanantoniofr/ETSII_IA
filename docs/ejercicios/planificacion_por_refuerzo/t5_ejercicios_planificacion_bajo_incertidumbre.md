@@ -1054,7 +1054,103 @@ Consideremos $R(s\_{1})=R(s\_{2})=-1$ y $R(s\_{3})=0$ como recompensas de los es
 
 <b>Dada $\pi(s\_{1})=a\_{2}, \pi(s\_{2})=a\_{2}$ y $\pi(s\_{3})=a\_{3}$ como política inicial, aplicar el algoritmo de iteración de políticas para obtener una política óptima del proceso.</b>
 
+**Paso 1: Planteamiento y resolución del sistema de ecuaciones**
+
+- Primero planteamos el sistema de ecuaciones lineales que caracteriza a $U_\pi$:
+
+(1) -> $U(s\_{1}) = R(s\_{1}) + \gamma \sum_{a in A(s\_{1})} P(s'|s\_{1}) U(s') = -1 + 0.9 [P(s\_{1}|s\_{1}) U(s\_{1}) + P(s\_{3}|s\_{1}) U(s\_{3})] = -1 + 0.9 [0 \cdot U(s\_{1}) + 0.1 \cdot U(s\_{3})] = -1 + 0.81 U(s\_{2}) + 0.09 U(s\_{3})$
+
+(2) -> $U(s\_{2}) = R(s\_{2}) + \gamma \sum_{a in A(s\_{2})} P(s'|s\_{2}) U(s') = -1 + 0.9 [P(s\_{1}|s\_{2}) U(s\_{1}) + P(s\_{3}|s\_{2}) U(s\_{3})] = -1 + 0.9 [0.9 \cdot U(s\_{1}) + 0.1 \cdot U(s\_{3})] = -1 + 0.81 U(s\_{1}) + 0.09 U(s\_{3})$
+
+(3) -> $U(s\_{3}) = R(s\_{3}) + \gamma \sum_{a in A(s\_{3})} P(s'|s\_{3}) U(s') = 0 + 0.9 [P(s\_{3}|s\_{3}) U(s\_{3})] = 0 + 0.9 [1.0 \cdot U(s\_{3}) ] = 0.9 U(s\_{3})$
+
+- Resolvemos el sistema de ecuaciones:
+
+de (3) obtenemos $U(s\_{3}) = 0$.
+Sustiutimos $U(s\_{3}) = 0$ en (1) y (2):
+
+(1) -> $U(s\_{1}) = -1 + 0.9 [0.9 \cdot U(s\_{1}) + 0.1 \cdot 0] => U(s\_{1}) - 0.81 \cdot U(s\_{1}) = -1 => U(s\_{1}) = -1 / 0.19 \approx -5.26$
+(2) -> $U(s\_{2}) = -1 + 0.9 [0.9 \cdot U(s\_{1}) + 0.1 \cdot 0] = -1 + 0.81 U(s\_{1})$
+
+Sustituimos $U(s\_{1}) \approx -5.26$ en (2):
+
+(2) -> $U(s\_{2}) = -1 + 0.81(-5.26) = -1 - 4.26 \approx -5.26$
+
+- Resumiendo, obtenemos:
+  $U(s\_{1}) \approx -5.26$
+  $U(s\_{2}) \approx -5.26$
+  $U(s\_{3}) = 0$
+
+**Paso 2: Mejora de la política mediante el criterio voraz**
+
+- Para el estado $s\_{1}$, evaluamos las acciones posibles ($a\_{1}$ y $a\_{2}$):
+  -> $a\_{1}$: -> $R(s\_{1}) + \gamma [P(s\_{1}|s\_{1}) U(s\_{1}) + P(s\_{2}|s\_{1}) U(s\_{1}) * P(s\_{3}|s\_{1}) U(s\_{3})] = -1 + 0.9 [0.9 \cdot (-5.26) + 0 \cdot (-5.26) + 0.1 \cdot 0] = -1 + 0.9(-4.734) = -1 - 4.263 \approx -5.26$
+  -> $a\_{2}$: -> $R(s\_{1}) + \gamma [P(s\_{2}|s\_{1}) U(s\_{2}) + P(s\_{2}|s\_{1}) U(s\_{2}) + P(s\_{3}|s\_{2}) U(s\_{3})] = -1 + 0.9 [0.9 \cdot (-5.26) + 0 \cdot (-5.26) + 0.1 \cdot 0] = -1 + 0.9(-4.734) \approx -5.26$
+
+- Para el estado $s\_{2}$, evaluamos las acciones posibles ($a\_{1}$ y $a\_{2}$):
+  -> $a\_{1}$: -> $R(s\_{2}) + \gamma [P(s\_{1}|s\_{2}) U(s\_{1}) + P(s\_{2}|s\_{2}) U(s\_{2}) + P(s\_{3}|s\_{2}) U(s\_{3})] = -1 + 0.9 [0 \cdot (-5.26) + 0.8 \cdot (-5.26) + 0.1 \cdot 0] = -1 + 0.9(-4.208) \approx -4.79$
+  -> $a\_{2}$: $Q(s\_{2}, a\_{2}) = R(s\_{2}) + \gamma [P(s\_{1}|s\_{2}) U(s\_{1}) + P(s\_{2}|s\_{2}) U(s\_{2}) + P(s\_{3}|s\_{2}) U(s\_{3})] = -1 + 0.9 [0.9 \cdot (-5.26) + 0 \cdot (-5.26) + 0.1 \cdot 0] = -1 + 0.9(-4.734) \approx -5.26$
+
+- Para el estado $s\_{3}$, solo hay una acción posible ($a\_{3}$):
+  -> $a\_{3}$: $Q(s\_{3}, a\_{3}) = R(s\_{3}) + \gamma [P(s\_{3}|s\_{3}) U(s\_{3})] = 0 + 0.9 [1.0 \cdot 0] = 0$
+
+La nueva política obtenida al maximizar las utilidades ($\pi_1$) es: **$\pi_1(s_1) = a_2, \pi_1(s_2) = a_1, \pi_1(s_3) = a_3$**.
+
+**No se ha alcanzado la convergencia, por lo que se debe repetir el proceso de evaluación y mejora de la política hasta que la política deje de cambiar.**
+
+<b><span style="color:red">Realizamos otra iteración del proceso de evaluación y mejora de la política.</span></b>
+
+- Primero planteamos y resolvemos el sistema de ecuaciones lineales que caracteriza a $U_\pi$ para la nueva política $\pi_1$:
+
+(1) -> $U(s\_{1}) = R(s\_{1}) + \gamma \sum_{a in A(s\_{1})} P(s'|s\_{1}) U(s') = -1 + 0.9 [P(s\_{2}|s\_{1}) U(s\_{2}) + P(s\_{3}|s\_{1}) U(s\_{3})] = -1 + 0.9 [0.9 \cdot U(s\_{2}) + 0.1 \cdot U(s\_{3})] = -1 + 0.81 U(s\_{2}) + 0.09 U(s\_{3})$
+
+(2) -> $U(s\_{2}) = R(s\_{2}) + \gamma \sum_{a in A(s\_{2})} P(s'|s\_{2}) U(s') = -1 + 0.9 [P(s\_{2}|s\_{2}) U(s\_{1}) + P(s\_{3}|s\_{2}) U(s\_{3})] = -1 + 0.9 [0.8 \cdot U(s\_{2}) + 0.1 \cdot U(s\_{3})] = -1 + 0.72 U(s\_{2}) + 0.09 U(s\_{3})$
+
+(3) -> $U(s\_{3}) = R(s\_{3}) + \gamma \sum_{a in A(s\_{3})} P(s'|s\_{3}) U(s') = 0 + 0.9 [P(s\_{3}|s\_{3}) U(s\_{3})] = 0 + 0.9 [1.0 \cdot U(s\_{3}) ] = 0.9 U(s\_{3})$
+
+de (3) obtenemos $U(s\_{3}) = 0$.
+
+Sustiutimos $U(s\_{3}) = 0$ en (1) y (2):
+$U(s\_{1}) = -1 + 0.81 U(s\_{2})$
+$U(s\_{2}) = -1 + 0.72 U(s\_{2})$
+
+Sustituimos $U(s\_{2})$ en la ecuación de $U(s\_{1})$:
+$U(s\_{2}) = -1 + 0.72 U(s\_{2}) => U(s\_{2}) - 0.72 U(s\_{2}) = -1 => 0.28 U(s\_{2}) = -1 => U(s\_{2}) = -1 / 0.28 \approx -3.57$
+
+Sustituimos $U(s\_{2})$ en la ecuación de $U(s\_{1})$:
+$U(s\_{1}) = -1 + 0.81(-3.57) = -1 - 2.89 \approx -3.89$
+
+En resumen, obtenemos:
+$U(s\_{1}) \approx -3.89$
+$U(s\_{2}) \approx -3.57$
+$U(s\_{3}) = 0$
+
+- Ahora, evaluamos nuevamente las acciones posibles para cada estado y aplicamos el criterio voraz:
+
+**Para el estado $s\_{1}$ (podemos aplicar $a\_{1}$ o $a\_{2}$):**
+
+- Si mantenemos **$a\_{2}$**, ya lo tenemos calculado -> ${\pi(s\_{1})} = -3.89$.
+- Si cambiamos a **$a\_{1}$**: $-1 + 0.9 [0.9 \cdot U(s\_{1}) + 0.1 \cdot U(s\_{3})] = -1 + 0.9 [0.9 \cdot (-3.89) + 0.1 \cdot 0] = -1 + 0.9(-3.501) = -1 - 3.151 \approx -4.15$.
+- _El máximo entre ambas es -3.89, por lo que la mejor elección sigue siendo $a\_{2}$._
+
+**Para el estado $s\_{2}$ (podemos aplicar $a\_{1}$ o $a\_{2}$):**
+
+- Si mantenemos **$a\_{1}$**, ya lo tenemos calculado -> ${\pi(s\_{2})} = -3.57$.
+- Si cambiamos a **$a\_{2}$**: $-1 + 0.9 [0.9 \cdot U(s\_{2}) + 0.1 \cdot U(s\_{3})] = -1 + 0.9 [0.9 \cdot (-3.57) + 0.1 \cdot 0] = -1 + 0.9(-3.213) = -1 - 2.892 \approx -3.89$.
+- _El máximo entre ambas es -3.57, por lo que la mejor elección sigue siendo $a\_{1}$._
+
+**Para el estado $s\_{3}$, solo hay una acción posible ($a\_{3}$):**
+
+- Si mantenemos, **$a\_{3}$** ya lo tenemos calculado -> ${\pi(s\_{3})} = 0$.
+
+La nueva política obtenida al maximizar las utilidades ($\pi_2$) es: **$\pi_2(s_1) = a_2, \pi_2(s_2) = a_1, \pi_2(s_3) = a_3$**.
+
+Como la política no ha cambiado respecto a la iteración anterior, hemos alcanzado la convergencia y por tanto $\pi_2$ es una política óptima del proceso de decisión de Markov.
+
+</div>
+
 <div class="highlight">
+
 Supongamos que no se conocen las funciones $P$ ni $R$ y que se desea aplicar el algoritmo de Montecarlo de primera visita con inicios exploratorios para aprender una política. Para ello se considera la política $\pi$ anterior como política inicial, se inicializa la tabla $q$ con el valor 0 y se genera como primer episodio (secuencia de estados, acciones y recompensas hasta alcanzar el estado terminal):
 $$ <s\_{2},a\_{1},-1>, <s\_{2},a\_{2},-1>, <s\_{1},a\_{2},-1>, <s\_{2},a\_{2},-1>, <s\_{1},a\_{2},-1>, <s\_{2},a\_{2},-1>, <s\_{3},a\_{3},0> $$
 
@@ -1108,6 +1204,7 @@ Ahora aplicamos el operador $arg\ m\hat{a}x$ estado por estado usando los valore
 Llegaste al mismo resultado final de la política (**$\pi(s_1)=a_1, \pi(s_2)=a_2, \pi(s_3)=a_3$**) por pura coincidencia: el error de multiplicar toda la fórmula por $\gamma^t$ encogió tus números numéricamente, pero casualmente mantuvo intacto el orden relativo de los máximos, ocultando el error metodológico.
 
 </div>
+
 - Primero planteamos y resolvemos el sistema de ecuaciones lineales que caracteriza a $U\_{\pi}$:
 
 U(s\_{1}) = -1 + 0.9 _ (0.9 _ U(s\_{2}) + 0.1 _ U(s\_{3})) = -1 + 0.81 _ U(s\_{2}) + 0.09 _ U(s\_{3})
