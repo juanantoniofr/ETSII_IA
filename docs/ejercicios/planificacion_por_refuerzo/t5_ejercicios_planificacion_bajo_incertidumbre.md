@@ -1098,13 +1098,13 @@ La nueva política obtenida al maximizar las utilidades ($\pi_1$) es: **$\pi_1(s
 
 **No se ha alcanzado la convergencia, por lo que se debe repetir el proceso de evaluación y mejora de la política hasta que la política deje de cambiar.**
 
-<b><span style="color:red">Realizamos otra iteración del proceso de evaluación y mejora de la política.</span></b>
+<b><span style="color:blue">Realizamos otra iteración del proceso de evaluación y mejora de la política.</span></b>
 
 - Primero planteamos y resolvemos el sistema de ecuaciones lineales que caracteriza a $U_\pi$ para la nueva política $\pi_1$:
 
 (1) -> $U(s\_{1}) = R(s\_{1}) + \gamma \sum_{a in A(s\_{1})} P(s'|s\_{1}) U(s') = -1 + 0.9 [P(s\_{2}|s\_{1}) U(s\_{2}) + P(s\_{3}|s\_{1}) U(s\_{3})] = -1 + 0.9 [0.9 \cdot U(s\_{2}) + 0.1 \cdot U(s\_{3})] = -1 + 0.81 U(s\_{2}) + 0.09 U(s\_{3})$
 
-(2) -> $U(s\_{2}) = R(s\_{2}) + \gamma \sum_{a in A(s\_{2})} P(s'|s\_{2}) U(s') = -1 + 0.9 [P(s\_{2}|s\_{2}) U(s\_{1}) + P(s\_{3}|s\_{2}) U(s\_{3})] = -1 + 0.9 [0.8 \cdot U(s\_{2}) + 0.1 \cdot U(s\_{3})] = -1 + 0.72 U(s\_{2}) + 0.09 U(s\_{3})$
+(2) -> $U(s\_{2}) = R(s\_{2}) + \gamma \sum_{a in A(s\_{2})} P(s'|s\_{2}) U(s') = -1 + 0.9 [P(s\_{2}|s\_{2}) U(s\_{1}) + P(s\_{3}|s\_{2}) U(s\_{3})] = -1 + 0.9 [0.8 \cdot U(s\_{2}) + 0.2 \cdot U(s\_{3})] = -1 + 0.72 U(s\_{2}) + 0.09 U(s\_{3})$
 
 (3) -> $U(s\_{3}) = R(s\_{3}) + \gamma \sum_{a in A(s\_{3})} P(s'|s\_{3}) U(s') = 0 + 0.9 [P(s\_{3}|s\_{3}) U(s\_{3})] = 0 + 0.9 [1.0 \cdot U(s\_{3}) ] = 0.9 U(s\_{3})$
 
@@ -1136,12 +1136,12 @@ $U(s\_{3}) = 0$
 **Para el estado $s\_{2}$ (podemos aplicar $a\_{1}$ o $a\_{2}$):**
 
 - Si mantenemos **$a\_{1}$**, ya lo tenemos calculado -> ${\pi(s\_{2})} = -3.57$.
-- Si cambiamos a **$a\_{2}$**: $-1 + 0.9 [0.9 \cdot U(s\_{2}) + 0.1 \cdot U(s\_{3})] = -1 + 0.9 [0.9 \cdot (-3.57) + 0.1 \cdot 0] = -1 + 0.9(-3.213) = -1 - 2.892 \approx -3.89$.
+- Si cambiamos a **$a\_{2}$**: $-1 + 0.9 [0.9 \cdot U(s\_{1}) + 0.1 \cdot U(s\_{3})] = -1 + 0.9 [0.9 \cdot (-3.89) + 0.1 \cdot 0] = -1 + 0.9(-3.501) = -1 - 3.151 \approx -4.15$.
 - _El máximo entre ambas es -3.57, por lo que la mejor elección sigue siendo $a\_{1}$._
 
 **Para el estado $s\_{3}$, solo hay una acción posible ($a\_{3}$):**
 
-- Si mantenemos, **$a\_{3}$** ya lo tenemos calculado -> ${\pi(s\_{3})} = 0$.
+- Si mantenemos, **$a\_{3}$** ya lo tenemos calculado -> ${\pi(s\_{3})} = 0$;
 
 La nueva política obtenida al maximizar las utilidades ($\pi_2$) es: **$\pi_2(s_1) = a_2, \pi_2(s_2) = a_1, \pi_2(s_3) = a_3$**.
 
@@ -1167,7 +1167,7 @@ Tú has mantenido el descuento del tiempo absoluto original. Por ejemplo, en tu 
 
 ---
 
-### Resolución correcta paso a paso
+**Resolución correcta paso a paso**
 
 Basándonos en la norma de la **primera visita**, solo debemos calcular la utilidad y actualizar la tabla en los instantes **t=0**, **t=1**, **t=2** y **t=6** (que es cuando ocurren de forma inédita los pares $(s_2,a_1), (s_2,a_2), (s_1,a_2)$ y $(s_3,a_3)$). La tabla $q$ parte con todos los valores a 0.
 
@@ -1192,7 +1192,7 @@ Basándonos en la norma de la **primera visita**, solo debemos calcular la utili
 
 _(El resto de pares, como $q(s_1,a_1)$, mantienen su valor inicial de $0$)._
 
-### Derivar la nueva política (Criterio voraz)
+**Derivar la nueva política (Criterio voraz)**
 
 Ahora aplicamos el operador $arg\ m\hat{a}x$ estado por estado usando los valores reales de nuestra tabla $q$ ``:
 
@@ -1205,55 +1205,10 @@ Llegaste al mismo resultado final de la política (**$\pi(s_1)=a_1, \pi(s_2)=a_2
 
 </div>
 
-- Primero planteamos y resolvemos el sistema de ecuaciones lineales que caracteriza a $U\_{\pi}$:
+<div class="highlight">
 
-U(s\_{1}) = -1 + 0.9 _ (0.9 _ U(s\_{2}) + 0.1 _ U(s\_{3})) = -1 + 0.81 _ U(s\_{2}) + 0.09 _ U(s\_{3})
-U(s\_{2}) = -1 + 0.9 _ (0.9 _ U(s\_{1}) + 0.1 _ U(s\_{3})) = -1 + 0.81 _ U(s\_{1}) + 0.09 _ U(s\_{3})
-U(s\_{3}) = 0
-
-Sustituimos U(s\_{3}) = 0 en las dos primeras ecuaciones:
-U(s\_{1}) = -1 + 0.81 _ U(s\_{2})
-U(s\_{2}) = -1 + 0.81 _ U(s\_{1})
-
-Sustituimos la segunda ecuación en la primera:
-U(s\_{1}) = -1 + 0.81 _ (-1 + 0.81 _ U(s\_{1})) = -1 - 0.81 + 0.6561 _ U(s\_{1})
-U(s\_{1}) - 0.6561 _ U(s\_{1}) = -1.81
-0.3439 _ U(s\_{1}) = -1.81
-U(s\_{1}) = -1.81 / 0.3439 ≈ -5.26
-Sustituimos U(s\_{1}) en la segunda ecuación:
-U(s\_{2}) = -1 + 0.81 _ (-5.26) = -1 - 4.26 ≈ -5.26
-U(s\_{3}) = 0
-
-Solución del sistema de ecuaciones lineales:
-
-- U(s\_{1}) ≈ -5.26
-- U(s\_{2}) ≈ -5.26
-- U(s\_{3}) = 0
-
-- Segundo, para cada estado, aplicamos el operador arg max para obtener la nueva política $\pi'$:
-
-Para el estado $s\_{1}$, podemos aplicar $a\_{1}$ o $a\_{2}$:
-
-- Si aplicamos $a\_{1}: -1 + 0.9 * (0.8 * U(s\_{1}) + 0.2  U(s\_{3})) = -1 + 0.9 * (0.8 * (-5.26) + 0.2 * 0) = -1 + 0.9 * (-4.208) = -1 - 3.7872 ≈ -4.79$
-- Si aplicamos $a\_{2}$: ≈ -5.26
-- El máximo entre ambas es -4.79, por lo que la mejor elección es cambiar a $a\_{1}$.
-
-Para el estado $s\_{2}$, podemos aplicar $a\_{1}$ o $a\_{2}$:
-
-- Si aplicamos $a\_{1}: -1 + 0.9 * (0.9 * U(s\_{1}) + 0.1 * U(s\_{3})) = -1 + 0.9 * (0.9 * (-5.26) + 0.1 * 0) = -1 + 0.9 * (-4.734) = -1 - 4.2606 ≈ -5.26$
-- Si aplicamos $a\_{2}: -1 + 0.9 * (0.9 * U(s\_{2}) + 0.1 * U(s\_{3})) = -1 + 0.9 * (0.9 * (-5.26) + 0.1 * 0) = -1 + 0.9 * (-4.734) = -1 - 4.2606 ≈ -5.26$
-- Ambas acciones dan el mismo valor, por lo que podemos mantener la acción $a\_{2}$.
-
-Para el estado $s\_{3}$, solo podemos aplicar $a\_{3}$, por lo que la acción se mantiene.
-
-La nueva política $\pi'$ es la misma que la política inicial $\pi$, por lo que hemos alcanzado la convergencia y la política óptima es: $\pi(s\_{1})=a\_{1}, \pi(s\_{2})=a\_{2}, \pi(s\_{3})=a\_{3}$.
+<b> Generar aleatoriamente 5 nuevos episodios. Para ello, elegir según una distribución uniforme $s\_{1}$ o $s\_{2}$ como estado inicial y $a\_{1}$ o $a\_{2}$ como primera acción a aplicar y seguir la política actual a partir de ahí. Actualizar a partir de cada episodio la tabla $q$ y derivar a partir de ella una nueva política según el criterio voraz.</b>
 
 </div>
-
-- Supongamos que no se conocen las funciones $P$ ni $R$ y que se desea aplicar el algoritmo de Montecarlo de primera visita con inicios exploratorios para aprender una política. Para ello se considera la política $\pi$ anterior como política inicial, se inicializa la tabla $q$ con el valor 0 y se genera como primer episodio (secuencia de estados, acciones y recompensas hasta alcanzar el estado terminal):
-  $$s\_{2} \\quad a\_{1} \\quad -1 \\quad s\_{2} \\quad a\_{2} \\quad -1 \\quad s\_{1} \\quad a\_{2} \\quad -1 \\quad s\_{2} \\quad a\_{2} \\quad -1 \\quad s\_{1} \\quad a\_{2} \\quad -1 \\quad s\_{2} \\quad a\_{2} \\quad -1 \\quad s\_{3}$$
-  Actualizar a partir de ese episodio la tabla $q$ y derivar a partir de ella una nueva política según el criterio voraz.
-
-- Generar aleatoriamente 5 nuevos episodios. Para ello, elegir según una distribución uniforme $s\_{1}$ o $s\_{2}$ como estado inicial y $a\_{1}$ o $a\_{2}$ como primera acción a aplicar y seguir la política actual a partir de ahí. Actualizar a partir de cada episodio la tabla $q$ y derivar a partir de ella una nueva política según el criterio voraz.
 
 - Repetir los dos puntos anteriores aplicando en este caso el algoritmo de Montecarlo de cada visita con inicios exploratorios.
