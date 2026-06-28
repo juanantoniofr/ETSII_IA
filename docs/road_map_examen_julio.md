@@ -16,22 +16,64 @@ Para optimizar tu esfuerzo según las puntuaciones del examen, divide tus 4 hora
 
 ### Calendario de Estudio (26 de Junio - 6 de Julio)
 
-**Fase 1: Bloque 1 (Aprendizaje Automático, Redes Neuronales y PLN)**
+Hoy es 29 de junio y tu examen es el 7 de julio. Esto significa que tienes exactamente 8 días completos de estudio por delante. Si, tal y como indicas, reservamos los dos últimos días exclusivamente para el laboratorio, te quedan **6 días perfectos** para repasar de forma intensiva la teoría y los problemas a mano.
 
-- **Día 1 (26 de junio) - Aprendizaje Automático:** Dedica este día a los conceptos base de clasificación, regresión y evaluación de modelos.
-- **Día 2 (27 de junio) - Redes Neuronales:** Repasa la teoría (pesos, funciones de activación) y realiza ejercicios matemáticos de cálculo de gradientes o propagación. Practica en el ordenador con los scripts de entrenamiento.
-- **Día 3 (28 de junio) - Procesamiento del Lenguaje Natural:** Céntrate en la teoría de extracción de características y modelos de lenguaje.
+Sabiendo que ya tienes dominados Naive Bayes y los árboles CART, el temario restante se estructura así:
 
-**Fase 2: Bloque 2 (Planificación Automática y Aprendizaje por Refuerzo)**
+**Día 1 (29 de junio): Cierre de Aprendizaje Automático e inicio de Redes Neuronales**
 
-- **Día 4 (29 de junio) - Planificación Automática (I):** Estudia las asunciones de la planificación clásica frente a la planificación bajo incertidumbre. Practica con los problemas en papel modelando estados, acciones y objetivos.
-- **Día 5 (30 de junio) - Planificación Automática (II):** Dedica las 4 horas a afianzar los problemas complejos y repasar las herramientas de ordenador asociadas a la resolución de planes.
-- **Día 6 (1 de julio) - Aprendizaje por Refuerzo (Teoría y Ecuaciones):** Entiende bien los Procesos de Decisión de Markov (MDP). Practica el planteamiento de sistemas de ecuaciones lineales para evaluar políticas ($U_\pi$) y las Ecuaciones de Bellman con el operador $\max$ ($U^*$).
-- **Día 7 (2 de julio) - Aprendizaje por Refuerzo (Algoritmos iterativos):** Haz problemas completos a mano de **Iteración de Valores** e **Iteración de Políticas**, asegurándote de no confundir el momento de aplicar el criterio voraz.
-- **Día 8 (3 de julio) - Aprendizaje por Refuerzo (Incertidumbre):** Estudia el método de **Montecarlo** (recuerda bien la diferencia entre primera visita y cada visita) y el algoritmo **Q-learning** usando diferencias temporales. Ya dominas gran parte de esto por los ejercicios que hemos visto.
+- **Aprendizaje Automático (k-NN):** Estudia las métricas de distancia (Euclídea, Manhattan, Hamming) y cómo aplicarlas en el algoritmo k-NN. Repasa la normalización de atributos numéricos (mín-máx y tipificación) para evitar que unas variables dominen sobre otras en el cálculo.
+- **Redes Neuronales (Bases):** Entiende el modelo base del perceptrón, el cálculo de su entrada ponderada ($z$) sumando pesos y sesgos, y la función de activación umbral o signo. Practica cómo entrenar y actualizar los pesos de un perceptrón simple a mano.
+- **Funciones de activación modernas:** Revisa las matemáticas de la función Sigmoide, Rectificador (ReLU) y Tangente hiperbólica.
 
-**Fase 3: Simulacros y Repaso Final**
+**Día 2 (30 de junio): Redes Neuronales (El núcleo matemático)**
 
-- **Día 9 (4 de julio) - Simulacro del Bloque 1:** Dedica el día a hacer un examen mental completo de Aprendizaje Automático, Redes y PLN. 1h test, 1.5h problemas a mano, 1.5h código en ordenador.
-- **Día 10 (5 de julio) - Simulacro del Bloque 2:** Haz lo mismo con Planificación y Aprendizaje por Refuerzo. Intenta resolver ejercicios enteros como el Ejercicio 6 o el Ejercicio 8 del boletín de problemas sin mirar los apuntes.
-- **Día 11 (6 de julio) - Repaso ligero y consolidación:** Usa las 4 horas para repasar únicamente los errores que hayas cometido en los simulacros. Memoriza las "fórmulas trampa" (como acordarte de descontar la recompensa correctamente con $\gamma$ en Montecarlo) y descansa la mente para llegar fresco a las 9:00 de la mañana.
+- **Arquitectura y propagación:** Estudia cómo se organizan las neuronas en capas ocultas y de salida, y cómo la información viaja hacia adelante (_Forward propagation_).
+- **Cálculo de error (Funciones de coste):** Dependiendo del problema, repasa cómo calcular el Error Cuadrático Medio (para regresión), la Entropía Cruzada Binaria (con activación sigmoide en la salida) y la Entropía Cruzada Categórica (usando la función Softmax para multiclase).
+- **El Descenso por el Gradiente:** Este es el punto más duro del tema. Practica a mano el algoritmo de retropropagación (_backpropagation_) para calcular los errores ($\Delta$) en cada capa y actualizar los pesos usando notación matricial y vectorial.
+
+**Día 3 (1 de julio): Procesamiento del Lenguaje Natural (PLN)**
+
+- **Clasificación de Textos:** Estudia cómo transformar un texto en números usando el modelo de Bolsa de Palabras y el modelo tf-idf (Frecuencia de término - Frecuencia documental inversa).
+- **Modelos de clasificación:** Aplica Naive Bayes Multinomial usando probabilidades condicionales con **suavizado de Laplace obligatorio**, y k-NN utilizando la **similitud del coseno**.
+- **Modelos de lenguaje (Secuencias):** Repasa el cálculo de probabilidades usando n-gramas (unigramas, bigramas, trigramas). Estudia las técnicas para abordar n-gramas desconocidos (retroceso o _backoff_ e interpolación lineal) y cómo medir la bondad de un modelo usando la fórmula de la **perplejidad**.
+
+**Día 4 (2 de julio): Planificación Automática**
+
+- **Formalismo STRIPS:** Practica cómo modelar un dominio definiendo predicados, estados iniciales, objetivos y esquemas de acciones (con sus precondiciones, listas de adición y listas de borrado).
+- **Búsqueda en grafos de estados:** Repasa cómo se aplican teóricamente los algoritmos Dijkstra y A\* para encontrar planes óptimos.
+- **Cálculo de Heurísticas (Vital para los problemas):** Practica a mano el método de _relajación del borrado_ para generar planes relajados. Debes saber calcular la heurística perfecta relajada ($h^+$), y los algoritmos de programación dinámica para estimar $h^{max}$ y $h^{add}$.
+
+**Día 5 (3 de julio): Aprendizaje por Refuerzo (Parte I - Programación Dinámica)**
+
+- **Procesos de Decisión de Markov (MDP):** Entiende la formalización de estados, acciones, probabilidades de transición, recompensas y el factor de descuento ($\gamma$).
+- **Utilidad y Bellman:** Comprende cómo calcular la utilidad esperada de una historia y domina el planteamiento de las **Ecuaciones de Bellman**.
+- **Algoritmos con conocimiento del entorno:** Resuelve los sistemas de ecuaciones lineales que requiere el **Algoritmo de Iteración de Valores** y el **Algoritmo de Iteración de Políticas** para encontrar la política óptima.
+
+**Día 6 (4 de julio): Aprendizaje por Refuerzo (Parte II - Interacción con el entorno)**
+
+- **Exploración vs. Explotación:** Entiende las políticas $\epsilon$-voraz.
+- **Método de Montecarlo:** Practica la diferencia de actualización entre el método de primera visita y el de cada visita con inicios exploratorios.
+- **Diferencias Temporales:** Domina a la perfección cómo actualizar la tabla de utilidades $Q(s,a)$ paso a paso con el **algoritmo Q-Learning** tras cada transición en el entorno.
+
+**Días 7 y 8 (5 y 6 de julio): Prácticas de Laboratorio**
+
+- Te dedicarás en exclusiva a repasar Jupyter, Python (NLTK, Scikit-learn, Keras, Unified-Planning) tal y como has planificado.
+
+Si consigues cerrar un tema teórico-práctico por día, llegarás al examen con todo el contenido absolutamente dominado.
+
+### Tabla de progreso
+
+| Estado | Fecha                 | Bloque Temático                             | Tareas específicas a completar                                                                                                                                                                                                                                                        |
+| :----: | :-------------------- | :------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|  [ ]   | **Día 1**<br>(29 jun) | **k-NN y Bases de RRNN**                    | <ul><li>[ ] Calcular distancias k-NN (Euclídea, Manhattan, Hamming).</li><li>[ ] Normalizar atributos (mín-máx y tipificación).</li><li>[ ] Entrenar un perceptrón a mano.</li><li>[ ] Entender funciones de activación (Sigmoide, ReLU, Tanh).</li></ul>                             |
+|  [ ]   | **Día 2**<br>(30 jun) | **Redes Neuronales<br>(Núcleo matemático)** | <ul><li>[ ] Realizar un paso de _forward propagation_.</li><li>[ ] Calcular funciones de coste (MSE y Entropía Cruzada).</li><li>[ ] Realizar la retropropagación (_backpropagation_) a mano.</li><li>[ ] Actualizar pesos con descenso estocástico por el gradiente.</li></ul>       |
+|  [ ]   | **Día 3**<br>(1 jul)  | **Proc. del Lenguaje Natural**              | <ul><li>[ ] Vectorizar textos (Bolsa de palabras y matriz tf-idf).</li><li>[ ] Aplicar Naive Bayes (con Laplace) y k-NN (similitud coseno).</li><li>[ ] Calcular probabilidades con n-gramas e interpolación.</li><li>[ ] Calcular la perplejidad de un modelo de lenguaje.</li></ul> |
+|  [ ]   | **Día 4**<br>(2 jul)  | **Planificación Automática**                | <ul><li>[ ] Modelar dominios en STRIPS (Precondiciones, Add/Del).</li><li>[ ] Trazar la búsqueda con Dijkstra y A\*.</li><li>[ ] Extraer planes relajados ignorando las listas de borrado.</li><li>[ ] Calcular heurísticas a mano ($h^+$, $h^{max}$ y $h^{add}$).</li></ul>          |
+|  [ ]   | **Día 5**<br>(3 jul)  | **A. por Refuerzo (Parte I)**               | <ul><li>[ ] Formular un MDP y las ecuaciones de Bellman.</li><li>[ ] Realizar 1-2 pasos del algoritmo de Iteración de Valores.</li><li>[ ] Realizar un paso del algoritmo de Iteración de Políticas.</li></ul>                                                                        |
+|  [ ]   | **Día 6**<br>(4 jul)  | **A. por Refuerzo (Parte II)**              | <ul><li>[ ] Entender las políticas $\epsilon$-voraz (exploración vs explotación).</li><li>[ ] Simular el método de Montecarlo (1ª visita y cada visita).</li><li>[ ] Actualizar una tabla $Q(s,a)$ ejecutando Q-Learning.</li></ul>                                                   |
+|  [ ]   | **Día 7**<br>(5 jul)  | **Laboratorio (Parte I)**                   | <ul><li>[ ] Repasar Jupyter, Pandas, Scikit-learn (KNeighbors, CART).</li><li>[ ] Repasar Keras (Sequential, Dense, losses) para RRNN.</li></ul>                                                                                                                                      |
+|  [ ]   | **Día 8**<br>(6 jul)  | **Laboratorio (Parte II)**                  | <ul><li>[ ] Repasar NLTK (Tokenize, CountVectorizer, TfIdfVectorizer).</li><li>[ ] Repasar Unified-Planning y llamadas a Fast Downward.</li></ul>                                                                                                                                     |
+|   🏆   | **Día 9**<br>(7 jul)  | **¡DÍA DEL EXAMEN!**                        | <ul><li>[ ] Repaso ligero, descansar y rendir al máximo.</li></ul>                                                                                                                                                                                                                    |
+
+¡Mucho ánimo con esos cálculos a mano y a por el examen! Si durante alguno de estos días te atascas haciendo un cálculo de _backpropagation_, una heurística $h^{add}$ o una tabla de Q-Learning, pregúntame y lo resolvemos paso a paso.

@@ -27,6 +27,14 @@
   border-radius: 15px;
 }
 
+.highlight-exercise {
+  border-left: 4px solid #07c777;
+  border-right: 4px solid #07c777;
+  padding: 30px 20px;
+  margin-bottom: 40px;
+  border-radius: 15px;
+}
+
 .highlight-FAQ {
   border-left: 4px solid #e709e3;
   border-right: 4px solid #e709e3;
