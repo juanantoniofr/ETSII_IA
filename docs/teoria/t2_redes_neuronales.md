@@ -1,6 +1,10 @@
+<link rel="stylesheet" href="../css/estilo.css">
+
 # Redes Neuronales
 
 ## 1. Perceptron
+
+<div class="highlight-theory">
 
 El **perceptrón** es un tipo fundamental de neurona artificial utilizado principalmente como un modelo de clasificación binaria, donde asocia a cada entrada una salida que suele ser 0 o 1 (clase negativa y positiva).
 
@@ -35,6 +39,10 @@ Para solucionar las limitaciones del perceptrón simple, surgieron dos grandes a
 
 - **Redes multicapa:** Al combinar múltiples perceptrones en distintas capas (capas ocultas), la red adquiere una capacidad expresiva mucho mayor, siendo capaz de resolver problemas no lineales como el XOR.
 - **Cambio en la función de activación:** La función umbral del perceptrón clásico da saltos bruscos (de 0 a 1) y no es derivable de forma útil, lo que impide usar algoritmos de entrenamiento eficientes como el descenso por el gradiente. Por ello, en las redes neuronales modernas, el perceptrón evoluciona sustituyendo la función umbral por funciones suaves y diferenciables, como la función **sigmoide**, la **tangente hiperbólica** o la función **ReLU**.
+
+</div>
+
+<div class="highlight-exercise">
 
 ### 1.5 Ejercicios
 
@@ -129,10 +137,14 @@ $$
   \end{pmatrix}
 $$
 
-tasa de aciertos = VP + VN / |numero_de_ejemplos| = 2+1/10 = 0.3
-sensibilidad = VP / (FN + VP) = 2 /(2+2) = 0.5
-especificidad = VN / (FP + VN) = 1 /(1+5) = 0.1666
-precisión = VP / (VP + FP) = 2 / (5+2) = 0.2857
+- tasa de aciertos = $VP + VN / |numero_de_ejemplos| = 2+1/10 = 0.3$
+- sensibilidad = $VP / (FN + VP) = 2 /(2+2) = 0.5$
+- especificidad = $VN / (FP + VN) = 1 /(1+5) = 0.1666$
+- precisión = $VP / (VP + FP) = 2 / (5+2) = 0.2857$
+
+</div>
+
+<div class="highlight-exercise">
 
 #### 1.5.2 ejercicio 4
 
@@ -155,16 +167,16 @@ Se pide:
 - **Ejemplo 1** $x_0 = 1; x_1 = 2,\; x_2 = 0,\;$ (Clase real $y = 1$)
   $z_1 = (1 \times 0) + (2 \times 0) + (0 \times 0) = 0$ => f_signo(0) = -1
 - Como hemos fallado en la predicción -> actualizamos los pesos
-  w0 <- w0 + η(y - a )x0 = 0 + (0.1 _ 2 _ 1) = 0.2
-  w1 <- w1 + η(y - a)x1 = 0 + (0.1 _ 2 _ 2) = 0.4
-  w2 <- w2 + η(y - a)x2 = 0 + (0.1 _ 2 _ 0) = 0
+  $w0 <- w0 + η(y - a)x0 = 0 + 0.1 (1 - (-1)) \cdot 1 = 0.2$
+  $w1 <- w1 + η(y - a)x1 = 0 + 0.1 (1 - (-1)) \cdot 2 = 0.4$
+  $w2 <- w2 + η(y - a)x2 = 0 + 0.1 (1 - (-1)) \cdot 0 = 0$
 
 - **Ejemplo 2** $x_0 = 1; x_1 = 0,\; x_2 = 0,\;$ (Clase real $y = -1$)
   $z_1 = (1 \times 0.2) + (0 \times 0.4) + (0 \times 0) = 0$ => f_signo(0.2) = 1
 - Como hemos fallado en la predicción -> actualizamos los pesos
-  w0 <- w0 + η(y - a)x0 = 0.2 + (0.1 _ -2 _ 1) = 0
-  w1 <- w1 + η(y - a)x1 = 0.4 + (0.1 _ -2 _ 0) = 0.4
-  w2 <- w2 + η(y - a)x2 = 0 + (0.1 _ -2 _ 0) = 0
+  $w0 <- w0 + η(y - a)x0 = 0.2 + 0.1 (-1 - 1) \cdot 1 = 0$
+  $w1 <- w1 + η(y - a)x1 = 0.4 + 0.1 (-1 - 1) \cdot 0 = 0.4$
+  $w2 <- w2 + η(y - a)x2 = 0 + 0.1 (-1 - 1) \cdot 0 = 0$
 
 - **Ejemplo 3** $x_0 = 1; x_1 = 2,\; x_2 = 2,\;$ (Clase real $y = 1$)
   $z_1 = (1 \times 0) + (2 \times 0.4) + (2 \times 0) = 0.8$ => f_signo(0.8) = 1
@@ -181,9 +193,9 @@ Se pide:
 - **Ejemplo 6** $x_0 = 1; x_1 = 1,\; x_2 = 2,\;$ (Clase real $y = -1$)
   $z_1 = (1 \times 0) + (1 \times 0.4) + (2 \times 0) = 0.4$ => f_signo(0.4) = 1
 - Fallamos, actualizamos pesos
-  w0 <- w0 + η(y - a)x0 = 0 + (0.1 _ -2 _ 1) = -0.2
-  w1 <- w1 + η(y - a)x1 = 0.4 + (0.1 _ -2 _ 1) = 0.2
-  w2 <- w2 + η(y - a)x2 = 0 + (0.1 _ -2 _ 2) = -0.4
+  $w0 <- w0 + η(y - a)x0 = 0 + 0.1 (-1 - 1) \cdot 1 = -0.2$
+  $w1 <- w1 + η(y - a)x1 = 0.4 + 0.1 (-1 - 1) \cdot 1 = 0.2$
+  $w2 <- w2 + η(y - a)x2 = 0 + 0.1 (-1 - 1) \cdot 2 = -0.4$
 
 **Época 2**
 
@@ -196,9 +208,9 @@ Se pide:
 - **Ejemplo 3** $x_0 = 1; x_1 = 2,\; x_2 = 2,\;$ (Clase real $y = 1$)
   $z_1 = (1 \times -0.2) + (2 \times 0.2) + (2 \times -0.4) = -0.6$ => f_signo(-0.6) = -1
 - Fallo, ajustamos pesos
-  w0 <- w0 + η(y - a)x0 = -0.2 + (0.1 _ 2 _ 1) = 0
-  w1 <- w1 + η(y - a)x1 = 0.2 + (0.1 _ 2 _ 2) = 0.6
-  w2 <- w2 + η(y - a)x2 = -0.4+ (0.1 _ 2 _ 2) = 0
+  $w0 <- w0 + η(y - a)x0 = -0.2 + 0.1 (1 - (-1)) \cdot 1 = 0$
+  $w1 <- w1 + η(y - a)x1 = 0.2 + 0.1 (1 - (-1)) \cdot 2 = 0.6$
+  $w2 <- w2 + η(y - a)x2 = -0.4+ 0.1 (1 - (-1)) \cdot 2 = 0$
 - **Ejemplo 4** $x_0 = 1; x_1 = 0,\; x_2 = 1,\;$ (Clase real $y = -1$)
   $z_1 = (1 \times 0) + (0 \times 0.6) + (0 \times 0) = 0$ => f_signo(0) = -1
 - Acierto
@@ -210,6 +222,10 @@ Se pide:
 - Fallo....
 
 --- Seguimos hasta que se clasifiquen correctamente todos los ejemplos ---
+
+</div>
+
+<div class="highlight-exercise">
 
 #### 1.5.3 ejercicio 18
 
@@ -248,7 +264,11 @@ El perceptrón que resuelve el problema de la mayoría simple se diseña con los
 - Si tenemos empate (ej. $x_1=1, x_2=1, x_3=0, x_4=0$): El producto escalar es $z = (1+1+0+0) - 2 = 0$. La función umbral para $0$ devuelve **0** (no hay estrictamente más unos).
 - Si tenemos mayoría (ej. $x_1=1, x_2=1, x_3=1, x_4=0$): El producto escalar es $z = (1+1+1+0) - 2 = 1$. Al ser $1 > 0$, la función umbral devuelve **1** (sí hay mayoría).
 
+</div>
+
 ## 2. Neuronas artificiales
+
+<div class="highlight-theory">
 
 ### 2.1 Definición
 
@@ -261,26 +281,37 @@ Al adoptar este tipo de funciones de activación, el comportamiento de la neuron
 - **Actúa por defecto como un modelo de regresión:** Al transformar la combinación lineal de las entradas mediante una función continua, la salida de la neurona pasa a ser una variable continua con valores acotados en un intervalo determinado, como $(0, 1)$ si usa la sigmoide o $[0, +\infty)$ si usa la función ReLU ``.
 - **Es adaptable a tareas de clasificación binaria:** Para volver a convertir a la neurona artificial en un clasificador (positivo/negativo), simplemente **se discretiza su salida continua fijando un umbral determinado (u)** `. Si el valor continuo que devuelve la neurona supera el umbral $u$, el ejemplo se clasifica como positivo; si es menor o igual, se clasifica como negativo, separando las clases mediante un hiperplano `.
 
+</div>
+
+<div class="highlight-theory">
+
 ### 2.2 Funciones de activación
 
 Las principales funciones de activación diferenciables utilizadas en neuronas artificiales (descartando las funciones umbral y signo propias del perceptrón clásico) son las siguientes:
-
-| Función de Activación              | Expresión Matemática                | Derivada matemática                                       |
+| Función de Activación | Expresión Matemática | Derivada matemática |
 | :--------------------------------- | :---------------------------------- | :-------------------------------------------------------- |
-| **Sigmoide ($\sigma$)**            | $\frac{1}{1 + e^{-z}}$              | $\sigma(z)(1 - \sigma(z))$.                               |
-| **Tangente Hiperbólica ($\tanh$)** | $\frac{e^z - e^{-z}}{e^z + e^{-z}}$ | $1 - \tanh^2(z)$.                                         |
-| **Rectificador (ReLU)**            | $\max(0, z)$                        | $0$ si $z \le 0$, $1$ si $z > 0$.                         |
-| **Softmax**                        | $\frac{e^{z_k}}{\sum e^{z_i}}$      | Matriz Jacobiana compleja (depende de todas las salidas). |
+| **Sigmoide ($\sigma$)** | $$\Large \frac{1}{1 + e^{-z}}$$ | $$\Large \sigma(z)(1 - \sigma(z))$$ |
+| **Tangente Hiperbólica ($\tanh$)** | $$\Large \frac{e^z - e^{-z}}{e^z + e^{-z}}$$ | $$\Large 1 - \tanh^2(z)$$ |
+| **Rectificador (ReLU)** | $$\Large \max(0, z)$$ | $$\Large 0 \text{ si } z \le 0, 1 \text{ si } z > 0$$ |
+| **Softmax** | $$\Large \frac{e^{z_k}}{\sum e^{z_i}}$$ | Matriz Jacobiana compleja (depende de todas las salidas). |
 
 Para que una red neuronal pueda entrenarse utilizando el método del descenso por el gradiente y el algoritmo de retropropagación, es un **requisito indispensable que la función de activación elegida sea diferenciable**. El uso de estas funciones permite que pequeños ajustes en los pesos de las neuronas produzcan cambios suaves en la salida, superando así la gran limitación expresiva del perceptrón.
 
+</div>
+
+<div class="highlight-theory">
+
 ### 2.3 Funciones de coste
 
-| **Función de Coste**             | **Expresión Matemática**                     | **Derivada (respecto a la salida $a$)** |
-| :------------------------------- | :------------------------------------------- | :-------------------------------------- |
-| **Error Cuadrático Medio (MSE)** | $\frac{1}{n}\sum_{k=1}^{n}(y_{k}-a_{k})^{2}$ | **$\frac{2}{n}(a - y)$**                |
-| **Entropía Cruzada Binaria**     | $-y \log_e(a) - (1-y)\log_e(1-a)$            | **$\frac{a - y}{a(1-a)}$**              |
-| **Entropía Cruzada Categórica**  | $-\sum_{k=1}^{n}y_{k}\log_e(a_{k})$          | **$-\frac{y}{a}$**                      |
+| **Función de Coste**             | **Expresión Matemática**                              | **Derivada (respecto a la salida $a$)** |
+| :------------------------------- | :---------------------------------------------------- | :-------------------------------------- |
+| **Error Cuadrático Medio (MSE)** | $$\Large \frac{1}{n}\sum_{k=1}^{n}(y_{k}-a_{k})^{2}$$ | $$\Large \frac{2}{n}(a - y)$$           |
+| **Entropía Cruzada Binaria**     | $$\Large -y \log_e(a) - (1-y)\log_e(1-a)$$            | $$\Large \frac{a - y}{a(1-a)}$$         |
+| **Entropía Cruzada Categórica**  | $$\Large -\sum_{k=1}^{n}y_{k}\log_e(a_{k})$$          | $$\Large -\frac{y}{a}$$                 |
+
+</div>
+
+<div class="highlight-theory">
 
 ### 2.4 Método de descenso por el gradiente
 
@@ -315,10 +346,14 @@ positivo por $-\eta$ (que es un valor estrictamente negativo al ser $\eta > 0$),
 Esto demuestra inequívocamente que avanzar en la dirección opuesta al gradiente ($-\nabla C$) es lo que asegura la mayor bajada de la función de coste. Apoyándose en esta demostración,
 el algoritmo actualiza siempre cada peso $w_i$ aplicando la regla: **$w_i \leftarrow w_i - \eta \frac{\partial C}{\partial w_i}$**.
 
+</div>
+
 ### 2.5 Ejercicios
 
 Los ejercicios del boletín de redes neuronales enfocados explícitamente en el entrenamiento de una única neurona artificial (mediante la actualización de sus pesos y sesgos aplicando el método del
 descenso por el gradiente) son tres:
+
+<div class="highlight-exercise">
 
 - **Ejercicio 8:**
   Consideremos una neurona artificial con tres argumentos, con sesgo y pesos iniciales 𝑤𝟢 = −0.9, 𝑤𝟣 = −0.7, 𝑤𝟤 = 0.6, 𝑤𝟥 = 0.5 y que usa la función identidad como función de activación.
@@ -332,20 +367,19 @@ descenso por el gradiente) son tres:
 | 1.9  | 5.0 | 0.8  | 3.0  |
 | 1.9  | 1.0 | 0.4  | -4.6 |
 
-|
 Se pide:
 
 - Calcular el error cuadrático medio de la neurona artificial sobre el conjunto de ejemplos.
 
 𝑤𝟢 = −0.9, 𝑤𝟣 = −0.7, 𝑤𝟤 = 0.6, 𝑤𝟥 = 0.5
 
-| $x_0$ | $x_1$ | $x_2$ | $x_3$ | $y$  | $z = a = \sum x_i w_i$              | Error al cuadrado: $(a - y)^2$                   |
-| :---- | :---- | :---- | :---- | :--- | :---------------------------------- | ------------------------------------------------ |
-| 1     | 0.0   | 3.0   | 2.8   | 6.1  | -0.9 + 0.0 + 1.8 + 1.4 = **2.3**    | $(2.3 - 6.1)^2 = (-3.8)^2 = \mathbf{14.44}$      |
-| 1     | 1.0   | 2.0   | 0.7   | -2.9 | -0.9 - 0.7 + 1.2 + 0.35 = **-0.05** | $(-0.05 - (-2.9))^2 = 2.85^2 = \mathbf{8.1225}$  |
-| 1     | -0.7  | 1.1   | -0.3  | 5.8  | -0.9 + 0.49 + 0.66 - 0.15 = **0.1** | $(0.1 - 5.8)^2 = (-5.7)^2 = \mathbf{32.49}$      |
-| 1     | 1.9   | 5.0   | 0.8   | 3.0  | -0.9 - 1.33 + 3.0 + 0.4 = **1.17**  | $(1.17 - 3.0)^2 = (-1.83)^2 = \mathbf{3.3489}$   |
-| 1     | 1.9   | 1.0   | 0.4   | -4.6 | -0.9 - 1.33 + 0.6 + 0.2 = **-1.43** | $(-1.43 - (-4.6))^2 = 3.17^2 = \mathbf{10.0489}$ |
+| $x_0$ | $x_1$ | $x_2$ | $x_3$ | $y$  | $z = a = \sum x_i w_i$              | Error al cuadrado: $(y - a)^2$                      |
+| :---- | :---- | :---- | :---- | :--- | :---------------------------------- | --------------------------------------------------- |
+| 1     | 0.0   | 3.0   | 2.8   | 6.1  | -0.9 + 0.0 + 1.8 + 1.4 = **2.3**    | $(6.1 - 2.3)^2 = 3.8^2 = \mathbf{14.44}$            |
+| 1     | 1.0   | 2.0   | 0.7   | -2.9 | -0.9 - 0.7 + 1.2 + 0.35 = **-0.05** | $(-2.9 - (-0.05))^2 = (-2.85)^2 = \mathbf{8.1225}$  |
+| 1     | -0.7  | 1.1   | -0.3  | 5.8  | -0.9 + 0.49 + 0.66 - 0.15 = **0.1** | $(5.8 - 0.1)^2 = 5.7^2 = \mathbf{32.49}$            |
+| 1     | 1.9   | 5.0   | 0.8   | 3.0  | -0.9 - 1.33 + 3.0 + 0.4 = **1.17**  | $(3.0 - 1.17)^2 = 1.83^2 = \mathbf{3.3489}$         |
+| 1     | 1.9   | 1.0   | 0.4   | -4.6 | -0.9 - 1.33 + 0.6 + 0.2 = **-1.43** | $(-4.6 - (-1.43))^2 = (-3.17)^2 = \mathbf{10.0489}$ |
 
 El **Error Cuadrático Medio (MSE)** final es el promedio de la suma de los errores al cuadrado:
 $MSE = \frac{14.44 + 8.1225 + 32.49 + 3.3489 + 10.0489}{5} = \frac{68.4503}{5} = \mathbf{13.69006}$
@@ -379,16 +413,20 @@ aplicando la regla **$w_0 \leftarrow w_0 - \eta \frac{\partial MSE}{\partial w_0
 - Volver a calcular el error cuadrático medio de la neurona artificial sobre el conjunto de ejemplos y comprobar que se ha reducido.
   w0 = -0.6796, w1 = -1.07544, w2 = 1.318, w3 = 0.78524
 
-| $x_0$ | $x_1$ | $x_2$ | $x_3$ | $y$  | $z = a = \sum x_i w_i$                              | Error al cuadrado: $(a - y)^2$                        |
+| $x_0$ | $x_1$ | $x_2$ | $x_3$ | $y$  | $z = a = \sum x_i w_i$                              | Error al cuadrado: $(y - a)^2$                        |
 | :---- | :---- | :---- | :---- | :--- | :-------------------------------------------------- | ----------------------------------------------------- |
-| 1     | 0.0   | 3.0   | 2.8   | 6.1  | -0.6796 + 0.0 + 4.038 + 2.344 = **5.7024**          | $(5.7024 - 6.1)^2 = (-0.3976)^2 = \mathbf{0.1581}$    |
-| 1     | 1.0   | 2.0   | 0.7   | -2.9 | -0.6796 - 1.07544 + 2.636 + 0.549 = **1.43096**     | $(1.43096 - (-2.9))^2 = 4.33096^2 = \mathbf{18.75}$   |
-| 1     | -0.7  | 1.1   | -0.3  | 5.8  | -0.6796 + 0.75208 + 1.318 - 0.235572 = **1.155908** | $(1.155908 - 5.8)^2 = (-4.644092)^2 = \mathbf{21.57}$ |
-| 1     | 1.9   | 5.0   | 0.8   | 3.0  | -0.6796 - 2.043096 + 6.73 + 0.669792 = **4.717696** | $(4.717696 - 3.0)^2 = 1.717696^2 = \mathbf{2.95}$     |
-| 1     | 1.9   | 1.0   | 0.4   | -4.6 | -0.6796 - 2.043096 + 1.318 + 0.314096 = **-1.0906** | $(-1.0906 - (-4.6))^2 = 3.5094^2 = \mathbf{12.31}$    |
+| 1     | 0.0   | 3.0   | 2.8   | 6.1  | -0.6796 + 0.0 + 4.038 + 2.344 = **5.7024**          | $(6.1 - 5.7024)^2 = 0.3976^2 = \mathbf{0.1581}$       |
+| 1     | 1.0   | 2.0   | 0.7   | -2.9 | -0.6796 - 1.07544 + 2.636 + 0.549 = **1.43096**     | $(-2.9 - 1.43096)^2 = (-4.33096)^2 = \mathbf{18.75}$  |
+| 1     | -0.7  | 1.1   | -0.3  | 5.8  | -0.6796 + 0.75208 + 1.318 - 0.235572 = **1.155908** | $(5.8 - 1.155908)^2 = 4.644092^2 = \mathbf{21.57}$    |
+| 1     | 1.9   | 5.0   | 0.8   | 3.0  | -0.6796 - 2.043096 + 6.73 + 0.669792 = **4.717696** | $(3.0 - 4.717696)^2 = (-1.717696)^2 = \mathbf{2.95}$  |
+| 1     | 1.9   | 1.0   | 0.4   | -4.6 | -0.6796 - 2.043096 + 1.318 + 0.314096 = **-1.0906** | $(-4.6 - (-1.0906))^2 = (-3.5094)^2 = \mathbf{12.31}$ |
 
 El nuevo **Error Cuadrático Medio (MSE)** es:
 $MSE = \frac{0.1581 + 18.75 + 21.57 + 2.95 + 12.31}{5} = \frac{55.7381}{5} = \mathbf{11.14762}$
+
+</div>
+
+<div class="highlight-exercise">
 
 - **Ejercicio 9:**
   Consideremos una neurona artificial con dos argumentos, con sesgo y pesos iniciales 𝑤𝟢 = −0.2, 𝑤𝟣 = −0.5, 𝑤𝟤 = 0.5 y que usa la función sigmoide como función de activación.
@@ -495,6 +533,8 @@ $$w_i^{(nuevo)} = w_i^{(actual)} - 0.2 \cdot (a - y)x_i$$
 - **Nuevo Sesgo:**
 
 $$b^{(nuevo)} = b^{(actual)} - 0.2 \cdot (a - y)$$
+
+</div>
 
 ## 3. Redes neuronales
 
