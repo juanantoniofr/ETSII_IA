@@ -488,3 +488,152 @@ Los intervalos finales aplicando el ajuste al infinito te quedarían así:
 Con esto habrás conseguido intervalos basados **en la densidad de elementos** (cuántos hay) en lugar de en la distancia absoluta, cumpliendo así el objetivo del segundo apartado del Ejercicio 3. Puedes aplicar exactamente esta misma lógica agrupando de 4 en 4 para la Anchura del sépalo y los datos de los pétalos.
 
 ---
+
+<div class="highlight-exercise">
+
+**Ejercicio 4**
+
+Una empresa de material deportivo quiere hacer un estudio de mercado para encontrar las características principales de sus potenciales clientes. En una primera fase se consideran la edad, el ser o no deportista profesional, el nivel de ingresos y el sexo. Tras realizar una encuesta, se obtienen los siguientes datos:
+
+| Edad   | Deportista profesional | Nivel de ingresos | Sexo   | Interesado |
+| ------ | ---------------------- | ----------------- | ------ | ---------- |
+| joven  | sí                     | bajo              | hombre | sí         |
+| joven  | sí                     | alto              | hombre | sí         |
+| joven  | no                     | alto              | mujer  | no         |
+| joven  | sí                     | bajo              | mujer  | sí         |
+| joven  | no                     | medio             | mujer  | no         |
+| adulto | sí                     | alto              | hombre | no         |
+| adulto | no                     | alto              | mujer  | no         |
+| adulto | sí                     | alto              | mujer  | no         |
+| adulto | no                     | medio             | mujer  | no         |
+| adulto | sí                     | bajo              | mujer  | no         |
+| adulto | no                     | medio             | mujer  | no         |
+| adulto | sí                     | medio             | hombre | no         |
+| adulto | no                     | alto              | hombre | sí         |
+| joven  | sí                     | alto              | mujer  | sí         |
+| joven  | sí                     | medio             | hombre | sí         |
+
+Se pide:
+
+-1 Construir un modelo naive Bayes con suavizado de Laplace que prediga si un cliente está o no interesado en función del valor de los otros cuatro atributos.
+
+- Probabilidades a priori de cada clase son, C_interesado = 6/15 C_no_interesado = 9/15
+- La fórmula general de la probabilidad condicionada aplicando el suavizado de Laplace es la siguiente:
+
+$$ \mathbb{P}(X=x|c) = \frac{N\_{x=x, c} + 1}{N_c + |X|} $$
+
+Donde:
+
+- **$N_{x=x, c}$**: es la cantidad de ejemplos en el conjunto de entrenamiento que pertenecen a la clase $c$ y en los que el atributo $X$ toma el valor $x$.
+- **$N_c$**: es la cantidad total de ejemplos que pertenecen a la clase $c$.
+- **$|X|$**: es la cantidad total de posibles valores distintos que puede tomar el atributo $X$.
+
+Y aquí tienes la tabla con los primeros cálculos corregidos para el atributo **Edad** ($|X|=2$):
+
+| Atributo ($X$) | Valor ($x$) | $\mathbb{P}(X=x \mid \text{interesado = sí})$       | $\mathbb{P}(X=x \mid \text{interesado = no})$                |
+| :------------- | :---------- | :-------------------------------------------------- | :----------------------------------------------------------- |
+| **Edad**       | **joven**   | $\frac{5 + 1}{6 + 2} = \frac{6}{8} = \mathbf{0.75}$ | $\frac{2 + 1}{9 + 2} = \frac{3}{11} \approx \mathbf{0.2727}$ |
+| **Edad**       | **adulto**  | $\frac{1 + 1}{6 + 2} = \frac{2}{8} = \mathbf{0.25}$ | $\frac{7 + 1}{9 + 2} = \frac{8}{11} \approx \mathbf{0.7272}$ |
+
+_(Nota: Como puedes observar en la tabla, la suma de las probabilidades de todos los valores posibles de un atributo dentro de una misma clase siempre da como resultado 1)._
+
+| Atributo ($X$)              | Valor ($x$) | $\mathbb{P}(X=x \mid \text{interesado = sí})$        | $\mathbb{P}(X=x \mid \text{interesado = no})$                  |
+| :-------------------------- | :---------- | :--------------------------------------------------- | :------------------------------------------------------------- |
+| **deportista profesional**  | **sí**      | $\frac{5 + 1}{6 + 2} = \frac{6}{11} = \mathbf{0.75}$ | $\frac{4 + 1}{9 + 2} = \frac{5}{11} \approx \mathbf{0.0.4545}$ |
+| **deportistan profesional** | **no**      | $\frac{1 + 1}{6 + 2} = \frac{2}{8} = \mathbf{0.25}$  | $\frac{5 + 1}{9 + 2} = \frac{6}{8} \approx \mathbf{0.5454}$    |
+
+| Atributo ($X$)        | Valor ($x$) | $\mathbb{P}(X=x \mid \text{interesado = sí})$          | $\mathbb{P}(X=x \mid \text{interesado = no})$                |
+| :-------------------- | :---------- | :----------------------------------------------------- | :----------------------------------------------------------- |
+| **Nivel de ingresos** | **bajo**    | $\frac{2 + 1}{6 + 3} = \frac{3}{6} = \mathbf{0.3333}$  | $\frac{1 + 1}{9 + 3} = \frac{2}{6} \approx \mathbf{0.1666}$  |
+| **Nivel de ingresos** | **medio**   | $\frac{1 + 1}{6 + 3} = \frac{2}{8} = \mathbf{0.2222}$  | $\frac{4 + 1}{9 + 3} = \frac{5}{8} \approx \mathbf{0.4166}$  |
+| **Nivel de ingresos** | **alto**    | $\frac{3 + 1}{6 + 3} = \frac{4}{10} = \mathbf{0.4444}$ | $\frac{4 + 1}{9 + 3} = \frac{4}{10} \approx \mathbf{0.4166}$ |
+
+| Atributo ($X$) | Valor ($x$) | $\mathbb{P}(X=x \mid \text{interesado = sí})$        | $\mathbb{P}(X=x \mid \text{interesado = no})$                |
+| :------------- | :---------- | :--------------------------------------------------- | :----------------------------------------------------------- |
+| **Sexo**       | **hombre**  | $\frac{4 + 1}{6 + 2} = \frac{5}{8} = \mathbf{0,625}$ | $\frac{2 + 1}{9 + 2} = \frac{3}{11} \approx \mathbf{0.2727}$ |
+| **Sexo**       | **mujer**   | $\frac{2 + 1}{6 + 2} = \frac{3}{8} = \mathbf{0.375}$ | $\frac{7 + 1}{9 + 2} = \frac{8}{11} \approx \mathbf{0.7272}$ |
+
+- 2. Construir la matriz de confusión que se tendría al usar ese modelo para clasificar los ejemplos del siguiente conjunto de prueba:
+
+| Edad   | Deportista profesional | Nivel de ingresos | Sexo   | Interesado |
+| ------ | ---------------------- | ----------------- | ------ | ---------- |
+| adulto | no                     | medio             | hombre | no         |
+| adulto | no                     | bajo              | hombre | no         |
+| joven  | no                     | medio             | hombre | no         |
+| joven  | no                     | bajo              | mujer  | no         |
+| adulto | sí                     | medio             | mujer  | no         |
+| joven  | sí                     | medio             | mujer  | sí         |
+
+---
+
+| Ejemplo 1     | P(c) | Adulto | no     | medio  | hombre | Producto | Casifica como |
+| :------------ | ---- | ------ | ------ | ------ | ------ | -------- | ------------- |
+| interesado    | 0,4  | 0.25   | 0.25   | 0.2222 | 0.625  | 0,0034   | XX            |
+| no interesado | 0,6  | 0.7272 | 0.5454 | 0.4166 | 0.2727 | 0,0270   | No interesado |
+
+Ejemplo 1 -> Acierto (VN) - Verdadero negativo
+
+| Ejemplo 2     | P(C) | adulto | no     | bajo   | hombre | Producto | Clasifica como |
+| :------------ | ---- | ------ | ------ | ------ | ------ | -------- | -------------- |
+| interesado    | 0,4  | 0.25   | 0.25   | 0,3333 | 0.625  | 0,0052   | XX             |
+| no interesado | 0,6  | 0.7272 | 0.5454 | 0.1666 | 0.2727 | 0,0108   | no interesado  |
+
+Ejemplo 2 -> Acierto (VN) - verdadero negativo
+
+| Ejemplo 3     | P(c) | joven  | no     | medio  | hombre | Producto | Calisifica como |
+| :------------ | ---- | ------ | ------ | ------ | ------ | -------- | --------------- |
+| interesado    | 0,4  | 0,75   | 0.25   | 0.2222 | 0.625  | 0,0104   | interesado      |
+| no interesado | 0,6  | 0,2727 | 0.5454 | 0.4166 | 0.2727 | 0,0101   | XX              |
+
+Ejemplo 3 - fallo (FP) - Falso positivo
+
+| Ejemplo 4     | P(c) | joven  | no     | bajo   | mujer  | Producto | Clasifica como |
+| :------------ | ---- | ------ | ------ | ------ | ------ | -------- | -------------- |
+| interesado    | 0,4  | 0,75   | 0.25   | 0,3333 | 0,375  | 0,0093   | XX             |
+| no interesado | 0,6  | 0,2727 | 0.5454 | 0,1666 | 0,7272 | 0,0108   | no interesado  |
+
+Ejemplo 4 -> Acierto (VN) - Verdadero Negativo
+
+| Ejemplo 5     | P(c) | adulto | sí     | medio  | mujer  | Producto | Clasifica como |
+| :------------ | ---- | ------ | ------ | ------ | ------ | -------- | -------------- |
+| interesado    | 0,4  | 0,25   | 0,75   | 0,2222 | 0,375  | 0,0062   | XX             |
+| no interesado | 0,6  | 0,7272 | 0,4545 | 0,4166 | 0,7272 | 0,06     | no interesado  |
+
+Ejemplo 5 -> acierto (VN) - verdadero negativo
+
+| Ejemplo 6     | P(c) | joven  | sí     | medio  | mujer  | Producto | Clasifica como |
+| :------------ | ---- | ------ | ------ | ------ | ------ | -------- | -------------- |
+| interesado    | 0,4  | 0,75   | 0,75   | 0,2222 | 0,375  | 0,0187   | XX             |
+| no interesado | 0,6  | 0,2727 | 0,4545 | 0,4166 | 0,7272 | 0,0225   | no interesado  |
+
+Ejemplo 6 -> fallo (FN) -> falso negativo
+
+**Matriz de confusión:**
+
+$$
+\begin{pmatrix}
+VP & FP \\
+FN & VN
+\end{pmatrix}
+$$
+
+$$
+\begin{pmatrix}
+0 & 1 \\
+1 & 4
+\end{pmatrix}
+$$
+
+- 3. Derivar a partir de esa matriz de confusión todas las medidas posibles de rendimiento del modelo.
+
+| Métrica                            |                                           | Fórmula                                                                                                                   | Resultado    |
+| :--------------------------------- | :---------------------------------------- | :------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| **Exactitud o Tasa de acierto**    | $\frac{VP + VN}{\vert \mathcal{D} \vert}$ | Proporción total de ejemplos clasificados correctamente sobre el total de ejemplos evaluados ($\vert \mathcal{D} \vert$). | 4/6 = 0,6666 |
+| **Tasa de error**                  | $\frac{FP + FN}{\vert \mathcal{D} \vert}$ | Proporción total de ejemplos que el modelo ha clasificado de manera incorrecta.                                           | 2/6 = 0,3333 |
+| **Sensibilidad o Recuerdo (TPR)**  | $\frac{VP}{VP + FN}$                      | Proporción de ejemplos positivos reales que el modelo ha clasificado correctamente.                                       | 0            |
+| **Especificidad (TNR)**            | $\frac{VN}{FP + VN}$                      | Proporción de ejemplos negativos reales que el modelo ha clasificado correctamente como negativos.                        | 4/5 = 0,8    |
+| **Precisión**                      | $\frac{VP}{VP + FP}$                      | Proporción de ejemplos realmente positivos de entre todos los que el modelo ha clasificado como positivos.                | 0            |
+| **Tasa de falsos positivos (FPR)** | $\frac{FP}{FP + VN}$                      | Proporción de ejemplos negativos reales que el modelo ha clasificado incorrectamente como positivos.                      | 1/5 = 0.2    |
+| **Tasa de falsos negativos (FNR)** | $\frac{FN}{VP + FN}$                      | Proporción de ejemplos positivos reales que el modelo ha clasificado incorrectamente como negativos.                      | 1            |
+
+</div>

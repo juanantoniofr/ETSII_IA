@@ -91,3 +91,37 @@ $$F1 = 2 \cdot \frac{Precision \cdot Recall}{Precision + Recall}$$
 Básicamente, el ejercicio no busca que apliques una única fórmula, sino que demuestres que sabes "leer" la matriz de confusión sacando los porcentajes tanto por filas (los datos reales) como por columnas (las predicciones de tu árbol).
 
 </div>
+
+<div class="highlight-theory">
+
+## Evaluación y selección de modelos
+
+### Métricas para Modelos de Clasificación
+
+| Métrica                            | ¿Apropiada para?        | Fórmula                                   | Explicación                                                                                                               | Interpretación (Aspectos relevantes)                                                                                                       |
+| :--------------------------------- | :---------------------- | :---------------------------------------- | :------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Exactitud o Tasa de acierto**    | Clasificación (General) | $\frac{VP + VN}{\vert \mathcal{D} \vert}$ | Proporción total de ejemplos clasificados correctamente sobre el total de ejemplos evaluados ($\vert \mathcal{D} \vert$). | Sirve para evaluar el desempeño general del modelo. Sin embargo, puede ser una métrica engañosa si las clases están muy desequilibradas.   |
+| **Tasa de error**                  | Clasificación (General) | $\frac{FP + FN}{\vert \mathcal{D} \vert}$ | Proporción total de ejemplos que el modelo ha clasificado de manera incorrecta.                                           | Mide la frecuencia global de fallos del modelo. Es exactamente el valor complementario a la exactitud.                                     |
+| **Sensibilidad o Recuerdo (TPR)**  | Clasificación Binaria   | $\frac{VP}{VP + FN}$                      | Proporción de ejemplos positivos reales que el modelo ha clasificado correctamente.                                       | Evalúa la capacidad para detectar los casos positivos. Responde a: _de todos los casos positivos reales, ¿cuántos cazó el modelo?_         |
+| **Especificidad (TNR)**            | Clasificación Binaria   | $\frac{VN}{FP + VN}$                      | Proporción de ejemplos negativos reales que el modelo ha clasificado correctamente como negativos.                        | Evalúa la capacidad para detectar los casos negativos. Responde a: _de todos los casos negativos reales, ¿cuántos descartó el modelo?_     |
+| **Precisión**                      | Clasificación Binaria   | $\frac{VP}{VP + FP}$                      | Proporción de ejemplos realmente positivos de entre todos los que el modelo ha clasificado como positivos.                | Evalúa la fiabilidad de las alarmas del modelo. Responde a: _si el modelo dice "es positivo", ¿qué porcentaje de veces acierta realmente?_ |
+| **Tasa de falsos positivos (FPR)** | Clasificación Binaria   | $\frac{FP}{FP + VN}$                      | Proporción de ejemplos negativos reales que el modelo ha clasificado incorrectamente como positivos.                      | Representa la probabilidad de que el modelo lance una "falsa alarma".                                                                      |
+| **Tasa de falsos negativos (FNR)** | Clasificación Binaria   | $\frac{FN}{VP + FN}$                      | Proporción de ejemplos positivos reales que el modelo ha clasificado incorrectamente como negativos.                      | Representa la probabilidad de que el modelo pase por alto un caso positivo real.                                                           |
+
+- TPR -> True Positive Rate
+- TNR -> True Negative Rate
+- FPR -> False Positive Rate
+- FNR -> False Negative Rate
+
+### Métricas para Modelos de Regresión
+
+| Métrica                                    | ¿Apropiada para? | Fórmula                                                     | Explicación                                                                                                                  | Interpretación (Aspectos relevantes)                                                                                                                                                                                                                               |
+| :----------------------------------------- | :--------------- | :---------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Error Absoluto Medio (MAE)**             | Regresión        | $\frac{1}{\vert\mathcal{D}\vert}\sum \vert y-\hat{y}\vert$  | Calcula el promedio del error en valor absoluto cometido entre el valor predicho y el valor real correcto para cada ejemplo. | Da una idea directa de la magnitud del error promedio sin importar si el fallo del modelo fue por exceso o por defecto.                                                                                                                                            |
+| **Error Cuadrático Medio (MSE)**           | Regresión        | $\frac{1}{\vert\mathcal{D}\vert}\sum(y-\hat{y})^{2}$        | Calcula el promedio de las diferencias al cuadrado entre el valor predicho y el valor real.                                  | Al elevarse al cuadrado, **penaliza de forma mucho más severa los errores grandes** frente a los pequeños. Al ser una función diferenciable, es más fácil de optimizar matemáticamente por los algoritmos.                                                         |
+| **Raíz del Error Cuadrático Medio (RMSE)** | Regresión        | $\sqrt{\frac{1}{\vert\mathcal{D}\vert}\sum(y-\hat{y})^{2}}$ | Es la raíz cuadrada del Error Cuadrático Medio (MSE) calculado en el paso anterior.                                          | Su principal ventaja frente al MSE es que **devuelve el error medido exactamente en la misma unidad original** que el atributo objetivo, lo que facilita enormemente su comprensión en el contexto del problema.                                                   |
+| **Coeficiente de determinación ($R^2$)**   | Regresión        | $1-\frac{MSE}{Var(\mathcal{D})}$                            | Compara el error cuadrático medio (MSE) del modelo con la varianza de los valores reales correctos del conjunto de datos.    | Mide la **calidad del ajuste numérico**. Un valor de 1 indica un ajuste perfecto; un 0 significa que el modelo es tan inútil como predecir siempre la media; y un valor negativo indica que las predicciones son peores que simplemente predecir la media siempre. |
+
+_(Nota: **$y$** = valor real correcto, **$\hat{y}$** = valor numérico predicho por el modelo, **$Var(\mathcal{D})$** = varianza de los valores reales correctos, y **$\vert \mathcal{D} \vert$** = Total de ejemplos en el conjunto de datos evaluado)._
+
+</div>
