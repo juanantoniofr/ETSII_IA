@@ -1,11 +1,21 @@
+<link rel="stylesheet" href="../css/estilo.css">
+
 # Procesamiento de Lenguaje Natural
 
+<div class="highlight-theory">
+
 ## 0. Introducción
+
+En este tema vamos a ver cómo se pueden utilizar técnicas de aprendizaje automático para procesar y analizar texto en lenguaje natural.
 
 Las dos aproximaciones más comunes para el procesamiento de lenguaje natural (PLN) son:
 
 - **aproximación simbólica**: se basa en reglas y estructuras lingüísticas explícitas.
 - **aproximación estadística o empírica**: se basa en modelos probabilísticos y aprendizaje automático. `esta es la aproximación más común en la actualidad y la que veremos en este tema`.
+
+</div>
+
+<div class="highlight-theory">
 
 ## 1. Clasificación de documentos
 
@@ -21,35 +31,61 @@ Una vez construido el modelo, abordamos la clasificación de documentos utilizan
 
 #### 1.2.1 Naive Bayes Multinomial
 
-Asigna a cada documento D, la etiqueta c que maximiza la probabilidad condicional P(c|D). Utiliza la fórmula de Bayes y asume que las características (términos) son independientes entre sí.
+Para clasificar documentos de texto utilizando el modelo Naive Bayes Multinomial, el algoritmo se apoya en la representación matemática de "bolsa de palabras". A diferencia de los problemas genéricos, aquí las fórmulas se adaptan para manejar vectores de frecuencias completas, ya que la cantidad de veces que se repite una palabra es vital para la decisión.
 
-$P(c|D) = \frac{P(D|c)P(c)}{P(D)}$
+Aquí tienes las fórmulas exactas que rigen este modelo:
 
-entonces c = argmax_c P(c|D) = argmax_c P(D|c)P(c)/P(D), como P(D) es constante para todas las clases, se puede simplificar a: argmax_c P(D|c)P(c), donde P(D|c) se calcula como el producto de las probabilidades de cada término dado la clase c, es decir, P(D|c) = Π P(t_i|c) para cada término t_i en el documento D.
+- 1. **La Fórmula de Predicción (Regla MAP Multinomial)**
 
-Así concluimos que c = argmax_c P(c) Π P(t_i|c) y para evitar desbordamientos numéricos, se suele trabajar con logaritmos, lo que nos da: c = argmax_c log P(c) + Σ log P(t_i|c).
+Para predecir la etiqueta $\hat{c}$ de un documento nuevo $D$, se selecciona la clase que maximice el producto de su probabilidad a priori por las probabilidades de cada término del vocabulario ($V$), **elevadas al número de veces que cada término aparece exactamente en ese documento ($n_{D,t}$)**.
+$$\hat{c} = \arg \max_{c \in C} \left( \mathbb{P}(c) \prod_{t \in V} \mathbb{P}(t|c)^{n_{D,t}} \right)$$
 
-- El aprendizaje de parámetros se realiza a partir de una estimación de máxima verosimilitud, contando la frecuencia de cada término en los documentos de cada clase y aplicando suavizado para evitar probabilidades cero.
-  - P(c) = (número de documentos en la clase c) / (número total de documentos)
-  - P(t_i|c) = (número de veces que aparece el término t_i en los documentos de la clase c + k) / (número total de términos en los documentos de la clase c + k \* |V|), donde k es el parámetro de suavizado y |V| es el tamaño del vocabulario.
+**Versión práctica con logaritmos:**
+Para evitar que el ordenador redondee a cero al multiplicar tantas probabilidades minúsculas (desbordamiento numérico), la fórmula anterior se transforma sistemáticamente sumando logaritmos:
+$$\hat{c} = \arg \max_{c \in C} \left( \log \mathbb{P}(c) + \sum_{t \in V} n_{D,t} \log \mathbb{P}(t|c) \right)$$
 
-##### 1.2.1.1 Ejercicios
+- 2. **Fórmulas de Entrenamiento**
 
-**Ejerecicio 3**
+Para que el modelo pueda aplicar la regla anterior, primero debe estimar sus parámetros a partir del corpus de textos de entrenamiento:
+
+**Probabilidad a priori de la clase:**
+Se calcula simplemente como la proporción de documentos de esa clase respecto al corpus entero:
+
+$$\mathbb{P}(c) = \frac{N_c}{N}$$
+_(Donde $N_c$ es la cantidad de documentos etiquetados con la clase $c$ y $N$ es la cantidad total de documentos)_.
+
+**Probabilidad condicional de cada término (con Suavizado de Laplace):**
+En el modelo multinomial **no contamos documentos, sino ocurrencias de palabras**. Además, es obligatorio sumar 1 al numerador y el tamaño del vocabulario al denominador para suavizar la probabilidad y evitar multiplicaciones por cero si aparece una palabra nueva:
+$$\mathbb{P}(t|c) = \frac{N_{c,t} + 1}{\sum_{s \in V} N_{c,s} + |V|}$$
+
+**Desglose de esta fórmula clave:**
+
+- **$N_{c,t}$**: Es el número total de veces que se repite la palabra $t$ al juntar todos los documentos de entrenamiento que pertenecen a la clase $c$.
+- **$\sum_{s \in V} N_{c,s}$**: Es la suma de todas las palabras totales (la longitud sumada) de todos los documentos de la clase $c$.
+- **$|V|$**: Es la cantidad de palabras únicas registradas en todo tu vocabulario de entrenamiento.
+
+_(Nota importante: Precisamente por el exponente $n_{D,t}$ y porque necesitamos sumar repeticiones enteras de palabras, en este tipo de problemas de Procesamiento de Lenguaje Natural nunca se usan matrices "one-hot" binarias, sino la matriz de conteo dispersa de la bolsa de palabras)\_.
+
+</div>
+
+<div class="highlight-exercise">
+
+##### 1.2.1. Ejerecicio 3
 
 En las opiniones de diversos espectadores de cinco determinadas películas se han identificado las siguientes palabras clave que las describen:
-𝑃𝟣: Divertida, de parejas, de amores, de amores.
-𝑃𝟤: Rápida, frenética, de disparos.
-𝑃𝟥: De parejas, rápida, divertida, divertida.
-𝑃𝟦: Frenética, de disparos, de disparos, divertida.
-𝑃𝟧: Rápida, de disparos, de amores.
+
+- 𝑃𝟣: Divertida, de parejas, de amores, de amores.
+- 𝑃𝟤: Rápida, frenética, de disparos.
+- 𝑃𝟥: De parejas, rápida, divertida, divertida.
+- 𝑃𝟦: Frenética, de disparos, de disparos, divertida.
+- 𝑃𝟧: Rápida, de disparos, de amores.
 
 Considerando 𝑉 = {de amores, de disparos, de parejas, divertida, freńetica, ŕapida} como vocabulario de términos y sabiendo que las películas 𝑃𝟣 y 𝑃𝟥 son comedias y las películas 𝑃𝟤 , 𝑃𝟦 y 𝑃𝟧 son de acción, se pide determinar el género de la película 𝑃 descrita por ciertos espectadores como
 𝑃: rápida, de parejas, de disparos, rápida.
 
 Usar para ello la bolsa de palabras como modelo de lenguaje y naive Bayes multinomial con suavizado de Laplace como modelo clasificador.
 
-- Solución:
+**Solución:**
 
 1. Construimos el modelo de bolsa de palabras para cada película:
 
@@ -65,9 +101,9 @@ Usar para ello la bolsa de palabras como modelo de lenguaje y naive Bayes multin
 
 2. Calculamos los parámetros del modelo Naive Bayes Multinomial con suavizado de Laplace:
 
-- P(comedia) = 2/5, P(acción) = 3/5, k = 1.
+- P(comedia) = 2/5, P(acción) = 3/5, k = 1. => **(de 5 documentos, 2 son comedias y 3 son de acción.)**
 
-3. Calculamos P(D|comedia) y P(D|acción) para la película P:
+3. ¿Cuál será el genero de la película P (definida por el documento D), comedia o acción? => Calculamos P(D|comedia) y P(D|acción):
 
 - |V| = 6
 
@@ -80,28 +116,34 @@ Usar para ello la bolsa de palabras como modelo de lenguaje y naive Bayes multin
   - P(rápida|comedia) = (1 + 1) / (8 + 6) = 2/14
 
 - Para acción:
-  - P(de amores|acción) = (0 + 1) / (10 + 6) = 1/16
+  - P(de amores|acción) = (1 + 1) / (10 + 6) = 2/16
   - P(de disparos|acción) = (4 + 1) / (10 + 6) = 5/16
   - P(de parejas|acción) = (0 + 1) / (10 + 6) = 1/16
   - P(divertida|acción) = (1 + 1) / (10 + 6) = 2/16
   - P(frenética|acción) = (2 + 1) / (10 + 6) = 3/16
   - P(rápida|acción) = (2 + 1) / (10 + 6) = 3/16
 
-- Aplicamos el modelo Naive Bayes para clasificar la película P: rápida, de parejas, de disparos, rápida.
-  - P(comedia|D) = P(comedia) _ P(de amores|comedia)^0 _ P(de disparos|comedia)^1 _ P(de parejas|comedia)^1 _ P(divertida|comedia)^0 _ P(frenética|comedia)^0 _ P(rápida|comedia)^2
-  - P(comedia|D) = $(2/5) * (3/14)^0 * (1/14)^1 * (3/14)^1 * (4/14)^0 * (1/14)^0 * (2/14)^2$
-  - P(comedia|D) = $(2/5) * (1/14) * (3/14) * (2/14)^2 = (2/5) * (1/14) * (3/14) * (4/196)$ = $(2/5) * (1/14) * (3/14) * (1/49)$ = 3 / 24010 = **0.00012495**
+- Aplicamos el modelo Naive Bayes para clasificar la película P, donde D = {rápida, de parejas, de disparos, rápida}.
 
-  - P(acción|D) = P(acción) _ P(de amores|acción)^0 _ P(de disparos|acción)^1 _ P(de parejas|acción)^1 _ P(divertida|acción)^0 _ P(frenética|acción)^0 _ P(rápida|acción)^2
-  - P(acción|D) = $(3/5) * (1/16)^0 * (5/16)^1 * (1/16)^1 * (2/16)^0 * (3/16)^0 * (3/16)^2$
-  - P(acción|D) = $(3/5) * (1/16) * ( 5/16) * (1/16) * (2/16) * (3/16) * (3/16)$
-  - P(acción|D) = $(3/5) * (1/16) * (5/16) * (1/16) * (2/16) * (3/16) * (3/16) = (3/5) * (1/16) * (5/16) * (1/16) * (2/16) * (3/16) * (3/16)$ = 27 / 65535 = **0.00041199**
+  $P(comedia|D) = P(comedia) * P(de amores|comedia)^0 * P(de disparos|comedia)^1 * P(de parejas|comedia)^1 * P(divertida|comedia)^0 * P(frenética|comedia)^0 * P(rápida|comedia)^2$
+  => $P(comedia|D) = $(2/5) * (3/14)^0 * (1/14)^1 * (3/14)^1 * (4/14)^0 * (1/14)^0 * (2/14)^2$
+  => $P(comedia|D) = $(2/5) * (1/14) * (3/14) * (2/14)^2 = (2/5) * (1/14) * (3/14) * (4/196)$ = $(2/5) * (1/14) * (3/14) * (1/49) = 3 / 24010 = **0.00012495**$
 
-- Concluimos que la película P es de acción, ya que P(acción|D) > P(comedia|D). Se clasifica la película P como de acción con un nivel de confianza en tanto por ciento de: P(acción|D) / (P(acción|D) + P(comedia|D)) = 0.00041199 / (0.00041199 + 0.00012495) ≈ **76.8%**.
+  $P(acción|D) = P(acción) * P(de amores|acción)^0 * P(de disparos|acción)^1 * P(de parejas|acción)^1 * P(divertida|acción)^0 * P(frenética|acción)^0 * P(rápida|acción)^2$
+  => $P(acción|D) = $(3/5) * (1/16)^0 * (5/16)^1 * (1/16)^1 * (2/16)^0 * (3/16)^0 * (3/16)^2$
+  => $P(acción|D) = $(3/5) * (1/16) * ( 5/16) * (1/16) * (2/16) * (3/16) * (3/16)$
+  => $P(acción|D) = $(3/5) * (1/16) * (5/16) * (1/16) * (2/16) * (3/16) * (3/16) = (3/5) * (1/16) * (5/16) * (1/16) * (2/16) * (3/16) * (3/16)$ = 27 / 65535 = **0.00041199**
+
+- Concluimos que la película P es de acción, ya que **P(acción|D) > P(comedia|D)**.
+- Se clasifica la película P como de acción con un nivel de confianza en tanto por ciento de: P(acción|D) / (P(acción|D) + P(comedia|D)) = 0.00041199 / (0.00041199 + 0.00012495) ≈ **76.8%**.
+
+</div>
+
+<div class="highlight-theory">
 
 ### 1.3 Modelo de lenguaje tf-idf
 
-El modelo de bolsa de palabras **no tiene en cuenta la importancia de los términos** en el documento ni en el corpus, simplemente tiene en cuenta **el número de veces que aparece cada término en el documento**. Para solucionar esto, se utiliza el **modelo de lenguaje tf-idf (term frequency - inverse document frequency), que **asigna un peso a cada término en función de su frecuencia en el documento y su frecuencia inversa en el corpus\*\*.
+El modelo de bolsa de palabras **no tiene en cuenta la importancia de los términos** en el documento ni en el corpus, simplemente tiene en cuenta **el número de veces que aparece cada término en el documento**. Para solucionar esto, se utiliza el **modelo de lenguaje tf-idf** (term frequency - inverse document frequency), que **asigna un peso a cada término** en función de su frecuencia en el documento y su frecuencia inversa en el corpus.
 
 Cada documento se representa como un vector de pesos tf-idf, donde el peso de cada término t en el documento d se calcula como:
 
@@ -133,11 +175,63 @@ $$cos(\theta) = \frac{A \cdot B}{||A|| ||B||}$$
 Entoces dada la representación tf-idf de dos documentos A y B, la similitud del coseno se calcula como:
 $$sim(A, B) = \frac{A \cdot B}{||A|| ||B||} = \frac{\sum_{i=1}^n A_i \cdot B_i}{\sqrt{\sum_{i=1}^n A_i^2} \sqrt{\sum_{i=1}^n B_i^2}}$$
 
-Como log en base a de x $log_a(x) = \frac{log_b(x)}{log_b(a)}$, entonces $log_a(x) = log_b(x) / log_b(a)$, la base del logaritmo es irrelevante para el cálculo de idf.
+Como log en base a de x $log_a(x) = \Large \frac{log_b(x)}{log_b(a)}$, entonces $\Large log_a(x) = log_b(x) / log_b(a)$, la base del logaritmo es irrelevante para el cálculo de idf.
 
-##### 1.3.1.1 Ejercicios
+</div>
 
-**Ejercicio 4**
+<div class="summary">
+
+La **similitud del coseno** es una métrica fundamental, especialmente utilizada en tareas de Procesamiento del Lenguaje Natural para comparar qué tan parecidos son dos documentos representados como vectores numéricos (por ejemplo, usando modelos tf-idf o bolsa de palabras).
+
+La fórmula matemática para calcular el coseno del ángulo que forman dos vectores $A$ y $B$ consiste en dividir su **producto escalar** entre la multiplicación de sus **módulos** (o longitudes geométricas):
+
+$$sim(A,B) = \frac{A \cdot B}{||A||_2 \times ||B||_2}$$
+
+Para ilustrarlo de forma sencilla, inventemos dos vectores $A$ y $B$ de 5 elementos cada uno. Imagina que representan los pesos de 5 palabras en dos frases distintas:
+
+- **Vector A:** $(2, 0, 1, 3, 0)$
+- **Vector B:** $(1, 1, 0, 2, 4)$
+
+Aquí tienes el cálculo paso a paso:
+
+### Paso 1: El Numerador (Producto Escalar)
+
+Se multiplica cada elemento del primer vector por el elemento que ocupa la misma posición en el segundo vector, y luego se suman todos los resultados:
+$$A \cdot B = (2 \times 1) + (0 \times 1) + (1 \times 0) + (3 \times 2) + (0 \times 4)$$
+$$A \cdot B = 2 + 0 + 0 + 6 + 0 = \mathbf{8}$$
+
+### Paso 2: El Denominador (Módulo de cada vector)
+
+El módulo (la longitud) se calcula elevando cada elemento al cuadrado, sumándolos y extrayendo la raíz cuadrada de ese total.
+
+Para el **Vector A**:
+$$||A||_2 = \sqrt{2^2 + 0^2 + 1^2 + 3^2 + 0^2}$$
+$$||A||_2 = \sqrt{4 + 0 + 1 + 9 + 0} = \sqrt{14} \approx \mathbf{3.742}$$
+
+Para el **Vector B**:
+$$||B||_2 = \sqrt{1^2 + 1^2 + 0^2 + 2^2 + 4^2}$$
+$$||B||_2 = \sqrt{1 + 1 + 0 + 4 + 16} = \sqrt{22} \approx \mathbf{4.690}$$
+
+### Paso 3: División Final
+
+Finalmente, aplicamos la fórmula dividiendo el resultado del Paso 1 entre la multiplicación de los dos resultados del Paso 2:
+$$sim(A,B) = \frac{8}{\sqrt{14} \times \sqrt{22}}$$
+$$sim(A,B) = \frac{8}{3.742 \times 4.690}$$
+$$sim(A,B) = \frac{8}{17.550} \approx \mathbf{0.4558}$$
+
+**¿Cómo se interpreta esto?**
+El resultado siempre será un número entre -1 y 1 (o entre 0 y 1 si no hay valores negativos, como ocurre con las frecuencias de palabras).
+
+- Si el resultado es cercano a **1**, significa que los vectores apuntan en la misma dirección y son **muy similares**.
+- Si el resultado es **0** (o cercano), significa que forman un ángulo de 90 grados y son **completamente distintos** (no comparten las mismas palabras clave).
+
+En este ejemplo numérico, hemos obtenido **0.4558**, lo que indica una similitud moderada entre ambos vectores.
+
+</div>
+
+<div class="highlight-exercise">
+
+#### 1.3.1 Ejercicio 4
 
 A continuación se muestra el poema 1 del libro de poemas Marinero en tierra de Rafael Alberti, que consta de cinco estrofas, cada una de las cuales la consideramos un documento.
 
@@ -150,7 +244,7 @@ Para pruebas, se añade una estrofa más:
 
 - D5: Padre, ¿por qué me trajiste acá?
 
-Tomando V = {la, mar, me, trajiste} como vocabulario de términos y **{D1, D2, D3, D4} como corpus de entrenamiento**, se pide:
+Tomando **V = {la, mar, me, trajiste}** como vocabulario de términos y **{D1, D2, D3, D4} como corpus de entrenamiento**, se pide:
 
 - 1. Obtener la representación de cada una de las estrofas bajo el modelo tf-idf.
 - D1: El mar. La mar. El mar. ¡Solo la mar!
@@ -210,6 +304,8 @@ Tomando V = {la, mar, me, trajiste} como vocabulario de términos y **{D1, D2, D
   $$sim(D5, D4) = \frac{0.415 \cdot 0 + 0 \cdot 1 + 0.415 \cdot 0.415 + 2 \cdot 0}{\sqrt{0.415^2 + 0^2 + 0.415^2 + 2^2} \sqrt{0.415^2 + 1^2 + 0.415^2 + 0^2}} = \frac{0.172225}{\sqrt{4.173225} \sqrt{1.172225}} = \frac{0.172225}{2.0425 \cdot 1.0826} = \mathbf{0.0779}$$
 
 - Concluimos que las estrofas más similares a D5 son D2, D4 y D3, de las cuales dos son positivas y una es negativa. Por lo tanto, clasificamos la estrofa D5 como positiva.
+
+</div>
 
 ### 1.4 Predicción de secuencia de términos
 
