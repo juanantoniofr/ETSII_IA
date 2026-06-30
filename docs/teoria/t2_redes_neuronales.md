@@ -285,6 +285,8 @@ Al adoptar este tipo de funciones de activación, el comportamiento de la neuron
 
 <div class="highlight-theory">
 
+  <div class="summary">
+
 ### 2.2 Funciones de activación
 
 Las principales funciones de activación diferenciables utilizadas en neuronas artificiales (descartando las funciones umbral y signo propias del perceptrón clásico) son las siguientes:
@@ -297,9 +299,12 @@ Las principales funciones de activación diferenciables utilizadas en neuronas a
 
 Para que una red neuronal pueda entrenarse utilizando el método del descenso por el gradiente y el algoritmo de retropropagación, es un **requisito indispensable que la función de activación elegida sea diferenciable**. El uso de estas funciones permite que pequeños ajustes en los pesos de las neuronas produzcan cambios suaves en la salida, superando así la gran limitación expresiva del perceptrón.
 
+  </div>
 </div>
 
 <div class="highlight-theory">
+
+  <div class="summary">
 
 ### 2.3 Funciones de coste
 
@@ -308,6 +313,8 @@ Para que una red neuronal pueda entrenarse utilizando el método del descenso po
 | **Error Cuadrático Medio (MSE)** | $$\Large \frac{1}{n}\sum_{k=1}^{n}(y_{k}-a_{k})^{2}$$ | $$\Large \frac{2}{n}(a - y)$$           |
 | **Entropía Cruzada Binaria**     | $$\Large -y \log_e(a) - (1-y)\log_e(1-a)$$            | $$\Large \frac{a - y}{a(1-a)}$$         |
 | **Entropía Cruzada Categórica**  | $$\Large -\sum_{k=1}^{n}y_{k}\log_e(a_{k})$$          | $$\Large -\frac{y}{a}$$                 |
+
+  </div>
 
 </div>
 
