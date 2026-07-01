@@ -1,4 +1,8 @@
+<link rel="stylesheet" href="../css/estilo.css">
+
 # Planificación automática (Teoría)
+
+<div class="highlight-theory">
 
 ## Introducción
 
@@ -9,6 +13,10 @@ Existen tres tipos principales de planificadores:
 - 1. **Planificadores de dominio específico**: Estos planificadores están diseñados para resolver problemas específicos en un dominio particular, como la planificación de rutas para vehículos o la programación de tareas en una fábrica.
 - 2. **Planificadores independientes del dominio**: Estos planificadores son más flexibles y pueden aplicarse a una amplia variedad de problemas, aunque pueden ser menos eficientes que los planificadores de dominio específico. **Este tipo es el que estudiaremos en este curso**.
 - 3. **Planificadores configurables**: Estos planificadores permiten a los usuarios configurar ciertos aspectos del proceso de planificación, como la heurística utilizada o las restricciones aplicadas.
+
+</div>
+
+<div class="summary">
 
 ## Hilo argumental del documento
 
@@ -31,6 +39,8 @@ El hilo argumental del documento se centra en la **planificación automática** 
 
 A lo largo del texto, se utiliza el ejemplo del **"mundo de los bloques"** y el **transporte de paquetes** para ilustrar de forma práctica cada uno de estos conceptos teóricos.
 
+</div>
+
 ## Planificación clásica
 
 Son aquellos que asumene estas 8 condiciones:
@@ -51,6 +61,8 @@ En este marco un problema de planificación se puede representar como una tupla 
 - s_i es el estado inicial del mundo.
 - S_g es el conjunto de estados objetivo que el agente desea alcanzar.
 
+<div class="highlight-theory">
+
 ## Formalismo STRIPS
 
 En este formalismo, un problema de planificación se representa mediante:
@@ -67,6 +79,10 @@ Se asume la **hipótesis del mundo cerrado**, lo que significa que cualquier hec
 **Los estados objetivos** son aquellos que contienen todos y cada uno de los hechos especificados en el objetivo.
 Un **plan solución** es una secuencia de acciones que, cuando se ejecuta desde el estado inicial, conduce a un estado objetivo.
 
+</div>
+
+<div class="summary">
+
 ## El mundo de los bloques
 
 Si no se utilizan variables genéricas, el formalismo exige definir una regla de acción explícita para cada posible combinación física. El cálculo exacto de estas **$2n^2$ acciones** se obtiene sumando los dos grandes grupos de movimientos que puede hacer el brazo robótico:
@@ -78,11 +94,15 @@ Al sumar ambos grupos algebraicamente ($2n + 2n^2 - 2n$), el número total de re
 
 Para evitar tener que escribir manualmente esta enorme explosión combinatoria al definir problemas con muchos bloques, la solución práctica consiste en utilizar **esquemas de acciones**, los cuales emplean variables genéricas (como $b_1$ y $b_2$) en lugar de identificar bloques concretos, permitiendo generalizar el dominio drásticamente.
 
+</div>
+
 ### PDDL (Planning Domain Definition Language)
 
 Es un lenguaje estándar para describir dominios de planificación y problemas de planificación. Fue desarrollado para facilitar la comunicación entre diferentes planificadores y para proporcionar una forma estructurada de representar problemas de planificación. Con el tiempo se ha ampliando con extensiones que permiten condiciones negadas y cuantificadas, efectos condicionales, variables numéricas, etc.
 
 ## Resolución de problemas de planificación
+
+<div class="highlight-theory">
 
 - `Búsqueda en el espacio de estados del problema`: consiste en aplicar un algoritmo de búsqueda en el grafo dirigido cuyos vértices son los estados del mundo y cuyas aristas conectan estados para los que existe una acción que los transforma de uno a otro. El objetivo es encontrar un camino desde el estado inicial hasta un estado objetivo.
 
@@ -107,21 +127,25 @@ Los algoritmos de búsqueda se diferencian en la forma en que seleccionan el nod
 - Entrada: Problema de palanificación P=(H, A, s_i, S_g)
 - Salida: Plan solución o fallo
 
-1. Inicializar el conjunto de nodos abiertos con el nodo raíz (s_i) y el conjunto de nodos cerrados vacío.
-2. Mientras el conjunto de nodos abiertos no esté vacío, hacer:
-   a. Busqueda en profundidad: Seleccionar el nodo _s_ más reciente del conjunto de nodos abiertos.
-   b. Busqueda en anchura: Seleccionar el nodo _s_ más antiguo del conjunto de nodos abiertos.
-   insertar _s_ en el conjunto de nodos cerrados.
-   c. Si G está contenido o es igual a _s_, entonces
-   reconstruir el camino desde el nodo raíz hasta _s_ y **devolverlo como plan solución**.
-   d. Para cada acción _a_ en A que sea aplicable a _s_, hacer:
-   generar el nodo hijo _s'_ aplicando la acción _a_ a _s_.
-   Si _s'_ no está en el conjunto de nodos cerrados ni en el conjunto de nodos abiertos, entonces
-   Padre de _s'_ = _s_.
-   insertar _s'_ en el conjunto de nodos abiertos.
+- 1. Inicializar el conjunto de nodos abiertos con el nodo raíz (s_i) y el conjunto de nodos cerrados vacío.
+- 2. Mientras el conjunto de nodos abiertos no esté vacío, hacer:
+  - a. Busqueda en profundidad: Seleccionar el nodo _s_ más reciente del conjunto de nodos abiertos.
+  - b. Busqueda en anchura: Seleccionar el nodo _s_ más antiguo del conjunto de nodos abiertos.
+  - c. Insertar _s_ en el conjunto de nodos cerrados.
+  - d. Si G está contenido o es igual a _s_, entonces reconstruir el camino desde el nodo raíz hasta _s_ y **devolverlo como plan solución**.
+  - e. Para cada acción _a_ en A que sea aplicable a _s_, hacer:
+    - generar el nodo hijo _s'_ aplicando la acción _a_ a _s_.
+    - Si _s'_ no está en el conjunto de nodos cerrados ni en el conjunto de nodos abiertos, entonces
+      - Padre de _s'_ = _s_.
+      - insertar _s'_ en el conjunto de nodos abiertos.
+
 3. Devolver fallo (no se ha encontrado un plan solución).
 
-### Algoritmo de Dijkstra
+</div>
+
+<div class="summary">
+
+## Algoritmo de Dijkstra
 
 Cuando cada acción _a_ tiene un costo asociado, el **algoritmo de Dijkstra** selecciona el nodo _s_ del conjunto de nodos abiertos que tiene el costo acumulado más bajo desde el nodo raíz hasta _s_. Este algoritmo garantiza encontrar la solución óptima en términos de costo total.
 
@@ -150,9 +174,13 @@ Si el estado $s$ no es el objetivo, se aplica cada acción $a$ disponible para g
 **4. Fracaso (Línea 18):**
 Si el bucle principal termina porque la estructura `Abiertos` se ha vaciado por completo sin haber alcanzado nunca los hechos del objetivo $G$, el algoritmo concluye y devuelve que **no existe ningún plan solución** para el problema.
 
+</div>
+
 ### Función heurística
 
 Es una función que para cada estado del problema estima el coste de un plan óptimo desde ese estado hasta un estado objetivo. Las funciones heurísticas se utilizan para guiar la búsqueda hacia los estados que parecen más prometedores, lo que puede reducir significativamente el tiempo de búsqueda.
+
+<div class="summary">
 
 ### Algoritmo A\*
 
@@ -175,6 +203,10 @@ Una de las propiedades matemáticas más importantes del algoritmo $A^*$ es que,
 
 - **Completo:** Si existe una solución para el problema, el algoritmo la encontrará.
 - **Óptimo:** Si el problema tiene solución, el plan proporcionado tendrá matemáticamente el coste mínimo posible.
+
+</div>
+
+<div class="highlight-theory">
 
 ## Heurísticas independientes del dominio
 
@@ -210,8 +242,57 @@ Esta propiedad es el pilar fundamental para que los algoritmos de búsqueda func
 
 - **Completo:** Garantiza que, si el problema tiene solución, el algoritmo logrará encontrar un plan solución.
 - **Óptimo:** Garantiza que el plan devuelto por el algoritmo tendrá estrictamente el **coste mínimo posible** de entre todos los caminos existentes.
+</div>
 
-## Algoritmo voráz
+<div class="summary">
+
+**¿Qué significa una función heurística $h$ sea `consistente` y `consciente del objetivo`?**
+
+- **Consciente del objetivo:** Significa que $h(s)=0$ para cualquier estado $s$ que cumpla las condiciones del objetivo (es decir, donde $G \subseteq S$). En términos prácticos, significa que la función heurística "se da cuenta" de que ya está en la meta y no estima un coste positivo para alcanzar un objetivo desde un estado que ya es objetivo.
+- **Consistente:** Significa que para cualquier estado $s$, cualquier acción $a$ aplicable a ese estado, y el estado resultante $s'$ obtenido tras aplicar la acción, se cumple matemáticamente la desigualdad $h(s) \le c_a + h(s')$. Esto quiere decir que, al aplicar una acción, la estimación del coste restante para llegar al objetivo nunca disminuye en mayor medida que el coste real ($c_a$) que ha supuesto aplicar dicha acción.
+
+Además, los apuntes confirman literalmente la regla lógica de tu premisa: "Una heurística consistente y consciente del objetivo es admisible". Y, en consecuencia, al utilizar una heurística admisible (que siempre subestima el coste real), el algoritmo A\* garantiza matemáticamente encontrar planes óptimos y ser completo.
+
+---
+
+**Ejemplo práctico de consistencia:**
+
+Para entenderlo fácilmente, la regla matemática de la consistencia ($h(s) \le c_a + h(s')$) significa que la estimación de lo que te falta para llegar a la meta **nunca puede dar "saltos mágicos" o rebajas que sean mayores al coste que realmente acabas de pagar** por moverte.
+
+Vamos a verlo con un ejemplo numérico imaginando un problema de transporte (como los de camiones que aparecen en tus ejercicios):
+
+- **Estado actual ($s$):** Tu camión está en la ciudad A.
+- **Acción ($a$):** Conducir de la ciudad A a la ciudad B.
+- **Coste real de la acción ($c_a$):** Conducir ese tramo te cuesta **10** (por ejemplo, litros de gasolina).
+- **Estado resultante ($s'$):** Tu camión está ahora en la ciudad B.
+
+Supongamos que tu heurística calcula que, desde la ciudad B, todavía te faltan **20** litros para llegar al objetivo final ($h(s') = 20$).
+
+Para que la heurística sea **consistente**, aplicamos la fórmula:
+$$h(s) \le 10 + 20$$
+$$h(s) \le 30$$
+
+Esto significa que, cuando estabas en la ciudad A, tu heurística **no podía estimar un coste mayor a 30**. Veamos qué pasa en dos casos numéricos distintos:
+
+**Caso 1: Una heurística CONSISTENTE**
+Imagina que en la ciudad A tu heurística estimaba que faltaban **25** ($h(s) = 25$).
+
+- Fórmula: $25 \le 10 + 20 \rightarrow 25 \le 30$ **(Se cumple)**.
+- _¿Qué significa intuitivamente?_ Arrancaste pensando que te faltaban 25. Gastaste 10 en moverte. Ahora te faltan 20. Tu estimación total se ha reajustado un poco al alza (de 25 pasó a 30 reales estimados), pero la diferencia entre tus estimaciones (25 - 20 = 5) no es mayor que el coste real que pagaste (10). La heurística se comporta de forma lógica y estable.
+
+**Caso 2: Una heurística INCONSISTENTE**
+Imagina que en la ciudad A tu heurística estimaba que faltaban **35** ($h(s) = 35$).
+
+- Fórmula: $35 \le 10 + 20 \rightarrow 35 \le 30$ **(Falso, se rompe la regla)**.
+- _¿Qué significa intuitivamente?_ Estabas en A y la heurística decía: "¡Uf, esto está carísimo, costará 35!". Pero das un pequeño paso hacia B que solo te cuesta 10, y de repente la heurística dice: "¡Ah, desde aquí solo quedan 20!". En un solo paso, la estimación del coste total ha caído de 35 a 30. La estimación ha disminuido en 15, que es una bajada mucho mayor que el coste real que acabas de pagar (10).
+
+Si una heurística es inconsistente (Caso 2), vuelve "loco" al algoritmo A\*, porque el algoritmo pensará que ha encontrado atajos milagrosos y tendrá que estar reevaluando constantemente estados que ya había dado por cerrados. Por eso, una heurística consistente garantiza que el algoritmo avance con paso firme.
+
+</div>
+
+<div class="highlight-theory">
+
+## Algoritmo voráz: cálculo de la heurística óptima $h^+$
 
 El **algoritmo voraz de cálculo de planes relajados** es un método diseñado para resolver una versión simplificada de un problema de planificación partiendo de un estado concreto, basándose en la premisa de que las acciones añaden nueva información al mundo pero nunca borran la anterior (relajación del borrado).
 
@@ -231,41 +312,13 @@ El pseudocódigo y funcionamiento del algoritmo siguen estos pasos matemáticos 
 
 El enfoque se denomina "voraz" porque engulle de forma continua cualquier acción que le proporcione información nueva hasta tropezar con la meta. El tamaño o coste del plan ficticio que devuelve este algoritmo se utiliza posteriormente para **estimar matemáticamente (mediante la heurística $h^+$)** cuánto esfuerzo costaría encontrar la solución óptima en el problema real, guiando así al planificador verdadero `.El **algoritmo voraz de cálculo de planes relajados** es un método diseñado para resolver una versión simplificada de un problema de planificación partiendo de un estado concreto, basándose en la premisa de que las acciones añaden nueva información al mundo pero nunca borran la anterior (relajación del borrado) `.
 
-El objetivo de este algoritmo es resolver el problema simplemente añadiendo cada vez nuevos hechos que se cumplen, sin preocuparse por las posibles interacciones o conflictos entre las acciones ``.
+</div>
 
-El pseudocódigo y funcionamiento del algoritmo siguen estos pasos matemáticos estrictos:
-
-1. **Inicialización:** Se define un conjunto de hechos acumulados (llamado $S^+$) que arranca conteniendo exactamente los mismos hechos que el estado inicial $s$. Además, se inicializa una secuencia vacía $a^+$ que irá guardando las acciones del plan.
-2. **Bucle de búsqueda:** Mientras el objetivo del problema ($G$) no esté completamente contenido dentro del conjunto $S^+$, el algoritmo repite el siguiente proceso de selección.
-3. **Selección de la acción (el paso "voraz"):** El sistema busca dentro de todas las acciones del dominio una acción $a$ que cumpla simultáneamente dos condiciones:
-   - **Es aplicable:** Sus precondiciones ya existen dentro de $S^+$.
-   - **Aporta información útil:** Su lista de adición contiene algún hecho que todavía no está presente en $S^+$.
-4. **Actualización:** Si existe al menos una acción que cumpla esto (en los ejercicios teóricos se suele pedir desempatar escogiendo la primera por orden alfabético), se elige, se vuelcan todos los hechos de su lista de adición dentro de $S^+$ y se añade la acción al plan $a^+$.
-5. **Terminación:**
-   - Si a base de acumular hechos se alcanza un punto en el que $G \subseteq S^+$, el algoritmo termina con éxito y **devuelve la secuencia de acciones obtenida** como el plan relajado definitivo.
-   - Si, por el contrario, no se ha alcanzado el objetivo pero ya no queda ninguna acción aplicable que pueda aportar un hecho nuevo, el algoritmo se detiene y determina que **no existe ningún plan relajado** posible para ese estado.
-
-El enfoque se denomina "voraz" porque engulle de forma continua cualquier acción que le proporcione información nueva hasta tropezar con la meta. El tamaño o coste del plan ficticio que devuelve este algoritmo se utiliza posteriormente para **estimar matemáticamente (mediante la heurística $h^+$)** cuánto esfuerzo costaría encontrar la solución óptima en el problema real, guiando así al planificador verdadero `.El **algoritmo voraz de cálculo de planes relajados** es un método diseñado para resolver una versión simplificada de un problema de planificación partiendo de un estado concreto, basándose en la premisa de que las acciones añaden nueva información al mundo pero nunca borran la anterior (relajación del borrado) `.
-
-El objetivo de este algoritmo es resolver el problema simplemente añadiendo cada vez nuevos hechos que se cumplen, sin preocuparse por las posibles interacciones o conflictos entre las acciones ``.
-
-El pseudocódigo y funcionamiento del algoritmo siguen estos pasos matemáticos estrictos:
-
-1. **Inicialización:** Se define un conjunto de hechos acumulados (llamado $S^+$) que arranca conteniendo exactamente los mismos hechos que el estado inicial $s$. Además, se inicializa una secuencia vacía $a^+$ que irá guardando las acciones del plan.
-2. **Bucle de búsqueda:** Mientras el objetivo del problema ($G$) no esté completamente contenido dentro del conjunto $S^+$, el algoritmo repite el siguiente proceso de selección.
-3. **Selección de la acción (el paso "voraz"):** El sistema busca dentro de todas las acciones del dominio una acción $a$ que cumpla simultáneamente dos condiciones:
-   - **Es aplicable:** Sus precondiciones ya existen dentro de $S^+$.
-   - **Aporta información útil:** Su lista de adición contiene algún hecho que todavía no está presente en $S^+$.
-4. **Actualización:** Si existe al menos una acción que cumpla esto (en los ejercicios teóricos se suele pedir desempatar escogiendo la primera por orden alfabético), se elige, se vuelcan todos los hechos de su lista de adición dentro de $S^+$ y se añade la acción al plan $a^+$.
-5. **Terminación:**
-   - Si a base de acumular hechos se alcanza un punto en el que $G \subseteq S^+$, el algoritmo termina con éxito y **devuelve la secuencia de acciones obtenida** como el plan relajado definitivo.
-   - Si, por el contrario, no se ha alcanzado el objetivo pero ya no queda ninguna acción aplicable que pueda aportar un hecho nuevo, el algoritmo se detiene y determina que **no existe ningún plan relajado** posible para ese estado.
-
-El enfoque se denomina "voraz" porque engulle de forma continua cualquier acción que le proporcione información nueva hasta tropezar con la meta. El tamaño o coste del plan ficticio que devuelve este algoritmo se utiliza posteriormente para **estimar matemáticamente (mediante la heurística $h^+$)** cuánto esfuerzo costaría encontrar la solución óptima en el problema real, guiando así al planificador verdadero.
+<div class="highlight-theory">
 
 ## Cómo calcular $h^{max}$ y $h^{add}$
 
-Como hemos visto, calcular la heurística óptima $h^+$ exige aplicar el algoritmo voraz generando todos los planes relajados posibles y compararlos, lo cual resulta computacionalmente muy costoso (el abanico de planes crece de forma exponencial según el número de acciones del dominio).
+Como hemos visto, **calcular la heurística óptima $h^+$ exige aplicar el algoritmo voraz** generando todos los planes relajados posibles y compararlos, lo cual resulta computacionalmente muy costoso (el abanico de planes crece de forma exponencial según el número de acciones del dominio).
 
 Para solucionar este cuello de botella, $h^{max}$ y $h^{add}$ actúan como **aproximaciones eficientes** que no construyen ninguna secuencia de acciones (no hay planes). En su lugar, el sistema **utiliza un algoritmo de programación dinámica** puramente matemático.
 
@@ -277,6 +330,90 @@ Dependiendo de la heurística que elijas, el cálculo final al evaluar esa tabla
 - **$h^{add}$:** Asume que los objetivos se deben lograr por separado de forma aislada, por lo que su valor es la **suma de los costes individuales** de cada objetivo. Al ignorar que ciertas acciones pueden servir para varios objetivos a la vez, esta heurística suele ser demasiado pesimista.
 
 En resumen: no tienes que trazar ni un solo plan relajado. El sistema simplemente rellena una tabla actualizando de forma matemática el coste estimado de cada hecho a partir del coste de sus precondiciones, deteniéndose en cuanto los números dejan de cambiar. Esto hace que calcular $h^{max}$ y $h^{add}$ sea **drásticamente más rápido** en la práctica computacional.
+
+</div>
+
+<div class="summary">
+
+## Si las heurísticas $h^{max}$ y $h^{add}$ simplemente rellena una tabla actualizando de forma matemática el coste estimado de cada hecho a partir del coste de sus precondiciones, ¿Cómo se "usan" para estimar el coste desde un estado cualquiera `s` al estado objetivo S?
+
+Para estimar el coste total desde un estado concreto $s$ hasta el estado objetivo general $S_G$, el algoritmo no utiliza toda la tabla que ha calculado, sino que **extrae exclusivamente los valores de los hechos que componen el objetivo** y los combina matemáticamente dependiendo de la heurística.
+
+Para entender el proceso completo, hay que fijarse en dos puntos clave:
+
+**1. La tabla está hecha "a medida" para el estado $s$**
+El algoritmo de programación dinámica que genera la tabla empieza siempre inicializando los costes basándose en el estado $s$ que quieres evaluar: le asigna un coste de $0$ a los hechos que ya se cumplen en $s$, y un coste de $\infty$ al resto. A partir de ahí, rellena matemáticamente la tabla propagando el coste de las precondiciones hasta que los valores se estabilizan. Esto garantiza que cada valor de la celda $T^s(g)$ representa el coste estimado para alcanzar el hecho $g$ individual partiendo específicamente de $s$.
+
+**2. Cómo se combinan esos valores para obtener el coste final**
+Dado que un estado objetivo en planificación automática casi siempre está compuesto por varios hechos a la vez ($g_1, g_2, \dots$), las heurísticas cogen las estimaciones individuales de la tabla y las fusionan aplicando su propia lógica:
+
+- **Heurística $h^{max}$:** Se basa en la suposición relajada de que para lograr un conjunto de objetivos, es suficiente con lograr el objetivo individual más costoso de todos. Por lo tanto, busca en la tabla los hechos que forman el objetivo $S_G$ y **se queda con el valor máximo**:
+  $h^{max}(s) = \max(T^s(g) \mid g \in S_G)$.
+- **Heurística $h^{add}$:** Se basa en la suposición de que los objetivos son independientes y hay que lograr cada uno por separado (ignorando que varias metas puedan compartir un mismo plan). Por lo tanto, extrae de la tabla los costes individuales de los hechos del objetivo y **los suma todos**:
+  $h^{add}(s) = \sum_{g \in S_G} T^s(g)$.
+
+**Ejemplo práctico de los apuntes:**
+Imagina el problema de transportar un paquete. El objetivo final requiere que se cumplan simultáneamente dos hechos: que el camión haya regresado al lugar $L_0$ y que el paquete esté en el lugar $L_3$.
+
+- Cuando la tabla para la heurística $h^{max}$ termina de estabilizarse evaluando el estado inicial, nos dice que el coste individual para el camión es $0$ y para el paquete es $3$.
+- ¿Cómo se usa la tabla entonces? El algoritmo aplica la regla del máximo a esos dos hechos concretos: $h^{max} = \max(0, 3) = \mathbf{3}$.
+- Por el contrario, si estuviéramos aplicando $h^{add}$, tras estabilizarse su respectiva tabla (donde el coste para el paquete resulta ser $4$), el algoritmo usa la suma: $h^{add} = 0 + 4 = \mathbf{4}$.
+
+</div>
+
+<div class="summary">
+
+## ¿Cuál es el pseudocódigo del algoritmo de propagación dinámica?
+
+El pseudocódigo oficial para el **algoritmo de cálculo por programación dinámica** de las heurísticas $h^{max}$ y $h^{add}$ se estructura de la siguiente manera:
+
+### Algoritmo de Cálculo de $h^{max}$ / $h^{add}$
+
+**Entrada:** Un problema de planificación $P = (H, A, I, G)$ y el estado $s$ de $P$.  
+**Salida:** El valor estimado de la heurística $h^{max}(s)$ o $h^{add}(s)$.
+
+```text
+1.  Para cada hecho g ∈ H hacer:
+2.      i ← 0
+3.      Inicializar T_0^s(g) como:
+            0   si g ∈ s
+            ∞   si g ∉ s
+
+4.  Repetir:
+5.      i ← i + 1
+6.      Para cada hecho g ∈ H hacer:
+
+7.          Para cada acción a ∈ A tal que g ∈ add(a) hacer:
+                # Paso A: Calcular el coste de satisfacer las precondiciones de "a"
+8.              (h^max) c_{pre(a)} ← max( T_{i-1}^s(g') | g' ∈ pre(a) )
+9.              (h^add) c_{pre(a)} ← sum( T_{i-1}^s(g') | g' ∈ pre(a) )
+
+                # Paso B: Quedarse con el coste de la mejor acción que añade "g"
+10.         c_g ← min( c_{pre(a)} + c_a  |  a ∈ A, g ∈ add(a) )
+
+            # Paso C: Actualizar el coste acumulado del hecho "g"
+11.         T_i^s(g) ← min( T_{i-1}^s(g), c_g )
+
+12. Si T_i^s = T_{i-1}^s entonces:  (La tabla se ha estabilizado)
+13.     (h^max) Devolver max( T_i^s(g) | g ∈ G )
+14.     (h^add) Devolver sum( T_i^s(g) | g ∈ G )
+```
+
+---
+
+### Explicación rápida de las variables para tus apuntes:
+
+- **$T_i^s(g)$:** Es el coste estimado de alcanzar el hecho individual $g$ partiendo desde el estado $s$ en la iteración de tiempo $i$.
+- **$c_{pre(a)}$:** Es el coste estimado acumulado para poder cumplir todas las precondiciones necesarias de la acción $a$.
+  - En **$h^{max}$** se asume que las precondiciones se pueden lograr en paralelo, por lo que su coste conjunto equivale únicamente al de la precondición más cara de conseguir ($\max$).
+  - En **$h^{add}$** se asume que las precondiciones son independientes y hay que pagarlas por separado, por lo que sus costes individuales se suman ($\sum$).
+- **$c_a$:** Es el coste individual de ejecutar la acción $a$.
+- **$c_g$:** El coste mínimo que costaría obtener el hecho $g$ utilizando la mejor acción aplicable posible del dominio que lo tenga en su lista de adición ($add(a)$).
+- **Condición de parada ($T_i^s = T_{i-1}^s$):** El bucle iterativo de programación dinámica se detiene en el momento exacto en que los costes de todos los hechos en una iteración $i$ son idénticos a los de la iteración anterior $i-1$ (es decir, la tabla se ha estabilizado por completo).
+
+</div>
+
+<div class="highlight-exercise">
 
 ## El problema de transportes
 
@@ -315,6 +452,8 @@ El enunciado te pide expresamente "razonar" el plan, lo que significa deducir la
 
 **Cálculo del coste:**
 Dado que el enunciado general del problema no especifica costes individuales para las acciones, en planificación clásica se asume un coste unitario (valor 1) para cada paso. Al constar de 6 acciones estrictamente necesarias, **el coste de este plan óptimo es 6**. _(Nota: En apartados teóricos más avanzados se aplican costes asimétricos, como 3 para viajar entre L1 y L3, lo que cambiaría el valor numérico total, pero esta es la secuencia fundamental más corta)_.
+
+</div>
 
 # Ejercicios
 
@@ -913,6 +1052,8 @@ Como $H\_2$ no estáen ninguna lista de adición, nunca vamos a llegar a obtener
 
 La consecuencia teórica y matemática de tu deducción, y lo que cierra el ejercicio de forma sobresaliente, es que cuando no existe un plan relajado para un estado, el valor de la heurística estimada tiende a infinito. Por lo tanto, la respuesta final a este apartado es h^+(s)=+∞
 
+<div class="highlight-exercise">
+
 ## Ejercicio 11
 
 Consideremos el siguiente problema de planificación automática:
@@ -1002,6 +1143,8 @@ Sabiendo que nuestro objetivo global es $G = \{H_1, H_4, H_5\}$, aplicamos las f
 - Para **$h^{add}$**, se asume que los objetivos son independientes y se suman todos sus costes:
   $h^{add}(I) = T(H_1) + T(H_4) + T(H_5) = 1 + 3 + 1$
   **$h^{add}(I) = 5$**
+
+</div>
 
 ## Ejercicio 12
 

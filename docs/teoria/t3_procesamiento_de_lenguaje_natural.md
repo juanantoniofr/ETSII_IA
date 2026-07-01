@@ -231,7 +231,7 @@ En este ejemplo numérico, hemos obtenido **0.4558**, lo que indica una similitu
 
 <div class="highlight-exercise">
 
-#### 1.3.1 Ejercicio 4
+### 1.3.1 Ejercicio 4
 
 A continuación se muestra el poema 1 del libro de poemas Marinero en tierra de Rafael Alberti, que consta de cinco estrofas, cada una de las cuales la consideramos un documento.
 
@@ -309,17 +309,31 @@ Tomando **V = {la, mar, me, trajiste}** como vocabulario de términos y **{D1, D
 
 ### 1.4 Predicción de secuencia de términos
 
+<div class="highlight-theory">
+
 #### 1.4.1 Modelos de lenguaje n-grama
 
-- En primer lugar, usando la regla de la cadena de Markov, se asume que la probabilidad de una palabra depende solo de las n-1 palabras anteriores,
-  es decir, P(w)=P(w*{1}w*{2}...w*{n-1})=P(w*{1})P(w*{2}|w*{1})P(w*{3}|w*{1}w*{2})...P(w*{n-1}|w*{1}w*{2}...w\_{n-2}).
-- En segundo lugar, se utiliza el modelo de lenguaje n-grama, que estima la probabilidad de una palabra dada las n-1 palabras anteriores, es decir,
-  P(w*{n}|w*{1}w*{2}...w*{n-1}) ≈ P(w*{n}|w*{n-1}w*{n-2}...w*{n-(n-1)}), donde n es el tamaño del n-grama.
+¡Tienes toda la razón, mis disculpas! Me enfoqué en corregir estrictamente las dos afirmaciones que me pasaste y dejé fuera el "broche de oro" matemático que une ambas ideas y que te di en el mensaje anterior.
 
-En definitva, el modelo de n-gramas estima la probabilidad de una secuencia como el producto de las probabilidades de cada palabra dada las n-1 palabras anteriores, es decir,
-P(w*{1}w*{2}...w*{n}) ≈ Π P(w*{i}|w*{i-(n-1)}...w*{i-1}), para i = 1, 2, ..., n.
+Para que tus apuntes queden perfectos y completos, aquí tienes el razonamiento íntegro de principio a fin estructurado en tres pasos:
+
+- **1. Regla de la cadena (El planteamiento inicial):** En primer lugar, aplicando la regla de la cadena de la probabilidad, la probabilidad de una secuencia se formula asumiendo que cada término depende de **toda su historia anterior completa**, sin omitir ninguna palabra. Es decir, para una secuencia $w$ de longitud $M$:
+
+$$\mathbb{P}(w) = \mathbb{P}(w_1w_2...w_M) = \mathbb{P}(w_1) \mathbb{P}(w_2|w_1) \mathbb{P}(w_3|w_1w_2) \dots \mathbb{P}(w_M|w_1...w_{M-1})$$
+
+- **2. Modelo n-grama / Asunción de Markov (La simplificación):** En segundo lugar, se utiliza el modelo de lenguaje n-grama que simplifica esa inmensa fórmula aproximando la historia a **únicamente los $n-1$ términos anteriores**. Es decir:
+
+$$\mathbb{P}(w_m|w_1...w_{m-1}) \cong \mathbb{P}(w_m|w_{m-(n-1)}...w_{m-1})$$
+
+_(donde $m$ representa la posición de la palabra actual en la secuencia y $n$ es el tamaño del modelo n-grama)_.
+
+- **3. Conclusión (La fórmula definitiva):** Al combinar ambos pasos, un modelo de n-gramas estima la probabilidad total de una secuencia de términos mediante el siguiente producto de probabilidades condicionales acotadas:
+
+$$\mathbb{P}(w) \cong \prod_{m=1}^{M}\mathbb{P}(w_m|w_{m-(n-1)}\cdot\cdot\cdot w_{m-1})$$
+
 Para evitar desbordamientos numéricos al multiplicar muchas probabilidades pequeñas, se suele trabajar con logaritmos, lo que nos da:
-$$log P(w_{1}w_{2}...w_{n}) ≈ \sum_{i=1}^n log P(w_{i}|w_{i-(n-1)}...w_{i-1})$$
+
+$$\log P(w_{1}w_{2}...w_{n}) \approx \sum_{i=1}^n \log P(w_{i}|w_{i-(n-1)}...w_{i-1})$$
 
 - **¿cómo se calculan las probabilidades P(w*{i}|w*{i-(n-1)}...w\_{i-1})?** Se pueden calcular con el **método de máxima verosimilitud**, contando la frecuencia de cada n-grama en un corpus de entrenamiento
   y aplicando suavizado para evitar probabilidades cero.
@@ -328,27 +342,30 @@ $$P(w_{i}|w_{i-(n-1)}...w_{i-1}) = \frac{C(w_{i-(n-1)}...w_{i}) + k}{C(w_{i-(n-1
 
 **Alternativas al suavizado son**:
 
-- backoff: si el n-grama no se encuentra en el corpus, se retrocede a un n-grama de tamaño n-1, y así sucesivamente hasta llegar a un unigram.
-- interpolación: se combina la probabilidad del n-grama con las probabilidades de los n-gramas de tamaño inferior, utilizando pesos $\lambda_i$ que suman 1.
+- Backoff: si el n-grama no se encuentra en el corpus, se retrocede a un n-grama de tamaño n-1, y así sucesivamente hasta llegar a un unigram.
+- Interpolación: se combina la probabilidad del n-grama con las probabilidades de los n-gramas de tamaño inferior, utilizando pesos $\lambda_i$ que suman 1.
   $$P(w*{i}|w*{i-(n-1)}...w*{i-1}) = \lambda_{1}P(w*{i}|w*{i-(n-1)}...w*{i-1}) + \lambda_{2}P(w*{i}|w*{i-(n-2)}...w*{i-2}) + ...\lambda_{n}P(w*{i}|w*{i-(n-n)}...w*{1})$$
 
-- **¿cómo se evalúa la calidad (rendimiento) de un modelo de lenguaje?** Se puede utilizar la **perplejidad**, que mide la capacidad del modelo para predecir una secuencia de palabras. La perplejidad se
-  define como la inversa de la probabilidad media de la secuencia, es decir,
+</div>
 
-$$P(W) = P(w_{1}w_{2}...w_{n})^{-1/n} = (\prod_{i=1}^m P(w_{i}|w_{i-(n-1)}...w_{i-1}))^{-1/n} = \sqrt[n]{\prod_{i=1}^m P(w_{i}|w_{i-(n-1)}...w_{i-1})}$$
+<div class="highlight-exercise">
 
-Para evitar desbordamientos numéricos, se suele trabajar con logaritmos, lo que nos da:
+#### 1.4.1 Ejercicios
 
-$$log P(W) = -\frac{1}{n} \sum_{i=1}^m log P(w_{i}|w_{i-(n-1)}...w_{i-1})$$
+**Ejercicio 8**
 
-donde n es el número de términos en el corpus de prueba (Vocabulario), unión con el símbolo final de secuencia </s> y m es el número de términos en la secuencia de prueba.
+Consideremos el vocabulario V = {a, b, c} y el corpus de entrenamiento formado por las siguientes secuencias de términos:
 
-##### 1.4.1.1 Ejercicios
-
-- Ejercicio 8
-  Consideremos el vocabulario V = {a, b, c} y el corpus de entrenamiento formado por las siguientes secuencias de términos:
-
-⟨s⟩a a a b⟨/s⟩ ⟨s⟩b a a c⟨/s⟩ ⟨s⟩a c a⟨/s⟩ ⟨s⟩b a c a⟨/s⟩ ⟨s⟩b b b a⟨/s⟩ ⟨s⟩a c b b⟨/s⟩ ⟨s⟩b a a b a⟨/s⟩ ⟨s⟩c b a⟨/s⟩ ⟨s⟩a b b b b⟨/s⟩ ⟨s⟩a a a⟨/s⟩
+- ⟨s⟩a a a b⟨/s⟩
+- ⟨s⟩b a a c⟨/s⟩
+- ⟨s⟩a c a⟨/s⟩
+- ⟨s⟩b a c a⟨/s⟩
+- ⟨s⟩b b b a⟨/s⟩
+- ⟨s⟩a c b b⟨/s⟩
+- ⟨s⟩b a a b a⟨/s⟩
+- ⟨s⟩c b a⟨/s⟩
+- ⟨s⟩a b b b b⟨/s⟩
+- ⟨s⟩a a a⟨/s⟩
 
 Se pide **construir un modelo bigrama** y calcular la probabilidad que le asigna a la secuencia de términos: ⟨s⟩a c c b c c c c b c⟨/s⟩
 
@@ -367,33 +384,33 @@ N = 49, ya que el corpus de entrenamiento tiene 49 términos (contando el símbo
 | Unigramas                   | Frecuencia | P(t) = Frecuencia / N |
 | --------------------------- | ---------- | --------------------- |
 | ⟨s⟩                         | 10         | no se genera          |
-| a                           | 20         | 20/49 ≈ 0.408         |
-| b                           | 15         | 15/49 ≈ 0.306         |
-| c                           | 4          | 4/49 ≈ 0.082          |
-| ⟨/s⟩                        | 10         | 10/49 ≈ 0.204         |
-| N = Suma de las frecuencias | 49         | -                     |
+| a                           | 19         | 19/50 ≈ 0.38          |
+| b                           | 15         | 15/50 ≈ 0.30          |
+| c                           | 5          | 5/50 ≈ 0.10           |
+| ⟨/s⟩                        | 10         | 10/50 ≈ 0.20          |
+| N = Suma de las frecuencias | 50         | -                     |
 
 2. cálculo de probabilidades:
    ​
 
-| Bigramas | Frecuencia | Suavizado de Laplace (k=1)        |  Retroceso (si 0→P(y))  | Interpolación (λ=1/2) - $1/2 C(x)/C(xy) + 1/2  P(y)$ |
-| -------- | ---------- | --------------------------------- | :---------------------: | :--------------------------------------------------: |
-| ⟨s⟩ a    | 5          | (5 + 1) / (10 + 4) = 6/14 ≈ 0.429 |       5/10 = 0.5        |     1/2 (5/10) + 1/2 (20/49) = 0.25 + 0.2 = 0.45     |
-| ⟨s⟩ b    | 4          | (4 + 1) / (10 + 4) = 5/14 ≈ 0.38  |       4/10 = 0.4        |      1/2 (4/10) + 1/2 (10/49) = 0.2 + 0.1 = 0.3      |
-| ⟨s⟩ c    | 1          | (1 + 1) / (10 + 4) = 2/14 ≈ 0.143 |       1/10 = 0.1        |     1/2 (1/10) + 1/2 (10/49) = 0.05 + 0.1 = 0.15     |
-| <s></s⟩  | 0          | (0 + 1) / (10 + 4) = 1/14 ≈ 0.071 | P(⟨/s⟩) = 10/49 ≈ 0.204 |       1/2 (0/10) + 1/2 (10/49) = 0 + 0.1 = 0.1       |
-| a a      | 8          | (8 + 1) / (20 + 4) = 9/24 ≈ 0.375 |       8/20 = 0.25       |     1/2 (6/20) + 1/2 (20/49) = 0.15 + 0.2 = 0.35     |
-| a b      | 3          | (3 + 1) / (20 + 4) = 4/24 ≈ 0.167 |       3/20 = 0.15       |    1/2 (3/20) + 1/2 (10/49) = 0.075 + 0.1 = 0.175    |
-| a c      | 3          | (3 + 1) / (20 + 4) = 4/24 ≈ 0.167 |       3/20 = 0.15       |    1/2 (3/20) + 1/2 (10/49) = 0.075 + 0.1 = 0.175    |
-| a ⟨/s⟩   | 6          | (6 + 1) / (20 + 4) = 7/24 ≈ 0.292 |       6/20 = 0.3        |     1/2 (6/20) + 1/2 (10/49) = 0.15 + 0.1 = 0.25     |
-| b a      | 6          | (6 + 1) / (15 + 4) = 7/19 ≈ 0.368 |       6/15 = 0.4        |      1/2 (6/15) + 1/2 (20/49) = 0.2 + 0.2 = 0.4      |
-| b b      | 6          | (6 + 1) / (15 + 4) = 7/19 ≈ 0.368 |       6/15 = 0.4        |      1/2 (6/15) + 1/2 (10/49) = 0.2 + 0.1 = 0.3      |
-| b c      | 0          | (0 + 1) / (15 + 4) = 1/19 ≈ 0.053 |   P(c) = 4/49 ≈ 0.082   |       1/2 (0/15) + 1/2 (10/49) = 0 + 0.1 = 0.1       |
-| b ⟨/s⟩   | 3          | (3 + 1) / (15 + 4) = 4/19 ≈ 0.211 |       3/15 ≈ 0.2        |           1/2 (0/15) + 1/2 (0) = 0 + 0 = 0           |
-| c a      | 1          | (1 + 1) / (4 + 4) = 2/8 ≈ 0.25    |       1/4 = 0.25        |     1/2 (2/4) + 1/2 (20/49) = 0.25 + 0.2 = 0.45      |
-| c b      | 2          | (2 + 1) / (4 + 4) = 3/8 ≈ 0.375   |        2/4 = 0.5        |    1/2 (1/4) + 1/2 (10/49) = 0.125 + 0.1 = 0.225     |
-| c c      | 0          | (0 + 1) / (4 + 4) = 1/8 ≈ 0.125   |   P(c) = 4/49 ≈ 0.082   |       1/2 (0/4) + 1/2 (10/49) = 0 + 0.1 = 0.1        |
-| c ⟨/s⟩   | 1          | (0 + 1) / (4 + 4) = 1/8 ≈ 0.125   |       1/4 = 0.25        |       1/2 (0/4) + 1/2 (10/49) = 0 + 0.1 = 0.1        |
+| Bigramas  | Frecuencia | Suavizado de Laplace (k=1)        |  Retroceso (si 0→P(y))  | Interpolación (λ=1/2) - $1/2 C(x)/C(xy) + 1/2  P(y)$ |
+| --------- | ---------- | --------------------------------- | :---------------------: | :--------------------------------------------------: |
+| ⟨s⟩ a     | 5          | (5 + 1) / (10 + 4) = 6/14 ≈ 0.429 |       5/10 = 0.5        |     1/2 (5/10) + 1/2 (20/49) = 0.25 + 0.2 = 0.45     |
+| ⟨s⟩ b     | 4          | (4 + 1) / (10 + 4) = 5/14 ≈ 0.38  |       4/10 = 0.4        |      1/2 (4/10) + 1/2 (10/49) = 0.2 + 0.1 = 0.3      |
+| ⟨s⟩ c     | 1          | (1 + 1) / (10 + 4) = 2/14 ≈ 0.143 |       1/10 = 0.1        |     1/2 (1/10) + 1/2 (10/49) = 0.05 + 0.1 = 0.15     |
+| `<s></s⟩` | 0          | (0 + 1) / (10 + 4) = 1/14 ≈ 0.071 | P(⟨/s⟩) = 10/49 ≈ 0.204 |       1/2 (0/10) + 1/2 (10/49) = 0 + 0.1 = 0.1       |
+| a a       | 8          | (8 + 1) / (19 + 4) = 9/23 ≈ 0.391 |      8/19 = 0.4210      |     1/2 (6/20) + 1/2 (20/49) = 0.15 + 0.2 = 0.35     |
+| a b       | 3          | (3 + 1) / (19 + 4) = 4/23 ≈ 0.174 |      3/19 = 0.158       |    1/2 (3/20) + 1/2 (10/49) = 0.075 + 0.1 = 0.175    |
+| a c       | 3          | (3 + 1) / (19 + 4) = 4/23 ≈ 0.174 |      3/19 = 0.158       |    1/2 (3/20) + 1/2 (10/49) = 0.075 + 0.1 = 0.175    |
+| a `⟨/s⟩`  | 6          | (6 + 1) / (19 + 4) = 7/23 ≈ 0.304 |      6/19 = 0.316       |     1/2 (6/20) + 1/2 (10/49) = 0.15 + 0.1 = 0.25     |
+| b a       | 6          | (6 + 1) / (15 + 4) = 7/19 ≈ 0.368 |       6/15 = 0.4        |      1/2 (6/15) + 1/2 (20/49) = 0.2 + 0.2 = 0.4      |
+| b b       | 6          | (6 + 1) / (15 + 4) = 7/19 ≈ 0.368 |       6/15 = 0.4        |      1/2 (6/15) + 1/2 (10/49) = 0.2 + 0.1 = 0.3      |
+| b c       | 0          | (0 + 1) / (15 + 4) = 1/19 ≈ 0.053 |   P(c) = 4/49 ≈ 0.082   |       1/2 (0/15) + 1/2 (10/49) = 0 + 0.1 = 0.1       |
+| b `⟨/s⟩`  | 3          | (3 + 1) / (15 + 4) = 4/19 ≈ 0.211 |       3/15 ≈ 0.2        |           1/2 (0/15) + 1/2 (0) = 0 + 0 = 0           |
+| c a       | 1          | (1 + 1) / (4 + 4) = 2/8 ≈ 0.25    |       1/4 = 0.25        |     1/2 (2/4) + 1/2 (20/49) = 0.25 + 0.2 = 0.45      |
+| c b       | 2          | (2 + 1) / (4 + 4) = 3/8 ≈ 0.375   |        2/4 = 0.5        |    1/2 (1/4) + 1/2 (10/49) = 0.125 + 0.1 = 0.225     |
+| c c       | 0          | (0 + 1) / (4 + 4) = 1/8 ≈ 0.125   |   P(c) = 4/49 ≈ 0.082   |       1/2 (0/4) + 1/2 (10/49) = 0 + 0.1 = 0.1        |
+| c `⟨/s⟩`  | 1          | (0 + 1) / (4 + 4) = 1/8 ≈ 0.125   |       1/4 = 0.25        |       1/2 (0/4) + 1/2 (10/49) = 0 + 0.1 = 0.1        |
 
 - La probabilidad de la secuencia ⟨s⟩a c c b c c c c b c⟨/s⟩ se calcula como el producto de las probabilidades de cada bigrama en la secuencia, utilizando cada una de las técnicas:
 
@@ -410,3 +427,210 @@ N = 49, ya que el corpus de entrenamiento tiene 49 términos (contando el símbo
 - 3. Aplicar la interpolación lineal 1/2P(t1 | t2) + 1/2P(t1).
      $$P(⟨s⟩a c c b c c c c b c⟨/s⟩) = P(a \| ⟨s⟩) P(c \| a) P(c \| c) P(b \| c) P(c \| b) P(c \| c) P(c \| c) P(c \| c) P(b \| c) P(c \| b) P(⟨/s⟩ \| c)$$
      $$= 0.45 \times 0.175 \times 0.1 \times 0.1 \times 0.175 \times 0.1 \times 0.1 \times 0.1 \times 0.1 \times 0.175 \times 0.1$$
+
+</div>
+
+<div class="summary">
+
+### 1.4.2 Detalle del calculo de probabilidades con suavizado de Laplace
+
+Para construir esta tabla a partir de los datos del Ejercicio 8, primero necesitamos extraer las frecuencias de todos los pares de palabras (bigramas) que aparecen en las 10 secuencias del corpus.
+
+Recordando lo que calculamos en nuestro mensaje anterior, la fórmula del suavizado de Laplace con $k=1$ para este problema exacto es:
+
+$$\mathbb{P}(t_2|t_1) = \frac{C(t_1 t_2) + 1}{C(t_1) + 4}$$
+
+_(Donde el $+4$ sale de sumar el tamaño del vocabulario $V=\{a,b,c\}$ más el símbolo de fin de secuencia `</s>`)._
+
+A continuación tienes la tabla completa con todas las combinaciones posibles de bigramas en este dominio:
+
+| Bigrama $(t_1 \rightarrow t_2)$                 | Frecuencia en corpus $C(t_1 t_2)$ | Probabilidad (Suavizado Laplace $k=1$) |
+| :---------------------------------------------- | :-------------------------------: | :------------------------------------: |
+| **Inicios de frase (Contexto `<s>`)**           |                                   |      _(Denominador: 10 + 4 = 14)_      |
+| $\langle s\rangle \rightarrow a$                |                 5                 |                 6 / 14                 |
+| $\langle s\rangle \rightarrow b$                |                 4                 |                 5 / 14                 |
+| $\langle s\rangle \rightarrow c$                |                 1                 |                 2 / 14                 |
+| $\langle s\rangle \rightarrow \langle/s\rangle$ |                 0                 |                 1 / 14                 |
+| **Contexto `a`**                                |                                   |      _(Denominador: 22 + 4 = 26)_      |
+| $a \rightarrow a$                               |                10                 |                11 / 26                 |
+| $a \rightarrow b$                               |                 3                 |                 4 / 26                 |
+| $a \rightarrow c$                               |                 3                 |                 4 / 26                 |
+| $a \rightarrow \langle/s\rangle$                |                 6                 |                 7 / 26                 |
+| **Contexto `b`**                                |                                   |      _(Denominador: 15 + 4 = 19)_      |
+| $b \rightarrow a$                               |                 6                 |                 7 / 19                 |
+| $b \rightarrow b$                               |                 6                 |                 7 / 19                 |
+| $b \rightarrow c$                               |                 0                 |                 1 / 19                 |
+| $b \rightarrow \langle/s\rangle$                |                 3                 |                 4 / 19                 |
+| **Contexto `c`**                                |                                   |       _(Denominador: 4 + 4 = 8)_       |
+| $c \rightarrow a$                               |                 1                 |                 2 / 8                  |
+| $c \rightarrow b$                               |                 2                 |                 3 / 8                  |
+| $c \rightarrow c$                               |                 0                 |                 1 / 8                  |
+| $c \rightarrow \langle/s\rangle$                |                 1                 |                 2 / 8                  |
+
+---
+
+**Explicación de los cálculos (5 casos representativos)**
+
+Para que entiendas perfectamente de dónde salen los números de la tercera columna, aquí tienes el desglose de 5 casos distintos aplicando la fórmula:
+
+**1. Un bigrama muy frecuente: $\mathbb{P}(a|a)$**
+Si contamos en el corpus, la letra `a` actúa como contexto un total de 22 veces. De esas 22 veces, va seguida de otra `a` en exactamente 10 ocasiones.
+Para aplicar Laplace, sumamos 1 a las ocurrencias en el numerador ($10+1 = 11$) y le sumamos 4 al denominador ($22+4 = 26$).
+_Resultado:_ $\mathbf{11 / 26}$
+
+**2. Un inicio de frase: $\mathbb{P}(a|\langle s\rangle)$**
+La marca de inicio de frase $\langle s\rangle$ aparece exactamente 10 veces en el corpus porque hay 10 secuencias. De esas 10 frases, 5 de ellas empiezan por la letra `a` (las secuencias 1, 2, 5, 8 y 10).
+Sumamos 1 en el numerador ($5+1 = 6$) y 4 al denominador ($10+4 = 14$).
+_Resultado:_ $\mathbf{6 / 14}$
+
+**3. Un fin de frase: $\mathbb{P}(\langle/s\rangle|a)$**
+¿Qué probabilidad hay de que la frase termine si estamos en la letra `a`? Como dijimos, la letra `a` aparece 22 veces en total, y observando el corpus, es la última letra de la frase en 6 ocasiones (las secuencias 2, 3, 4, 7, 9 y 10).
+Sumamos 1 al numerador ($6+1 = 7$) y 4 al denominador ($22+4 = 26$).
+_Resultado:_ $\mathbf{7 / 26}$
+
+**4. Un bigrama que no existe en el corpus: $\mathbb{P}(c|b)$**
+Si buscas en todas las frases de entrenamiento, la letra `b` jamás va seguida de una `c` (frecuencia = 0). Sin suavizado, la probabilidad sería 0 absoluto. Sin embargo, sabemos que la letra `b` actúa como contexto 15 veces. Aplicando Laplace, "inventamos" una ocurrencia fantasma en el numerador ($0+1 = 1$) y sumamos el vocabulario al denominador ($15+4 = 19$).
+_Resultado:_ $\mathbf{1 / 19}$
+
+**5. Un contexto muy poco común: $\mathbb{P}(b|c)$**
+La letra `c` aparece muy pocas veces en el corpus. Si las contamos, actúa como contexto de la palabra siguiente en tan solo 4 ocasiones en total. De esas 4 veces, va seguida de la letra `b` en 2 ocasiones (en las secuencias 8 y 9).
+Sumamos 1 al numerador ($2+1 = 3$) y sumamos 4 a las escasas 4 apariciones de la letra c en el denominador ($4+4 = 8$).
+_Resultado:_ $\mathbf{3 / 8}$
+
+</div>
+
+<div class=hihlight-exercise>
+
+### Enunciado original
+
+**Ejercicio 9:** Consideremos un corpus de entrenamiento consistente en una única secuencia de dígitos en la que el dígito cero ocurre 90 veces y los dígitos del uno al nueve ocurren una sola vez cada uno. Si entrenamos un modelo unigrama a partir de ese corpus, se pide calcular su perplejidad:
+
+1.  Sobre la secuencia $000000000\langle/s\rangle$.
+2.  Sobre la secuencia $010203040\langle/s\rangle$.
+3.  Sobre la secuencia $123456789\langle/s\rangle$.
+4.  Sobre el corpus de prueba formado por las tres secuencias anteriores.
+
+---
+
+### Resolución Paso a Paso
+
+**Paso Preliminar: Entrenamiento del modelo (probabilidades base)**
+Como la secuencia de entrenamiento es única, debemos tener en cuenta el símbolo de final de frase $\langle/s\rangle$ que la cierra. Hacemos el recuento total:
+
+- 90 apariciones del dígito '0'.
+- 9 apariciones de dígitos varios (del '1' al '9').
+- 1 aparición del símbolo $\langle/s\rangle$.
+  **Total de términos de entrenamiento:** 100.
+
+Aplicando la estimación de máxima verosimilitud para un modelo unigrama, las probabilidades aprendidas son:
+
+- $\mathbb{P}(0) = \frac{90}{100} = \mathbf{0.9}$
+- $\mathbb{P}(\text{dígito } 1\text{-}9) = \frac{1}{100} = \mathbf{0.01}$
+- $\mathbb{P}(\langle/s\rangle) = \frac{1}{100} = \mathbf{0.01}$
+
+Para agilizar los cálculos aplicaremos directamente sus logaritmos:
+$\log_2(0.9) \approx -0.152$ y $\log_2(0.01) \approx -6.644$.
+
+#### Apartado 1: Sobre la secuencia $000000000\langle/s\rangle$
+
+Tenemos una frase de prueba compuesta por 9 ceros y 1 símbolo de fin.
+
+- **$N = 10$** términos.
+- **Suma de logaritmos:** $9 \times \log_2(0.9) + 1 \times \log_2(0.01) \approx 9(-0.152) + 1(-6.644) = -8.012$
+- **Exponente ($-\frac{1}{N} \sum$):** $-\frac{1}{10} \times (-8.012) = 0.8012$
+- **Perplejidad:** $2^{0.8012} \approx \mathbf{1.74}$
+
+#### Apartado 2: Sobre la secuencia $010203040\langle/s\rangle$
+
+Tenemos una frase compuesta por 5 ceros y 5 términos de probabilidad baja (los dígitos 1, 2, 3, 4 y el símbolo $\langle/s\rangle$).
+
+- **$N = 10$** términos.
+- **Suma de logaritmos:** $5 \times \log_2(0.9) + 5 \times \log_2(0.01) \approx 5(-0.152) + 5(-6.644) = -33.980$
+- **Exponente ($-\frac{1}{N} \sum$):** $-\frac{1}{10} \times (-33.980) = 3.398$
+- **Perplejidad:** $2^{3.398} \approx \mathbf{10.54}$
+
+#### Apartado 3: Sobre la secuencia $123456789\langle/s\rangle$
+
+Esta frase no contiene ni un solo cero. Está formada íntegramente por los 9 dígitos raros y el símbolo de final de secuencia.
+
+- **$N = 10$** términos.
+- **Suma de logaritmos:** $10 \times \log_2(0.01) \approx 10(-6.644) = -66.440$
+- **Exponente ($-\frac{1}{N} \sum$):** $-\frac{1}{10} \times (-66.440) = 6.644$
+- **Perplejidad:** $2^{6.644} = \mathbf{100}$
+  _(Nota matemática rápida: Como todos los términos tienen exactamente probabilidad 0.01, el resultado era deducible teóricamente, ya que la perplejidad de una secuencia uniforme es siempre la probabilidad invertida: $1/0.01 = 100$)._
+
+#### Apartado 4: Sobre el corpus formado por las tres secuencias
+
+Aquí conectamos con la teoría de nuestro último mensaje. Ahora evaluamos el modelo usando las tres secuencias de golpe.
+
+- **$M = 3$** secuencias independientes.
+- **$N = 30$** términos en total (10 de cada frase).
+- **Suma total de logaritmos:** Simplemente sumamos los recuentos de todo el corpus. Hay un total de **14 ceros** (9 de la primera frase y 5 de la segunda) y **16 términos raros** de probabilidad 0.01 (dígitos y los 3 fines de frase).
+  Suma = $14 \times \log_2(0.9) + 16 \times \log_2(0.01) \approx 14(-0.152) + 16(-6.644) = -2.128 - 106.304 = -108.432$
+- **Exponente ($-\frac{1}{N} \sum$):** $-\frac{1}{30} \times (-108.432) = 3.6144$
+- **Perplejidad Global:** $2^{3.6144} \approx \mathbf{12.25}$
+
+Como puedes observar, la perplejidad global (12.25) se estabiliza como un "promedio geométrico" de lo sorprendido que ha estado el modelo frente a cada una de las frases individuales.
+
+</div>
+
+### 1.5 Perplejidad
+
+<div class="summary">
+
+¡Tienes toda la razón y has dado en el clavo! La confusión viene de una pequeña mezcla de notación en mi explicación anterior al intentar simplificarte el cálculo práctico, pero tu deducción teórica es matemáticamente impecable.
+
+Vamos a dejar clara la definición exacta de ambas letras según la teoría de tus apuntes:
+
+- **$M$**: Representa el **número de secuencias (frases completas)** independientes que conforman el corpus de prueba.
+- **$N$**: Representa la **cantidad total de términos (palabras individuales o tokens)** que suman todas esas $M$ secuencias juntas, incluyendo siempre los símbolos de fin de frase $\langle/s\rangle$.
+
+Por lo tanto, respondiendo a tu pregunta: **¡Sí, exactamente, $M=1$!**
+Como en este primer apartado del Ejercicio 9 estás calculando la perplejidad sobre una sola frase (la secuencia `000000000</s>`), se considera que ese corpus de prueba particular está formado por $M=1$ secuencia, la cual contiene en su interior un total de $N=10$ términos.
+
+**¿Cómo encaja esto en la fórmula oficial?**
+La fórmula teórica de la perplejidad hace el sumatorio sobre las secuencias grandes (los $W_i$ en mayúscula):
+
+$$Perplejidad(W_1 \dots W_M) = 2^{-\frac{1}{N} \sum_{i=1}^{M} \log_2 \mathbb{P}(W_i)}$$
+
+Al aplicarla a tu caso concreto donde $M=1$, el sumatorio desaparece porque solo evalúas tu única frase ($W_1$):
+
+$$Perplejidad(W_1) = 2^{-\frac{1}{10} \log_2 \mathbb{P}(W_1)}$$
+
+¿Y de dónde salió la suma que hicimos en el mensaje anterior? Como la probabilidad de una frase completa $\mathbb{P}(W_1)$ se calcula multiplicando las probabilidades de sus términos individuales, al aplicarle el logaritmo se transforma en la suma de los logaritmos de cada término. Por eso terminaste sumando los 10 logaritmos pequeños (los 9 ceros y el $\langle/s\rangle$) para obtener aquel fabuloso `-8.012`.
+
+En resumen para tus apuntes:
+
+- **$M = 1$** (porque evaluamos 1 secuencia).
+- **$N = 10$** (porque esa única secuencia está compuesta por 10 términos).
+
+Aclarado este detalle, respondo a tus dos excelentes preguntas teóricas:
+
+**1. ¿En qué rango se mueve la perplejidad?**
+La perplejidad se mueve siempre en el intervalo cerrado y hasta el infinito: **$[1, +\infty)$**.
+Dado que la probabilidad máxima teórica de una secuencia es 1 (certeza absoluta), el logaritmo de 1 es 0. Al elevar $2^0$, obtenemos 1. Por tanto, el valor más bajo y perfecto que puede alcanzar la perplejidad es 1. A partir de ahí, a medida que bajan las probabilidades, el valor crecerá sin límite superior. Nunca verás una perplejidad negativa ni un valor como $0.5$.
+
+**2. ¿A mayor número, menos esperada es la secuencia?**
+**Sí, estás en lo cierto**. La teoría establece matemáticamente que la perplejidad es _inversamente proporcional_ a la probabilidad que el modelo le asigna a esa secuencia.
+La propia palabra lo define muy bien intuitivamente (grado de "perplejidad" o sorpresa del modelo):
+
+- **Menor perplejidad (números bajos cercanos a 1):** El modelo predijo la secuencia con muchísima seguridad. No le sorprende porque es lo que esperaba ver.
+- **Mayor perplejidad (números grandes):** El modelo le da una probabilidad bajísima a esa secuencia. Está "perplejo" o muy sorprendido porque, según su entrenamiento, es una frase muy rara o poco esperada.
+
+Fíjate en cómo esto cuadra maravillosamente con el propio ejercicio que estás resolviendo:
+
+- En la **primera secuencia** (`000000000</s>`), todos los números eran ceros. Como el cero apareció 90 veces en el entrenamiento, era súper probable. Su perplejidad fue de **1.74** (muy esperada).
+- En esta **segunda secuencia** (`010203040</s>`), has metido los números 1, 2, 3 y 4. El modelo solo los vio 1 vez durante su entrenamiento, por lo que le resultan extraños. Al ser una secuencia menos esperada, la perplejidad ha subido a **10.56**.
+
+---
+
+Si tengo dos secuencias independientes en el corpus de prueba, la primera de 3 símbolos y la segunda de 7 símbolos (ambas con el carácter $\langle/s\rangle$), entonces:
+
+- **$M = 2$**: Efectivamente, tienes dos secuencias independientes ($W_1$ y $W_2$) en tu corpus de prueba.
+- **$N = 12$**: Sumas todos los tokens evaluados en el corpus completo. Son los 4 términos de la primera frase (3 símbolos + $\langle/s\rangle$) más los 8 términos de la segunda frase (7 símbolos + $\langle/s\rangle$).
+
+Si tuvieras que meter estos datos en la fórmula de la perplejidad para evaluar qué tal se le da a tu modelo predecir juntas estas dos frases, el exponente te quedaría planteado exactamente así:
+
+$$-\frac{1}{12} \left[ \log_2 \mathbb{P}(\text{Frase 1}) + \log_2 \mathbb{P}(\text{Frase 2}) \right]$$
+
+</div>

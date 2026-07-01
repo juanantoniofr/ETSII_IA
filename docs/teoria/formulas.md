@@ -163,7 +163,6 @@ Una vez que el algoritmo ha calculado las distancias y ha aislado a los $k$ ejem
 
 </div>
 
-
 ## Árboles de Decisión (CART)
 
 <div class="highlight-theory">
@@ -173,26 +172,29 @@ El algoritmo CART (Árboles de Clasificación y Regresión) basa todo su aprendi
 Aquí tienes las fórmulas fundamentales que rigen el algoritmo:
 
 ### 1. La Fórmula Maestra de Partición (Impureza Promedio)
+
 Cuando el árbol está en un nodo e intenta averiguar por dónde cortar un atributo usando un valor umbral ($u$), divide temporalmente sus datos en dos ramas (izquierda y derecha). El objetivo del algoritmo es encontrar el corte que minimice la siguiente fórmula de impureza ponderada:
 $$\text{Impureza} = \frac{|\mathcal{D}^{Izq}|}{|\mathcal{D}|} I(\mathcal{D}^{Izq}) + \frac{|\mathcal{D}^{Der}|}{|\mathcal{D}|} I(\mathcal{D}^{Der})$$
-*(Donde $|\mathcal{D}|$ es la cantidad total de ejemplos en el nodo que vas a dividir, $|\mathcal{D}^{Izq}|$ y $|\mathcal{D}^{Der}|$ son cuántos ejemplos caen a cada lado del corte, e $I$ es la función de impureza que aplique según el tipo de problema)*.
+_(Donde $|\mathcal{D}|$ es la cantidad total de ejemplos en el nodo que vas a dividir, $|\mathcal{D}^{Izq}|$ y $|\mathcal{D}^{Der}|$ son cuántos ejemplos caen a cada lado del corte, e $I$ es la función de impureza que aplique según el tipo de problema)_.
 
 ### 2. Fórmulas para tareas de Clasificación
+
 Si tu objetivo es predecir una categoría (ejemplo: "spam" o "no spam"), la función de impureza $I$ que utiliza CART por defecto es el **Índice de Gini**.
 
-*   **Fórmula del Índice de Gini:**
-    $$G(D) = 1 - \sum_{c \in C} \hat{\Pi}_c^2$$
-    *(Donde $\hat{\Pi}_c$ es la proporción de ejemplos que pertenecen a la clase $c$ dentro de ese nodo)*. Si todos los datos de una partición son de la misma clase, el índice de Gini dará exactamente $0$, lo que indica pureza total.
-*   **Predicción final (Hojas):** Cuando el árbol no se puede dividir más, la etiqueta final del nodo hoja se decide calculando la **clase mayoritaria** de los ejemplos que han caído en él.
+- **Fórmula del Índice de Gini:**
+  $$G(D) = 1 - \sum_{c \in C} \hat{\Pi}_c^2$$
+  _(Donde $\hat{\Pi}_c$ es la proporción de ejemplos que pertenecen a la clase $c$ dentro de ese nodo)_. Si todos los datos de una partición son de la misma clase, el índice de Gini dará exactamente $0$, lo que indica pureza total.
+- **Predicción final (Hojas):** Cuando el árbol no se puede dividir más, la etiqueta final del nodo hoja se decide calculando la **clase mayoritaria** de los ejemplos que han caído en él.
 
 ### 3. Fórmulas para tareas de Regresión
+
 Si tu objetivo es predecir un número continuo (ejemplo: el precio de una casa o los mililitros de helado vendidos), la función de impureza $I$ que asume el algoritmo es la **Varianza**.
 
-*   **Fórmula de Impureza (Varianza):**
-    $$Var(\mathcal{D}) = \frac{1}{|\mathcal{D}|} \sum_{(x,y) \in \mathcal{D}} (y - \overline{y})^2$$
-    *(El algoritmo buscará particiones que hagan que esta varianza sea lo más cercana a 0 posible, es decir, agrupando ejemplos con valores numéricos muy similares)*.
-*   **Predicción final (Hojas):** La predicción que devolverá la hoja del árbol para cualquier dato nuevo será matemáticamente la **media aritmética** de los valores objetivos de los ejemplos de entrenamiento asociados a esa hoja:
-    $$\text{ETIQUETA}(\mathcal{D}) = \frac{1}{|\mathcal{D}|} \sum_{(x,y) \in \mathcal{D}} y = \overline{y}$$
+- **Fórmula de Impureza (Varianza):**
+  $$Var(\mathcal{D}) = \frac{1}{|\mathcal{D}|} \sum_{(x,y) \in \mathcal{D}} (y - \overline{y})^2$$
+  _(El algoritmo buscará particiones que hagan que esta varianza sea lo más cercana a 0 posible, es decir, agrupando ejemplos con valores numéricos muy similares)_.
+- **Predicción final (Hojas):** La predicción que devolverá la hoja del árbol para cualquier dato nuevo será matemáticamente la **media aritmética** de los valores objetivos de los ejemplos de entrenamiento asociados a esa hoja:
+  $$\text{ETIQUETA}(\mathcal{D}) = \frac{1}{|\mathcal{D}|} \sum_{(x,y) \in \mathcal{D}} y = \overline{y}$$
 
 </div>
 
@@ -245,5 +247,132 @@ $$R^2 = 1 - \frac{\text{Suma de los errores al cuadrado}}{\text{Suma total de la
 $$R^2 = 1 - \frac{\sum (y_i - a_i)^2}{\sum (y_i - \bar{y})^2}$$
 
 El coeficiente de determinación es una métrica **global** que solo se puede sacar cuando hayas terminado de pasar por la red los **5 ejemplos** de la tabla del Ejercicio 11.
+
+</div>
+
+<div class="summary">
+
+### Ciclo completo de fórmulas para Redes Neuronales para resolver ejercicios de retropropagación
+
+Para resolver un ejercicio completo en tu examen, el gran secreto que debes tener en cuenta es que **gran parte del algoritmo es universal**. Las fórmulas matemáticas para propagar la información por las capas ocultas y para actualizar los pesos son exactamente las mismas en las tres configuraciones; lo único que cambia es cómo actúa y cómo se equivoca la capa de salida.
+
+A continuación tienes el ciclo completo de fórmulas matriciales paso a paso, integrando tus tres configuraciones:
+
+### FASE 1: Propagación hacia adelante (Forward)
+
+Para calcular cómo transita la información desde la primera capa oculta hasta la salida, se aplica la misma operación en cada capa $l$:
+
+1.  **Entrada neta:** $z^l = W^l a^{l-1} + W_0^l$
+2.  **Activación:** $a^l = g^l(z^l)$
+
+_Lo que cambia:_ En las capas ocultas, $g^l$ suele ser la función Rectificador (ReLU) o Sigmoide. Sin embargo, en la capa de salida ($L$), $g^L$ dependerá de tu configuración:
+
+- **Regresión:** $a^L = z^L$ _(Función Identidad)_.
+- **Clasificación Binaria:** $a^L = \Large \frac{1}{1+e^{-z^L}}$ _(Función Sigmoide)_.
+- **Clasificación Multiclase:** $a^L = \Large \frac{e^{z_i^L}}{\sum e^{z_j^L}}$ _(Función Softmax)_
+
+### FASE 2: Cálculo del Coste y del Error Inicial ($\Delta^L$)
+
+Aquí es donde aplicamos las tres reglas de oro que mencionaste. Comparamos tu predicción ($a^L$) con el objetivo real ($y$):
+
+- **1. Regresión**
+  - Cálculo del coste: $MSE = \frac{1}{n} \sum_{k=1}^n (y_k - a_k^L)^2$
+  - Error a propagar: $\Delta^L = \frac{2}{n}(a^L - y)$
+- **2. Clasificación Binaria**
+  - Cálculo del coste: $C = -y \log_e(a^L) - (1-y) \log_e(1-a^L)$
+  - Error a propagar: $\Delta^L = a^L - y$
+- **3. Clasificación Multiclase**
+  - Cálculo del coste: $C = -\sum_{k=1}^n y_k \log_e(a_k^L)$
+  - Error a propagar: $\Delta^L = a^L - y$
+
+### FASE 3: Propagación hacia atrás del error (Backpropagation)
+
+Una vez que tienes el vector $\Delta^L$ calculado en el paso anterior, esta fórmula matricial vuelve a ser **completamente universal** para cualquiera de los tres problemas.
+Para trasladar el error a las capas interiores ($l = L-1, \dots, 2$), aplicas:
+$$\Delta^l = ((W^{l+1})^T \Delta^{l+1}) \odot (g^l)^{\prime}(z^l)$$
+_(Recuerda: multiplicas el error de la capa superior por los pesos transpuestos, y luego aplicas el producto de Hadamard $\odot$ multiplicando posición a posición por la derivada de la activación de esa capa oculta)_.
+
+### FASE 4: Recálculo de Pesos (Gradientes y Descenso Estocástico)
+
+Teniendo las activaciones de la Fase 1 y los errores de la Fase 3, se calculan los gradientes locales que dictan cuánto debe cambiar la red para este ejemplo concreto. Las fórmulas **universales** son:
+
+- **Gradiente de los pesos:** $\Large \frac{\partial C}{\partial W^l} = \Delta^l (a^{l-1})^T$
+- **Gradiente de los sesgos:** $\Large \frac{\partial C}{\partial W_0^l} = \Delta^l$
+
+Finalmente, como los ejercicios suelen pedir ajustar los parámetros por "minilotes" (un bloque de $m$ ejemplos juntos), sumas los gradientes de todos los ejemplos del bloque y aplicas la regla de actualización multiplicada por la tasa de aprendizaje $\eta$:
+
+- **Nuevos Pesos:** $\Large W^l \leftarrow W^l - \frac{\eta}{m} \sum \Delta^l (a^{l-1})^T$
+- **Nuevos Sesgos:** $\Large W_0^l \leftarrow W_0^l - \frac{\eta}{m} \sum \Delta^l$
+
+</div>
+
+## PNL - Procesamiento de Lenguaje Natural
+
+<div class="highlight-exercise">
+
+### CONFIGURACIÓN 1: Clasificación de Documentos (Bolsa de Palabras + Naive Bayes)
+
+Se usa cuando nos importa la frecuencia entera de repetición de cada palabra sin discriminar su rareza general.
+
+**1. Entrenamiento del Modelo (Cálculo de parámetros):**
+
+- **Probabilidad a priori de la clase:** $\mathbb{P}(c) = \frac{N_c}{N}$ _(Documentos de la clase $c$ entre el total de documentos)_.
+- **Probabilidad condicional (con Suavizado Laplace):**
+  $$\mathbb{P}(t|c) = \frac{N_{c,t} + 1}{\sum_{s \in V} N_{c,s} + |V|}$$
+  _(Ocurrencias de la palabra $t$ en la clase $c$ $+ 1$, dividido entre el total de palabras en la clase $c$ $+$ el tamaño del vocabulario $|V|$)_.
+
+**2. Predicción de un nuevo documento:**
+Para clasificar un texto nuevo, usas la versión con logaritmos para evitar desbordamientos, multiplicando por el número de veces ($n_{D,t}$) que aparece la palabra en el texto de prueba:
+$$\hat{c} = \arg \max_{c \in C} \left( \log \mathbb{P}(c) + \sum_{t \in V} n_{D,t} \log \mathbb{P}(t|c) \right)$$
+
+---
+
+### CONFIGURACIÓN 2: Clasificación de Documentos (TF-IDF + kNN)
+
+Se usa cuando queremos darle más importancia a las palabras "clave" o raras del texto y penalizar las demasiado comunes (como preposiciones o artículos).
+
+**1. Representación del Documento (Pesos TF-IDF):**
+Para cada palabra $t$ en el documento $D$:
+$$tf\text{-}idf_{t,D} = tf_{t,D} \times \log_2 \left( \frac{N}{df_t} \right)$$
+_(Donde $tf$ es las veces que aparece $t$ en el documento, $N$ es el total de documentos de entrenamiento, y $df$ es en cuántos documentos distintos aparece la palabra $t$)_.
+
+**2. Predicción de un nuevo documento:**
+
+- **Métrica (Similitud del Coseno):** Se calcula el coseno entre el vector del documento nuevo y cada ejemplo de entrenamiento:
+  $$sim(D_1, D_2) = \frac{D_1 \cdot D_2}{||D_1||_2 \times ||D_2||_2}$$
+- **Regla de Decisión:** Te quedas con los $k$ documentos que saquen el valor de similitud más alto y asignas la clase mayoritaria entre ellos.
+
+---
+
+### CONFIGURACIÓN 3: Modelos de n-gramas (Predicción de secuencias)
+
+Aquí el objetivo es predecir secuencias asumiendo que cada palabra depende solo de las $n-1$ palabras anteriores (propiedad de Markov).
+
+**1. Fórmulas de Entrenamiento (Cómo abordar los ceros):**
+Para calcular la probabilidad de una palabra dado un contexto, usas una de estas tres vías dependiendo de lo que exija el problema:
+
+- **A. Suavizado de Laplace ($k=1$):**
+  $$\mathbb{P}(w_m|\text{contexto}) = \frac{C(\text{contexto } w_m) + 1}{C(\text{contexto}) + (|V| + 1)}$$
+  _(Suma 1 a la ocurrencia del bloque completo, y divide por el conteo del contexto puro más las continuaciones posibles)_.
+- **B. Retroceso (Backoff):** Si la frecuencia del n-grama es 0, en lugar de dar probabilidad nula, el modelo asume por defecto la probabilidad del modelo inferior (ej. si falla el trigrama, usa el bigrama).
+- **C. Interpolación:** Mezcla varios modelos asignando pesos $\lambda$ que deben sumar 1:
+  $$\mathbb{P}(w_m|w_{m-1}) = \lambda_1 \mathbb{P}_{\text{unigrama}}(w_m) + \lambda_2 \mathbb{P}_{\text{bigrama}}(w_m|w_{m-1})$$
+
+**2. Predicción final de una frase completa:**
+Para evaluar la probabilidad de que exista toda la frase generada, multiplicas las probabilidades condicionales acotadas o sumas sus logaritmos:
+
+$$\mathbb{P}(w) \cong \prod_{m=1}^{M}\mathbb{P}(w_m|w_{m-(n-1)}\cdot\cdot\cdot w_{m-1})$$
+
+O esta versión equivalente usando logaritmos para evitar underflow numérico:
+
+$$\log \mathbb{P}(w) \cong \sum_{m=1}^M \log \mathbb{P}(w_m|w_{m-(n-1)} \dots w_{m-1})$$
+
+---
+
+### CONFIGURACIÓN 4: Evaluación (Perplejidad)
+
+Teniendo tu modelo de n-gramas anterior entrenado y un documento nuevo de prueba con $N$ términos totales (incluyendo símbolos $\langle/s\rangle$), mides el desempeño del modelo usando base logarítmica:
+$$\Large Perplejidad(w) = 2^{-\frac{1}{N} \sum_{i=1}^M \log_2 \mathbb{P}(w_i)}$$
+_(Básicamente, tomas todas las probabilidades individuales que tu modelo calculó para la secuencia de prueba, les aplicas logaritmo en base 2, las sumas, divides por el número total de términos y elevas 2 a la menos todo eso)_.
 
 </div>
