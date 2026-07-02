@@ -457,6 +457,94 @@ Dado que el enunciado general del problema no especifica costes individuales par
 
 # Ejercicios
 
+<div class="summary">
+
+Para resolver solventemente cualquier ejercicio de modelado en el formalismo **STRIPS** en tu examen, debes estructurar tu respuesta siguiendo un conjunto de reglas metodológicas y evitar caer en las trampas típicas de diseño.
+
+Aquí tienes la **guía maestra de "tips" y buenas prácticas** basada estrictamente en los dominios y la teoría de tu asignatura:
+
+---
+
+### 1. Domina la Estructura de la Tupla $P = \langle H, A, I, G \rangle$
+
+Todo problema de planificación STRIPS debe quedar definido por estos cuatro conjuntos:
+
+- **$H$ (Hechos/Proposiciones):** Definidos por predicados aplicados a constantes.
+- **$A$ (Acciones):** Los esquemas de acciones parametrizados.
+- **$I$ (Estado Inicial):** El conjunto de hechos verdaderos al comenzar.
+- **$G$ (Objetivos):** El conjunto de hechos que se desean alcanzar.
+
+---
+
+### 2. Aplica la "Regla de Oro" de la Representación Factorizada
+
+La mayor ventaja de STRIPS es que trabaja con estados factorizados. Al diseñar las listas de efectos de tus esquemas de acciones:
+
+- **Especifica únicamente lo que cambia** al aplicar la acción.
+- Todo lo que **no** aparezca explícitamente en la lista de borrado (efectos negativos) ni en la lista de adición (efectos positivos) **permanece inalterado por defecto**. No intentes listar hechos que siguen igual.
+- **Regla estricta:** La lista de borrado y la de adición para una misma acción deben ser completamente **disjuntas** (un hecho no puede borrarse y añadirse al mismo tiempo).
+
+---
+
+### 3. Evita Errores de Coherencia de Variables
+
+Un error clásico de examen que penaliza gravemente es usar variables "huérfanas".
+
+- **Regla:** Toda variable que aparezca en las precondiciones o en los efectos de un esquema de acción **debe figurar en los parámetros de la cabecera de la acción**.
+- _Ejemplo correcto:_ Si representas `CONDUCIR(c, f, l1, l2)`, necesitas que el conductor `c`, la furgoneta `f`, el origen `l1` y el destino `l2` estén en los parámetros para poder comprobar `CONDUCTOR_EN(c, l1)` y cambiar la ubicación de la furgoneta.
+
+---
+
+### 4. No te olvides de los "Flags de Control" (Exclusión Mutua)
+
+Muchos enunciados limitan el uso de recursos con frases como: _"el procesador solo puede ejecutar un programa a la vez"_, _"el satélite solo dispone de energía para encender un instrumento"_ o _"el robot solo tiene dos pinzas"_.
+
+- **Tip de examen:** Para modelar esto, es obligatorio introducir un **predicado de control de disponibilidad** (un flag de estado):
+  - `PROCESADOR_EN_ESPERA()`
+  - `BRAZO_LIBRE()`
+  - `HAY_ENERGÍA(s)`
+  - `AVAILABLE(x)`
+- **La trampa:** Si pones en las precondiciones que el recurso debe estar libre (`BRAZO_LIBRE()` o `AVAILABLE(x)`), debes **borrarlo de inmediato** en la lista de efectos de la acción que lo ocupa, y **volver a añadirlo** en la acción que lo libera o descarga. Si olvidas este ciclo de borrado/adición, tu modelo permitirá que un robot coja infinitas cosas a la vez.
+
+---
+
+### 5. Clasifica Hechos Estáticos vs. Hechos Dinámicos
+
+- **Hechos Dinámicos:** Cambian a lo largo del tiempo (ej. `PAQUETE_EN(p, l)` o `ASCENSOR_EN(pl)`). Aparecen en precondiciones, borrados y adiciones.
+- **Hechos Estáticos:** Describen la geografía inmutable del entorno (ej. `HAY_CARRETERA(l1, l2)`, `SUPERIOR(pl1, pl2)` o `MOVE-DIR(f, t, d)`).
+  - **Tip de examen:** Colócalos en las **precondiciones** para validar que la acción es física o lógicamente posible.
+  - **La trampa:** **Nunca** los pongas en la lista de borrado o adición. Las carreteras no desaparecen por conducir por ellas.
+
+---
+
+### 6. Aplica la Hipótesis del Mundo Cerrado en $I$ y $G$
+
+- En el **Estado Inicial ($I$):** Solo debes listar aquellos hechos que son **verdaderos**. Todo lo que no listes (como que un programa no está copiado) se asume automáticamente como falso.
+- En el **Objetivo ($G$):** **Nunca diseñes un estado completo**. El objetivo debe ser el conjunto **mínimo** de condiciones que se deben cumplir para dar el problema por resuelto. Por ejemplo, si el objetivo es que el paquete esté en su destino, solo pon `PAQUETE_EN(P1, L3)`. No incluyas dónde debe acabar el camión o el conductor a menos que el enunciado lo exija explícitamente.
+
+---
+
+### 7. El truco del "Desdoblamiento de Acciones"
+
+A veces, el efecto de una acción cambia drásticamente según las propiedades del destino.
+
+- _Por ejemplo:_ En Sokoban, empujar una piedra a una casilla objetivo añade el hecho `AT-GOAL(s)`, pero empujarla a una casilla no-objetivo debe borrarlo (por si la piedra ya estaba en una zona objetivo y la has sacado de ahí).
+- **Tip de examen:** En lugar de intentar escribir condiciones complejas (que STRIPS básico no permite), **desdobla la acción en dos esquemas de acciones diferentes**. Crea una acción `PUSH-TO-GOAL` (con la precondición estática `is_goal(t)`) y otra `PUSH-TO-NONGOAL` (con la precondición estática `is_nongoal(t)`).
+
+---
+
+### 8. Cómo redactar la comprobación de un plan solución
+
+Si el examen te pide _"comprobar que el plan efectivamente es solución describiendo la secuencia de estados"_:
+
+1.  Escribe el estado inicial completo $S_0 = I$.
+2.  Para cada acción $a_i$ de tu plan:
+    - Muestra que se cumplen sus precondiciones en $S_{i-1}$.
+    - Escribe el nuevo estado $S_i = (S_{i-1} \setminus \text{del}(a_i)) \cup \text{add}(a_i)$.
+3.  Al llegar al último estado $S_n$, escribe explícitamente: _"Como $G \subseteq S_n$, se cumplen todos los objetivos y el plan es válido"_.
+
+</div>
+
 ## Ejercicio 1
 
 Consideremos un dominio de planificación automática consistente en un ordenador que debe gestionar la ejecución de varios programas de software. El proceso para ejecutar un programa consiste en primero copiarlo desde el disco duro a la memoria y después asignarlo al procesador para que este lo ejecute. Asumimos que la memoria del ordenador tiene capacidad infinita, pero que el procesador solo puede ejecutar un programa a la vez.
@@ -509,8 +597,8 @@ Se pide:
   -> COPIAR(P2) => S_2 => {EN_MEMORIA(P1), EN_MEMORIA(P2), PROCESADOR_EN_ESPERA()}
   -> ASIGNAR(P1) => S_3 => {EN_MEMORIA(P1), ASIGNADO(P1), EN_MEMORIA(P2)}
   -> EJECUTAR(P1) => S_4 => {EN_MEMORIA(P1), EN_MEMORIA(P2), EJECUTADO(P1), PROCESADOR_EN_ESPERA()}
-  -> ASIGNAR(P1) => S_5 => {EN_MEMORIA(P1), EN_MEMORIA(P2), EJECUTADO(P1), ASIGNADO(P2)}
-  -> EJECUTAR(P2) => S_6 => {EN_MEMORIA(P1), EN_MEMORIA(P2), EJECUTADO(P1), EJECUTADO(P1), PROCESADOR_EN_ESPERA()}
+  -> ASIGNAR(P2) => S_5 => {EN_MEMORIA(P1), EN_MEMORIA(P2), EJECUTADO(P1), ASIGNADO(P2)}
+  -> EJECUTAR(P2) => S_6 => {EN_MEMORIA(P1), EN_MEMORIA(P2), EJECUTADO(P1), EJECUTADO(P2), PROCESADOR_EN_ESPERA()}
 
 ---
 
@@ -601,6 +689,8 @@ S_INICIAL = { HAY_CARRETERA(L1, L3), HAY_CARRETERA(L2, L3), HAY_CAMINO(L1, L2), 
 -> BAJAR_DE(C2, F1, L1) => { CONDUCTOR_EN(C2, L1), SIN_CONDUCTOR(F1), **FURGONETA_EN(F1, L1)**, **PAQUETE_EN(P2, L3)**, SIN_CONDUCTOR(F2), **PAQUETE_EN(P1, L3)**, **CONDUCTOR_EN(C1, L3)**, FURGONETA_EN(F2, L3)}
 -> CAMINAR(C2, L1, L2) => { **CONDUCTOR_EN(C2, L2)**, SIN_CONDUCTOR(F1), **FURGONETA_EN(F1, L1)**, **PAQUETE_EN(P2, L3)**, SIN_CONDUCTOR(F2), **PAQUETE_EN(P1, L3)**, **CONDUCTOR_EN(C1, L3)**, FURGONETA_EN(F2, L3)}
 
+<div class="highlight-exercise">
+
 ## Ejercicio 3
 
 Consideremos un dominio de planificación automática consistente en un ascensor (que asumimos con capacidad infinita) que permite moverse a personas entre distintas plantas de un edificio.
@@ -658,17 +748,20 @@ Plan = { BAJAR(PL1, PL0), ENTRAR(PE0, PL0), SUBIR(PL0, PL1), SUBIR(PL1, PL2), SA
 Ya que ORIGEN(PE0, PL0) y ORIGEN(PE1, PL3), y SUPERIOR(PL1, PL0), SUPERIOR(PL2, PL0), SUPERIOR(PL3, PL0), SUPERIOR(PL2, PL1), SUPERIOR(PL3, PL1), SUPERIOR(PL3, PL2), Y DESTINO(PE0, PL2), DESTINO(PE1, PL0) no están en ninguan lista de borrado ni de adición, sustituimos estos hechos por el simbolo H para claridad de la exposición.
 
 S_i = {ASCENSOR_EN(PL1), FUERA_ASCENSOR(PE0), FUERA_ASCENSOR(PE1), H}
--> BAJAR(PL1, PL0) -> { ASCENSOR_EN(PL0), FUERA_ASCENSOR(PE0), , FUERA_ASCENSOR(PE1), H}
--> ENTRAR(PE0, PL0) -> { ASCENSOR_EN(PL0), DENTRO_ASCENSOR(PE0), FUERA_ASCENSOR(PE1), H}
--> SUBIR(PL0, PL1) -> { ASCENSOR_EN(PL1), DENTRO_ASCENSOR(PE0), FUERA_ASCENSOR(PE1), H}
--> SUBIR(PL1, PL2) -> { ASCENSOR_EN(PL2), DENTRO_ASCENSOR(PE0), FUERA_ASCENSOR(PE1), H}
--> SALIR(PE0, PL2) -> { ASCENSOR_EN(PL2), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), FUERA_ASCENSOR(PE1), H}
--> SUBIR(PL2, PL3) -> { ASCENSOR_EN(PL3), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), FUERA_ASCENSOR(PE1), H}
--> ENTRAR(PE1, PL3) -> { ASCENSOR_EN(PL3), DENTRO_ASCENSOR(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
--> BAJAR(PL3, PL2) -> { ASCENSOR_EN(PL2), DENTRO_ASCENSOR(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
--> BAJAR(PL2, PL1) -> { ASCENSOR_EN(PL1), DENTRO_ASCENSOR(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
--> BAJAR(PL1, PL0) -> { ASCENSOR_EN(PL0), DENTRO_ASCENSOR(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
--> SALIR(PE1, PL0) -> { ASCENSOR_EN(PL0), FUERA_ASCENSOR(PE1), EN_DESTINO(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
+
+- BAJAR(PL1, PL0) -> { **ASCENSOR_EN(PL0)**, FUERA_ASCENSOR(PE0), , FUERA_ASCENSOR(PE1), H}
+- ENTRAR(PE0, PL0) -> { ASCENSOR_EN(PL0), **DENTRO_ASCENSOR(PE0)**, FUERA_ASCENSOR(PE1), H}
+- SUBIR(PL0, PL1) -> { **ASCENSOR_EN(PL1)**, DENTRO_ASCENSOR(PE0), FUERA_ASCENSOR(PE1), H}
+- SUBIR(PL1, PL2) -> { **ASCENSOR_EN(PL2)**, DENTRO_ASCENSOR(PE0), FUERA_ASCENSOR(PE1), H}
+- SALIR(PE0, PL2) -> { **ASCENSOR_EN(PL2)**, FUERA_ASCENSOR(PE0), **EN_DESTINO(PE0)**, FUERA_ASCENSOR(PE1), H}
+- SUBIR(PL2, PL3) -> { **ASCENSOR_EN(PL3)**, FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), FUERA_ASCENSOR(PE1), H}
+- ENTRAR(PE1, PL3) -> { ASCENSOR_EN(PL3), **DENTRO_ASCENSOR(PE1)**, FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
+- BAJAR(PL3, PL2) -> { **ASCENSOR_EN(PL2)**, DENTRO_ASCENSOR(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
+- BAJAR(PL2, PL1) -> { **ASCENSOR_EN(PL1)**, DENTRO_ASCENSOR(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
+- BAJAR(PL1, PL0) -> { **ASCENSOR_EN(PL0)**, DENTRO_ASCENSOR(PE1), FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
+- SALIR(PE1, PL0) -> { ASCENSOR_EN(PL0), **FUERA_ASCENSOR(PE1)**, **EN_DESTINO(PE1)**, FUERA_ASCENSOR(PE0), EN_DESTINO(PE0), H}
+
+<div class="highlight-exercise">
 
 ## Ejercicio 4
 
@@ -742,22 +835,23 @@ Se pide:
 
 #### Apartado 2
 
-Estado Incial S_i = {
+Estado Incial $S_i$ = {
 
-- \(\text{SON_DISTINTOS}(o_1, o_2)\; \forall o_1, o_2 \in \{ESTRELLA_0,\ldots,ESTRELLA_4,\;NEBULOSA_0,\ldots,NEBULOSA_2\}\ \text{con}\ o_1 \neq o_2\)
-- APUNTA_A(SATÉLITE_1, ESTRELLA_0$), APUNTA_A(SATÉLITE_0, ESTRELLA_4)
-- A_BORDO(INTRUMENTO_i, SATÉLITE_0) \( i \in \{0,1,2\), A_BORDO(INTRUMENTO_3, SATÉLITE_1)
-- NO_CALIBRADO(INSTRUMENTO_i) \( i \in \{0,1,2,3\)
-- OBJETIVO_CALIBRACIÓN(INSTRUMENTO_0, ESTRELLA_1), OBJETIVO_CALIBRACIÓN(INSTRUMENTO_1, ESTRELLA_2), OBJETIVO_CALIBRACIÓN(INSTRUMENTO_2, ESTRELLA_0), OBJETIVO_CALIBRACIÓN(INSTRUMENTO_3, ESTRELLA_0)
-- COMPATIBLE_CON(INSTRUMENTO_0, INFRAROJOS), COMPATIBLE_CON(INSTRUMENTO_0, ESPECTÓGRAFO), COMPATIBLE_CON(INSTRUMENTO_1, VISIBLE), COMPATIBLE_CON(INSTRUMENTO_2, VISIBLE), COMPATIBLE_CON(INSTRUMENTO_2, INFRAROJOS), COMPATIBLE_CON(INSTRUMENTO_3, INFRAROJOS, COMPATIBLE_CON(INSTRUMENTO_3, ESPECTÓGRAFO), COMPATIBLE_CON(INSTRUMENTO_3, VISIBLE)
-- HAY_ENERGÍA(SATÉLITE_0), HAY_ENERGÍA(SATÉLITE_1),
-- SIN_IMAGEN(ESTRELLA_i, TIPO) \( i \in \{0,1,2,3,4\}, TIPO \in \{VISIBLE, INFRARROJOS, ESPECTRÓGRAFO\} ), SIN_IMAGEN(NEBULOSA_i, TIPO) \( i, j \in \{0,1,2\}, TIPO \in \{VISIBLE, INFRARROJOS, ESPECTRÓGRAFO\} \)
+- SON_DISTINTOS(o_1, o_2); $\forall o_1, o_2 \in {ESTRELLA_0,\ldots,ESTRELLA_4,\;NEBULOSA_0,\ldots,NEBULOSA_2}$ con $o_1 \neq o_2$
+- APUNTA_A($SATÉLITE_1$, $ESTRELLA_0$), APUNTA_A($SATÉLITE_0$, $ESTRELLA_4$)
+- A_BORDO($INTRUMENTO_i$, $SATÉLITE_0$) para $i \in \{0,1,2\}$, A_BORDO($INTRUMENTO_3$, $SATÉLITE_1$)
+- NO_CALIBRADO($INSTRUMENTO_i$) para $i \in \{0,1,2,3\}$
+- OBJETIVO_CALIBRACIÓN($INSTRUMENTO_0$, $ESTRELLA_1$), OBJETIVO_CALIBRACIÓN($INSTRUMENTO_1$, $ESTRELLA_2$), OBJETIVO_CALIBRACIÓN($INSTRUMENTO_2$, $ESTRELLA_0$), OBJETIVO_CALIBRACIÓN($INSTRUMENTO_3$, $ESTRELLA_0$)
+- COMPATIBLE_CON($INSTRUMENTO_0$, $INFRAROJOS$), COMPATIBLE_CON($INSTRUMENTO_0$, $ESPECTRÓGRAFO$), COMPATIBLE_CON($INSTRUMENTO_1$, $VISIBLE$), COMPATIBLE_CON($INSTRUMENTO_2$, $VISIBLE$), COMPATIBLE_CON($INSTRUMENTO_2$, $INFRAROJOS$), COMPATIBLE_CON($INSTRUMENTO_3$, $INFRAROJOS$, COMPATIBLE_CON($INSTRUMENTO_3$, $ESPECTRÓGRAFO$), COMPATIBLE_CON($INSTRUMENTO_3$, $VISIBLE$)
+- HAY_ENERGÍA($SATÉLITE_0$), HAY_ENERGÍA($SATÉLITE_1$),
+- SIN_IMAGEN(ESTRELLA_i, TIPO) para $i \in \{0,1,2,3,4\}$, TIPO $\in \{VISIBLE, INFRARROJOS, ESPECTRÓGRAFO\}$
+- SIN_IMAGEN(NEBULOSA_i, VISIBLE), SIN_IMAGEN(NEBULOSA_i, TIPO) para $i, j \in \{0,1,2\}$, TIPO $\in \{VISIBLE, INFRARROJOS, ESPECTRÓGRAFO\}$ )
   }
 
-Estado objetivo, S_o {
+Estado objetivo, $S_o$ { CON_IMAGEN(ESTRELLA_3, INFRAROJOS), CON_IMAGEN(ESTRELLA_4, ESPECTRÓGRAFO), CON_IMAGEN(NEBULOSA_0, ESPECTRÓGRAFO), CON_IMAGEN(NEBULOSA_2, VISIBLE), CON_IMAGEN(NEBULOSA_2, ESPECTRÓGRAFO) }
 
-- CON_IMAGEN(ESTRELLA_3, INFRAROJOS), CON_IMAGEN(ESTRELLA_4, ESPECTÓGRAFO), CON_IMAGEN(NEBULOSA_0, ESPECTÓGRAFO), CON_IMAGEN(NEBULOSA_2, VISIBLE), CON_IMAGEN(NEBULOSA_2, ESPECTÓGRAFO)  
-  }
+</div>
+<div class="highlight-exercise">
 
 ## Ejercicio 5
 
@@ -796,6 +890,8 @@ Representar en el formalismo **STRIPS** el siguiente dominio: hay dos habitacion
 **Objetivo**
 
 - PELOTA_EN(P_i,HABITACIÓN_2) con i en {1,2,..., N}
+
+</div>
 
 ## Ejercicio 6
 
@@ -915,6 +1011,8 @@ Por definición, el valor de la heurística **$h^+(s)$ equivale al coste del pla
 Revisando todos los planes anteriores, el plan de menor coste es el "Plan relajado óptimo (Ruta directa)". Asumiendo un coste unitario de valor 1 para cada acción (estándar en planificación clásica), el cálculo es el siguiente:
 **$h^+(I) = 1 + 1 + 1 + 1 = 4$**.
 
+<div class="highlight-exercise">
+
 ## Ejercicio 9
 
 Consideremos el siguiente problema de planificación automática:
@@ -935,62 +1033,75 @@ Consideremos el siguiente problema de planificación automática:
 
 Se pide determinar todos los posibles planes relajados para el estado inicial del problema y calcular el valor de la heurística $h^+$ para ese estado.
 
-### Solución.
+<div class="nota">
+Como lo que estás haciendo en realidad es una **búsqueda en árbol sobre el espacio de estados relajado**, la mejor forma de presentarlo es imitando esa estructura jerárquica.
 
-Aplicando el algoritmo voraz al estado inicial s, definimos:
-$S^+$ = { $H\_5, H\_6$ }
-$a^+$ = <>
+Aquí tienes una propuesta de presentación **altamente visual, limpia y estructurada**, diseñada específicamente para sacar la máxima nota en tu examen de planificación:
 
-- Paso 1: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **A** >
-  Al aplicar **A**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_5, H\_6$ }, y $a^+$ = < **A** >
-- Paso 2: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **B** y **D** >
-  Al aplicar **B**, tenemos $S^+$ = { $H\_1$, $H\_2$m $H\_3$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **B** >
-- Paso 3: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **C** , **E**>
-  Al aplicar **C**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_3$, $H\_4$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **B**, **C** >
+</div>
 
-- Paso 1: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **A** >
-  Al aplicar **A**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_5, H\_6$ }, y $a^+$ = < **A** >
-- Paso 2: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **B** y **D** >
-  Al aplicar **D**, tenemos $S^+$ = { $H\_1$, $H\_2$m $H\_3$, $H\_5, H\_6$, }, y $a^+$ = < **A**, **D** >
-- Paso 3: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **C**, **E** >
-  Al aplicar **C**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_3$, $H\_4$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **D**, **C** >
+### Solución propuesta para el Ejercicio 9
 
-- Paso 1: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **A** >
-  Al aplicar **A**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_5, H\_6$ }, y $a^+$ = < **A** >
-- Paso 2: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **B** y **D** >
-  Al aplicar **D**, tenemos $S^+$ = { $H\_1$, $H\_2$m $H\_3$, $H\_5, H\_6$, }, y $a^+$ = < **A**, **D** >
-- Paso 3: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **C**, **E** >
-  Al aplicar **C**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_3$, $H\_4$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **D**, **C** >
+**Objetivo a alcanzar:** $G = \{H_1, H_3, H_4\}$
+**Estado inicial relajado:** $S_0^+ = \{H_5, H_6\}$
 
-- Paso 1: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **A** >
-  Al aplicar **A**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_5, H\_6$ }, y $a^+$ = < **A** >
-- Paso 2: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **B** y **D** >
-  Al aplicar **B**, tenemos $S^+$ = { $H\_1$, $H\_2$m $H\_3$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **B** >
-- Paso 3: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **C** , **E**>
-  Al aplicar **E**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_3$, $H\_4$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **B**, **E** >
+---
 
-- Paso 1: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ ->< **A** >
-  Al aplicar **A**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_5, H\_6$ }, y $a^+$ = < **A** >
-- Paso 2: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **B** y **D** >
-  Al aplicar **D**, tenemos $S^+$ = { $H\_1$, $H\_2$m $H\_3$, $H\_5, H\_6$, }, y $a^+$ = < **A**, **D** >
-- Paso 3: acciones para las que se cumplen las precondiciones y añadan nuevos hechos a $S^+$ -> < **C**, **E** >
-  Al aplicar **E**, tenemos $S^+$ = { $H\_1$, $H\_2$, $H\_3$, $H\_4$, $H\_5, H\_6$ }, y $a^+$ = < **A**, **D**, **E** >
+#### 1. Árbol de Exploración de Planes Relajados
 
-Tenemos 4 posibles planes relajados
+Representamos la búsqueda sistemática del algoritmo voraz en forma de árbol jerárquico. En cada nodo indicamos el conjunto acumulado de hechos $S^+$ y las acciones elegibles que aportan hechos nuevos:
 
-- P_1 = < **A**, **B**, **C** >
-- P_2 = < **A**, **D**, **C** >
-- P_3 = < **A**, **B**, **E** >
-- P_4 = < **A**, **D**, **E** >
+- **Raíz ($S_0^+ = \{H_5, H_6\}$)**: La única acción aplicable que aporta hechos nuevos es la **Acción A** (pre: $\{H_5, H_6\}$).
+  - **Aplicamos A** (coste 5) $\rightarrow$ **$S_1^+ = \{H_1, H_2, H_5, H_6\}$**.
+  - _Desde aquí, las acciones aplicables que añaden nuevos hechos (buscando conseguir $H_3$) son **B** (pre: $\{H_1, H_6\}$) y **D** (pre: $\{H_1, H_5\}$). Esto abre dos ramas principales:_
 
-Como $h^+$ sería el plan de menos coste y tenemos
+##### **RAMA 1: Elegimos la Acción B** (coste 1)
 
-- P_1 = 5 + 1 + 3 = 9
-- P_2 = 5 + 3 + 3 = 11
-- P_3 = 5 + 1 + 2 = 8
-- P_4 = 5 + 3 + 2 = 10
+- **Estado acumulado:** $S_{2.B}^+ = \{H_1, H_2, H_3, H_5, H_6\}$
+- _Para conseguir el último objetivo restante ($H_4$), podemos aplicar **C** o **E**. Se abren dos soluciones:_
+  - **Sub-rama C:** Aplicamos **C** (coste 3) $\rightarrow S_3^+ = \{H_1, H_2, H_3, H_4, H_5, H_6\}$ (Objetivos cumplidos).  
+    $$\mathbf{P_1 = \langle A, B, C \rangle}$$
+  - **Sub-rama E:** Aplicamos **E** (coste 2) $\rightarrow S_3^+ = \{H_1, H_2, H_3, H_4, H_5, H_6\}$ (Objetivos cumplidos).  
+    $$\mathbf{P_3 = \langle A, B, E \rangle}$$
 
-$h^+$ = P_3 = < **A**, **B**, **E** >
+##### **RAMA 2: Elegimos la Acción D** (coste 3)
+
+- **Estado acumulado:** $S_{2.D}^+ = \{H_1, H_2, H_3, H_5, H_6\}$
+- _De igual forma, para conseguir $H_4$ podemos aplicar **C** o **E**:_
+  - **Sub-rama C:** Aplicamos **C** (coste 3) $\rightarrow S_3^+ = \{H_1, H_2, H_3, H_4, H_5, H_6\}$ (Objetivos cumplidos).  
+    $$\mathbf{P_2 = \langle A, D, C \rangle}$$
+  - **Sub-rama E:** Aplicamos **E** (coste 2) $\rightarrow S_3^+ = \{H_1, H_2, H_3, H_4, H_5, H_6\}$ (Objetivos cumplidos).  
+    $$\mathbf{P_4 = \langle A, D, E \rangle}$$
+
+---
+
+#### 2. Tabla de Evaluación de Planes Relajados y Selección de $h^+$
+
+Una vez encontrados todos los caminos posibles en el árbol que satisfacen el objetivo, evaluamos sus costes de ejecución para determinar el plan óptimo:
+| Identificador | Plan Relajado Secuencial $\langle a^+ \rangle$ | Desglose de Costes | Coste Total | ¿Es el óptimo ($h^+$)? |
+| :-----------: | :--------------------------------------------- | :----------------: | :---------: | :--------------------: |
+| **$P_1$** | $\langle A, B, C \rangle$ | $5 + 1 + 3$ | **9** | No |
+| **$P_2$** | $\langle A, D, C \rangle$ | $5 + 3 + 3$ | **11** | No |
+| **$P_3$** | $\langle A, B, E \rangle$ | $5 + 1 + 2$ | **8** | **Sí (Mínimo Coste)** |
+| **$P_4$** | $\langle A, D, E \rangle$ | $5 + 3 + 2$ | **10** | No |
+
+---
+
+#### 3. Conclusión Final
+
+El valor de la heurística $h^+$ para el estado inicial $I$ equivale al coste del **plan relajado óptimo** (el plan relajado de mínimo coste posible). Por lo tanto:
+
+$$h^+(I) = \text{coste}(P_3) = \mathbf{8}$$
+
+---
+
+### ¿Por qué esta presentación es mucho mejor para tu examen?
+
+1.  **Reduce el texto repetitivo:** En lugar de escribir "Paso 1, Paso 2, Paso 3" cuatro veces, la jerarquía visual del árbol muestra la herencia de los pasos de forma natural.
+2.  **Es extremadamente fácil de corregir:** El corrector del examen puede comprobar de un solo vistazo la tabla de planes y el valor final de $h^+$. Si todo coincide, apenas tendrá que leer el resto y te pondrá la máxima nota de inmediato.
+3.  **Evita errores de copia:** Al tener los planes limpios y agrupados en una tabla comparativa final, calcular los costes y compararlos es un proceso visual sencillísimo en el que no cometerás erratas de cálculo.
+
+</div>
 
 ## Ejercicio 10
 
@@ -1205,110 +1316,214 @@ $T_0(H_6)$ = $\infty$
 
 #### Paso 2: Iteración 2 ($T_2$)
 
-**Evaluamos cuánto costaría aplicar las acciones basándonos en $T_1$**
-
-- **Acción A** (pre: $H_1$): Coste base = $T_1(H_1)$ + 3 = $\infty$ + 3 = $\infty$
-- **Acción B** (pre: $H_3$ y $H_4$):
-  - Coste base $h^{max}$ = $\max(T_1(H_3), T_1(H_4)) + 2 = $\infty$ + 2 = $\infty$
-  - Coste base $h^{add}$ = $(T_1(H_3) + T_1(H_4)) + 2 = \infty + 3 + 2 = \infty$
-- **Acción C** (pre: $H_4$): Coste base = 3 + 2 = 5 **Añade $H\_3, H\_6$**
-- **Acción D** (pre: $H_2$): Coste base = 0 + 3 = 3 **Añade $H\_4, H\_5, H\_6$**
-- **Acción E** (pre: $H_4$ y $H_6$): **Añade $H\_1, H\_2, H\_5$**
-  - Coste base $h^{max}$ = $\max(T_1(H_4), T_1(H_6)) + 3 = \max(3,3) + 3 = 6$
-  - Coste base $h^{add}$ = $(T_1(H_4) + T_1(H_6)) + 3 = (3 + 3) + 3 = 9$
-- **Acción F** (pre: $H_3$): Coste base = $\infty$ + 3 = $\infty$ **Añade $H\_1, H\_2, H\_6$**
-
-**Actualizamos los costes mínimos para cada hecho ($T_2$)**
+**Evaluamos cuánto costaría aplicar las acciones basándonos en $T_1$ y Actualizamos los costes mínimos para cada hecho ($T_2$)**
 
 Para todos los hechos ($H_1$ a $H_6$), manteniendo estrictamente tu estructura de desglose y aplicando la notación dual unificada `[h^max, h^add]`, queda de la siguiente manera:
 
 - **$T_2(H_1)$**:
-  - Coste acción E: $h^{max}$ = 6, $h^{add}$ = 9
-  - Coste acción F: $\infty$
-  - $T_2(H_1) = [h^{max} = \min(\infty, 6) = 6 \text{ y } h^{add} = \min(\infty, 9) = 9] =$
+  - Acciones que añaden $H_1$: E (pre: $H_4$ y $H_6$ y coste 3) y F (pre: $H_3$ y coste 3)
+  - Miramos los costes acumulados de los hechos $H_4$ y $H_6$ para E, y de $H_3$ para F en $T_1$: **$T_1(H_4) = 3$, $T_1(H_6) = 3$, $T_1(H_3) = \infty$**
+  - Coste acción F ($h^{max}$ y $h^{add}$): $T_1(H_3) + 3 = \infty + 3 = \infty$
+  - Coste acción E: (como hay dos precondiciones, tomamos el máximo y la suma de sus costes)
+    - $h^{max}$ = $\max(T_1(H_4), T_1(H_6)) + 3 = \max(3, 3) + 3 = 6$
+    - $h^{add}$ = $(T_1(H_4) + T_1(H_6)) + 3 = (3 + 3) + 3 = 9$
+      **Por último actualizamos la tabla para $H_1$** -> $T_2(H_1):
+    - h^{max} = \min($T_1(H_1), Coste de E, Coste de F$) = \min(\infty, 6, \infty) = 6
+    - h^{add} = \min($T_1(H_1), Coste de E, Coste de F$) = \min(\infty, 9, \infty) = 9$
+  **En nuestro formato unificado, $T_2(H_1) = [6, 9]$\*\*
 
 - **$T_2(H_2)$**:
-  - Coste acción B: $\infty$
-  - Coste acción E: $h^{max}$ = 6, $h^{add}$ = 9
-  - Coste acción F: $\infty$
-  - $T_2(H_2) = [h^{max} = \min(0, 6) = 0 \text{ y } h^{add} = \min(0, 9) = 0] = $
+  - Acciones que añaden $H_2$: D (pre: $H_2$ y coste 3) y E (pre: $H_4$ y $H_6$ y coste 3)
+  - Miramos los costes acumulados de los hechos $H_2$ para D, y de $H_4$ y $H_6$ para E en $T_1$: **$T_1(H_2) = 0$, $T_1(H_4) = 3$, $T_1(H_6) = 3$**
+  - Coste acción D ($h^{max}$ y $h^{add}$): $T_1(H_2) + 3 = 0 + 3 = 3$
+  - Coste acción E:
+    - $h^{max}$ = $\max(T_1(H_4), T_1(H_6)) + 3 = \max(3, 3) + 3 = 6$
+    - $h^{add}$ = $(T_1(H_4) + T_1(H_6)) + 3 = (3 + 3) + 3 = 9$
+      **Por último actualizamos la tabla para $H_2$** -> $T_2(H_2):
+    - h^{max} = \min($T_1(H_2), Coste de D, Coste de E$) = \min(0, 3, 6) = 0
+    - h^{add} = \min($T_1(H_2), Coste de D, Coste de E$) = \min(0, 3, 9) = 0$
+  **En nuestro formato unificado, $T_2(H_2) = [0, 0]$\*\*
 
 - **$T_2(H_3)$**:
-  - Coste acción A: $\infty$
-  - Coste acción C: $h^{max}$ = 5, $h^{add}$ = 5
-  - $T_2(H_3) = [h^{max} = \min(\infty, 5) = 5 \text{ y } h^{add} = \min(\infty, 5) = 5] =$
-
+  - Acciones que añaden $H_3$: A (pre: $H_1$ y coste 3) y C (pre: $H_4$ y coste 2).
+  - Por A, miramos los costes acumulados de $H_1$ en $T_1$: **$T_1(H_1) = \infty$**, y por C, miramos los costes acumulados de $H_4$ en $T_1$: **$T_1(H_4) = 3$**
+  - Coste acción A ($h^{max}$ y $h^{add}$): $T_1(H_1) + 3 = \infty + 3 = \infty$
+  - Coste acción C: ($h^{max}$ y $h^{add}$): $T_1(H_4) + 2 = 3 + 2 = 5$
+    **Por último actualizamos la tabla para $H_3$** -> $T_2(H_3):
+    - h^{max} = \min($T_1(H_3), Coste de A, Coste de C$) = \min(\infty, \infty, 5) = 5
+    - h^{add} = \min($T_1(H_3), Coste de A, Coste de C$) = \min(\infty, \infty, 5) = 5$
+      **En nuestro formato unificado, $T_2(H_3) = [5, 5]**
 - **$T_2(H_4)$**:
-  - Coste acción A: $\infty$
-  - Coste acción D: $h^{max}$ = 3, $h^{add}$ = 3
-  - $T_2(H_4) = [h^{max} = \min(3, 3) = 3 \text{ y } h^{add} = \min(3, 3) = 3] =$
+  - Acciones que añaden $H_4$: A (pre: $H_1$ y coste 3) y D (pre: $H_2$ y coste 3)
+  - Costes acumulados:
+    - Por A: $T_1(H_1) = \infty$, coste acción A = $\infty + 3 = \infty$
+    - Por D: $T_1(H_2) = 0$, coste acción D = $0 + 3 = 3$
+    <div class="nota">
+      <b>Recuerda:</b> Si solo tenemos una precondición, los costes acumulados de $h^{max}$ y $h^{add}$ son iguales, por lo que no es necesario calcularlos por separado.
+    </div>
+
+  **Por último actualizamos la tabla para $H_4$** -> $T_2(H_4):
+  - h^{max} = \min($T_1(H_4), Coste de A, Coste de D$) = \min(3, \infty, 3) = 3
+  - h^{add} = \min($T_1(H_4), Coste de A, Coste de D$) = \min(3, \infty, 3) = 3$
+    **En nuestro formato unificado, $T_2(H_4) = [3, 3]**
 
 - **$T_2(H_5)$**:
-  - Coste acción B: $\infty$
-  - Coste acción D: $h^{max}$ = 3, $h^{add}$ = 3
-  - Coste acción E: $h^{max}$ = 6, $h^{add}$ = 9
-  - $T_2(H_5) = [h^{max} = \min(3, 3, 6) = 3 \text{ y } h^{add} = \min(3, 3, 9) = 3] =$
+  - Acciones que añaden $H_5$: B (pre: ($H_3$ y $H_4$) y coste 2), D (pre: $H_2$ y coste 3) y E (pre: $H_4$ y $H_6$ y coste 3)
+  - Miramos los costes acumulados:
+  <div class="nota">
+    <b>Recuerda:</b> Si tenemos más de una precondición, los costes acumulados de $h^{max}$ y $h^{add}$ se evalúan separadamente, el primero toma el valor máximo y el segundo la suma de los costes.
+  </div>
+  - Por B:
+    - $h^{max}$ = $\max(T_1(H_3), T_1(H_4)) + 2 = \max(\infty, 3) + 2 = \infty$
+    - $h^{add}$ = $(T_1(H_3) + T_1(H_4)) + 2 = (\infty + 3) + 2 = \infty$
+  - Por D: $T_1(H_2) + 2 = 0 + 3 = 3$ (para ambos $h^{max}$ y $h^{add}$)
+  - Por E:
+    - $h^{max}$ = $\max(T_1(H_4), T_1(H_6)) + 3 = \max(3, 3) + 3 = 6$
+    - $h^{add}$ = $(T_1(H_4) + T_1(H_6)) + 3 = (3 + 3) + 3 = 9$
+
+  **Por último actualizamos la tabla para $H_5$** -> $T_2(H_5):
+  - h^{max} = \min($T_1(H_5), Coste de B, Coste de D, Coste de E$) = \min(\infty, \infty, 3, 6) = 3
+  - h^{add} = \min($T_1(H_5), Coste de B, Coste de D, Coste de E$) = \min(\infty, \infty, 3, 9) = 3$
+    **En nuestro formato unificado, $T_2(H_5) = [3, 3]**
 
 - **$T_2(H_6)$**:
-  - Coste acción B: $\infty$
-  - Coste acción C: $h^{max}$ = 5, $h^{add}$ = 5
-  - Coste acción D: $h^{max}$ = 3, $h^{add}$ = 3
-  - Coste acción F: $\infty$
-  - $T_2(H_6) = [h^{max} = \min(3, 3, 5) = 3 \text{ y } h^{add} = \min(3, 3, 5) = 3] =$
+  - Acciones que añaden $H_6$: B (pre: ($H_3$ y $H_4$) y coste 2), C (pre: $H_4$ y coste 2), D (pre: $H_2$ y coste 3) y F (pre: $H_3$ y coste 3)
+  - Miramos los costes acumulados:
+    - Por B:
+      - $h^{max}$ = $\max(T_1(H_3), T_1(H_4)) + 2 = \max(\infty, 3) + 2 = \infty$
+      - $h^{add}$ = $(T_1(H_3) + T_1(H_4)) + 2 = (\infty + 3) + 2 = \infty$
+    - Por C: $T_1(H_4) + 2 = 3 + 2 = 5$ (para ambos $h^{max}$ y $h^{add}$)
+    - Por D: $T_1(H_2) + 3 = 0 + 3 = 3$ (para ambos $h^{max}$ y $h^{add}$)
+    - Por F: $T_1(H_3) + 3 = \infty + 3 = \infty$ (para ambos $h^{max}$ y $h^{add}$)
+
+  **Por último actualizamos la tabla para $H_6$** -> $T_2(H_6):
+  - h^{max} = \min($T_1(H_6), Coste de B, Coste de C, Coste de D, Coste de F$) = \min(\infty, \infty, 5, 3, \infty) = 3
+  - h^{add} = \min($T_1(H_6), Coste de B, Coste de C, Coste de D, Coste de F$) = \min(\infty, \infty, 5, 3, \infty) = 3$
+
+**Resultado de la iteración 2 ($T_2$)**
+
+- $T_2(H_1) = [6, 9]$
+- $T_2(H_2) = [0, 0]$
+- $T_2(H_3) = [5, 5]$
+- $T_2(H_4) = [3, 3]$
+- $T_2(H_5) = [3, 3]$
+- $T_2(H_6) = [3, 3]$
 
 #### Paso 3: Iteración 3 ($T_3$)
 
-**Evaluamos cuánto costaría aplicar las acciones basándonos en $T_2$**
+- **T_3(H_1)**:
+  - Acciones que añaden $H_1$: E (pre: $H_4$ y $H_6$ y coste 3) y F (pre: $H_3$ y coste 3)
+  - Miramos los costes acumulados de los hechos $H_4$ y $H_6$ para E, y de $H_3$ para F en $T_2$: **$T_2(H_4) = 3$, $T_2(H_6) = 3$, $T_2(H_3) = 5$**
+  - Coste acción F ($h^{max}$ y $h^{add}$): $T_2(H_3) + 3 = 5 + 3 = 8$
+  - Coste acción E:
+    - $h^{max}$ = $\max(T_2(H_4), T_2(H_6)) + 3 = \max(3, 3) + 3 = 6$
+    - $h^{add}$ = $(T_2(H_4) + T_2(H_6)) + 3 = (3 + 3) + 3 = 9$
+      **Por último actualizamos la tabla para $H_1$** -> $T_3(H_1):
+    - h^{max} = \min($T_2(H_1), Coste de E, Coste de F$) = \min(6, 6, 8) = 6
+    - h^{add} = \min($T_2(H_1), Coste de E, Coste de F$) = \min(9, 9, 8) = 8$
+      **En nuestro formato unificado, $T_3(H_1) = [6, 8]$\*\*
 
-- **Acción A** (pre: $H_1$): Coste base = $T_2(H_1)$ + 3 = $\infty$ + 3 = $\infty$
-- **Acción B** (pre: $H_3$ y $H_4$): Coste base = $\max(T_2(H_3), T_2(H_4)) + 2 = 5 + 2 = 7 **Añade $H\_2, H\_5, H\_6$\*\*
-- **Acción C** (pre: $H_4$): Coste base = 3 + 2 = 5 **Añade $H\_3, H\_6$**
-- **Acción D** (pre: $H_2$): Coste base = 0 + 3 = 3 **Añade $H\_4, H\_5, H\_6$**
-- **Acción E** (pre: $H_4$ y $H_6$): Coste base = $\max(T_2(H_3), T_2(H_6)) + 3 = 3 + 3 = 6 **Añade $H\_1, H\_2, H\_5$\*\*
-- **Acción F** (pre: $H_3$): Coste base = 5 + 3 = 8 **Añade $H\_1, H\_2, H\_6$**
+Para completar formalmente el **Ejercicio 12** y demostrar en el examen que has llegado a la estabilización de la tabla, aquí tienes el desglose detallado de los cálculos que faltan para el resto de los hechos en la **Iteración 3 ($T_3$)**, la comprobación de parada en la **Iteración 4 ($T_4$)** y el cálculo de los valores heurísticos finales.
 
-**Actualizamos los costes mínimos para cada hecho ($T_3$)**
+---
 
-- $T_3(H_1) = \min(\infty, \max(6 \text{ [por E]}, 8 \text{ [por F]})) = 8$
-- $T_3(H_2) = \min(0, \max(7 \text{ [por B]}, 6 \text{ [por E]}, 8 \text{ [por F]})) = 0$
-- $T_3(H_3) = \min(5, 5 \text{ [por C]}) = 5$
-- $T_3(H_4) = \min(3, 3 \text{ [por D]}) = 3$
-- $T_3(H_5) = \min(3, \max(7 \text{ [por B]}, 3 \text{ [por D]}, 6 \text{ [por E]})) = 3$
-- $T_3(H_6) = \min(3, \max(7 \text{ [por B]}, 5 \text{ [por C]}, 5 \text{ [por D]}, 8 \text{ [por F]})) = 3$
+### Paso 1: Completar la Iteración 3 ($T_3$) para el resto de hechos
 
-#### Paso 4: Iteración 4 ($T_4$)
+Dado que ya calculaste con total precisión que $T_3(H_1) =$, evaluamos el resto de hechos basándonos en la columna anterior ($T_2$):
 
-**Evaluamos cuánto costaría aplicar las acciones basándonos en $T_3$**:
+- **$T_3(H_2)$:**
+  - Acciones que añaden $H_2$: B, E y F.
+  - Costes de las acciones en $T_2$:
+    - Por B ($h^{max}$): $\max(T_2(H_3), T_2(H_4)) + 2 = \max(5, 3) + 2 = 7$.
+    - Por B ($h^{add}$): $(T_2(H_3) + T_2(H_4)) + 2 = (5 + 3) + 2 = 10$.
+    - Por E ($h^{max}$): $\max(T_2(H_4), T_2(H_6)) + 3 = \max(3, 3) + 3 = 6$.
+    - Por E ($h^{add}$): $(T_2(H_4) + T_2(H_6)) + 3 = (3 + 3) + 3 = 9$.
+    - Por F ($h^{max}$ y $h^{add}$): $T_2(H_3) + 3 = 5 + 3 = 8$.
+  - Actualizamos la celda:
+    - $h^{max} = \min(T_2(H_2), 7, 6, 8) = \min(0, 6) = 0$.
+    - $h^{add} = \min(T_2(H_2), 10, 9, 8) = \min(0, 8) = 0$.
+  - **En formato unificado: $T_3(H_2) = $**
 
-- **Acción A** (pre: $H_1$): Coste base = $T_3(H_1)$ + 3 = 8 + 3 = 11 **Añade $H\_3, H\_4$**
-- **Acción B** (pre: $H_3$ y $H_4$): Coste base = $\max(T_3(H_3), T_3(H_4)) + 2 = 5 + 2 = 7 **Añade $H\_2, H\_5, H\_6$\*\*
-- **Acción C** (pre: $H_4$): Coste base = 3 + 2 = 5 **Añade $H\_3, H\_6$**
-- **Acción D** (pre: $H_2$): Coste base = 0 + 3 = 3 **Añade $H\_4, H\_5, H\_6$**
-- **Acción E** (pre: $H_4$ y $H_6$): Coste base = $\max(T_3(H_3), T_3(H_6)) + 3 = 3 + 3 = 6 **Añade $H\_1, H\_2, H\_5$\*\*
-- **Acción F** (pre: $H_3$): Coste base = 5 + 3 = 8 **Añade $H\_1, H\_2, H\_6$**
+- **$T_3(H_3)$:**
+  - Acciones que añaden $H_3$: A y C.
+  - Costes de las acciones en $T_2$:
+    - Por A ($h^{max}$): $T_2(H_1) + 3 = 6 + 3 = 9$.
+    - Por A ($h^{add}$): $T_2(H_1) + 3 = 9 + 3 = 12$.
+    - Por C ($h^{max}$ y $h^{add}$): $T_2(H_4) + 2 = 3 + 2 = 5$.
+  - Actualizamos la celda:
+    - $h^{max} = \min(T_2(H_3), 9, 5) = \min(5, 5) = 5$.
+    - $h^{add} = \min(T_2(H_3), 12, 5) = \min(5, 5) = 5$.
+  - **En formato unificado: $T_3(H_3) =$**
 
-**Actualizamos los costes mínimos para cada hecho ($T_4$)**:
+- **$T_3(H_4)$:**
+  - Acciones que añaden $H_4$: A y D.
+  - Costes de las acciones en $T_2$:
+    - Por A ($h^{max}$): $T_2(H_1) + 3 = 9$.
+    - Por A ($h^{add}$): $T_2(H_1) + 3 = 12$.
+    - Por D ($h^{max}$ y $h^{add}$): $T_2(H_2) + 3 = 0 + 3 = 3$.
+  - Actualizamos la celda:
+    - $h^{max} = \min(T_2(H_4), 9, 3) = \min(3, 3) = 3$.
+    - $h^{add} = \min(T_2(H_4), 12, 3) = \min(3, 3) = 3$.
+  - **En formato unificado: $T_3(H_4) =$**
 
-- $T_4(H_1) = \min(11, \max(6 \text{ [por E]}, 8 \text{ [por F]})) = 8$
-- $T_4(H_2) = \min(0, \max(7 \text{ [por B]}, 6 \text{ [por E]}, 8 \text{ [por F]})) = 0$
-- $T_4(H_3) = \min(5, \max(11 \text{ [por A]}, 5 \text{ [por C]})) = 5$
-- $T_4(H_4) = \min(3, \max(11 \text{ [por A]}, 3 \text{ [por D]})) = 3$
-- $T_4(H_5) = \min(3, \max(7 \text{ [por B]}, 3 \text{ [por D]}, 6 \text{ [por E]})) = 3$
-- $T_4(H_6) = \min(3, \max(7 \text{ [por B]}, 5 \text{ [por C]}, 5 \text{ [por D]}, 8 \text{ [por F]})) = 3$
+- **$T_3(H_5)$:**
+  - Acciones que añaden $H_5$: B, D y E.
+  - Costes de las acciones en $T_2$:
+    - Por B: $7$ ($h^{max}$) / $10$ ($h^{add}$).
+    - Por D: $3$ (para ambas).
+    - Por E: $6$ ($h^{max}$) / $9$ ($h^{add}$).
+  - Actualizamos la celda:
+    - $h^{max} = \min(T_2(H_5), 7, 3, 6) = \min(3, 3) = 3$.
+    - $h^{add} = \min(T_2(H_5), 10, 3, 9) = \min(3, 3) = 3$.
+  - **En formato unificado: $T_3(H_5) =$**
 
-A partir de esta iteración los valores se estabilizan, tenemos entonces los costes de cada hecho como:
+- **$T_3(H_6)$:**
+  - Acciones que añaden $H_6$: B, C, D y F.
+  - Costes de las acciones en $T_2$:
+    - Por B: $7$ ($h^{max}$) / $10$ ($h^{add}$).
+    - Por C: $5$ (para ambas).
+    - Por D: $3$ (para ambas).
+    - Por F: $8$ (para ambas).
+  - Actualizamos la celda:
+    - $h^{max} = \min(T_2(H_6), 7, 5, 3, 8) = \min(3, 3) = 3$.
+    - $h^{add} = \min(T_2(H_6), 10, 5, 3, 8) = \min(3, 3) = 3$.
+  - **En formato unificado: $T_3(H_6) =$**
 
-- $C(H_1) = 8$
-- $C(H_2) = 0$
-- $C(H_3) = 5$
-- $C(H_4) = 3$
-- $C(H_5) = 3$
-- $C(H_6) = 3$
+---
 
-#### Por lo tanto
+### Paso 2: Iteración 4 ($T_4$) y Estabilización
 
-- $h^{max}(I) = \max(C(H_3), C(H_4), C(H_5)) = \max(5, 3, 3) = 5$
-- $h^{add}(I) = C(H_3) + C(H_4) + C(H_5) = 5 + 3 + 3 = 11$
+Como muy bien identificaste, al haber cambiado un coste en la columna anterior ($H_1$ bajó a $8$ en $h^{add}$), el algoritmo nos obliga a realizar la columna $T_4$ para demostrar que ya no hay más cambios:
+
+1.  **Evaluamos la Acción A en $T_3$:**
+    Dado que $T_3(H_1) =$, su coste base baja ligeramente para $h^{add}$:
+    - $h^{max} = 6 + 3 = 9$
+    - $h^{add} = T_3(H_1) + 3 = 8 + 3 = 11$
+2.  **Actualizamos $T_4(H_3)$:**
+    - $h^{add} = \min(T_3(H_3), \text{Coste A}, \text{Coste C}) = \min(5, 11, 5) = \mathbf{5}$. No se altera.
+3.  **Comprobamos el resto de hechos:** Ningún otro cálculo se ve afectado por el cambio de $H_1$, por lo que todos los costes de los hechos se mantienen idénticos a los de $T_3$.
+
+Dado que **$T_4 = T_3$**, el algoritmo de programación dinámica se detiene oficialmente por **estabilización de la tabla**.
+
+---
+
+### Paso 3: Cálculo de las Heurísticas para el Estado Inicial ($I$)
+
+El objetivo establecido para este problema es el conjunto de hechos **$G = \{H_3, H_4, H_5\}$**. Una vez estabilizada nuestra tabla de hechos, extraemos los costes individuales correspondientes de la columna final:
+
+- $T(H_3) =$
+- $T(H_4) =$
+- $T(H_5) =$
+
+Aplicamos las definiciones de cada heurística para obtener las estimaciones finales:
+
+- **Para $h^{max}(I)$:** Asume que el coste para lograr un conjunto de metas es el del hecho individual más costoso:
+  $$h^{max}(I) = \max( T(H_3), T(H_4), T(H_5) )$$
+  $$h^{max}(I) = \max( 5, 3, 3 ) = \mathbf{5}$$
+
+- **Para $h^{add}(I)$:** Asume que las metas son independientes y se deben lograr sumando todos sus costes individuales:
+  $$h^{add}(I) = T(H_3) + T(H_4) + T(H_5)$$
+  $$h^{add}(I) = 5 + 3 + 3 = \mathbf{11}$$
 
 </div>
 
@@ -1330,7 +1545,7 @@ Registrar qué hechos "añade" cada acción que se vuelve aplicable en una itera
 
 Aquí hay una **confusión conceptual muy común** entre las heurísticas $h^{max}$, $h^{add}$ y $h^+$ que debes separar claramente en tus apuntes:
 
-- **La heurística $h^+$ NO se calcula con la tabla de programación dinámica:** El valor de $h^+(s)$ representa el coste de un _plan relajado óptimo_ [Excerpt 87]. La única forma de calcular $h^+(s)$ de forma exacta es aplicando el algoritmo voraz explorando **todas las ramas posibles** (todas las combinaciones de acciones), medir el coste de cada plan relajado válido y quedarte con el mínimo [Excerpt 87]. Como este cálculo es de coste exponencial (NP-difícil), en la práctica no se usa una tabla para él [Excerpt 87, 91].
+- **La heurística $h^+$ NO se calcula con la tabla de programación dinámica:** El valor de $h^+(s)$ representa el coste de un _plan relajado óptimo_. La única forma de calcular $h^+(s)$ de forma exacta es aplicando el algoritmo voraz explorando **todas las ramas posibles** (todas las combinaciones de acciones), medir el coste de cada plan relajado válido y quedarte con el mínimo . Como este cálculo es de coste exponencial (NP-difícil), en la práctica no se usa una tabla para él [Excerpt 87, 91].
 - **La tabla sirve para aproximar $h^+$ a través de $h^{max}$ y $h^{add}$ [Excerpt 91]:** Dado que el Ejercicio 12 te pide calcular expresamente tanto $h^{max}$ como $h^{add}$, **sí, debes calcular la suma de las precondiciones, pero únicamente para rellenar la tabla de $h^{add}$**.
 
 Para tu examen, la regla de oro para combinar precondiciones en tus tablas es:
@@ -1350,5 +1565,31 @@ Pero en las siguientes iteraciones, cuando esos hechos tomen valores numéricos 
 - En la tabla de **$h^{add}$**: $c_{pre(E)} = 3 + 3 = 6$. El coste base de la acción E sería $6 + 3 = 9$.
 
 Por lo tanto, para resolver el Ejercicio 12 al completo, debes desarrollar **dos procesos de tablas paralelos** (o una sola tabla con las celdas divididas en dos): uno aplicando la regla del máximo ($h^{max}$) y otro aplicando la regla de la suma ($h^{add}$).
+
+</div>
+
+<div class="highlight-theory">
+
+### Recuerda
+
+Para asegurar que no quede ninguna duda de cara al examen, vamos a dividir tu consulta en las dos cuestiones que planteas: la diferencia teórica de los planes y la corrección de tus cálculos de la iteración 2.
+
+### Parte 2: Corrección de tus cálculos de la Iteración 2 ($T_2$)
+
+Al revisar tus cálculos, has cometido un **error sistemático en la columna de $h^{add}$**: has aplicado operaciones de **suma** en el paso final de actualización de las celdas en lugar de aplicar el **mínimo**.
+
+La regla de actualización de la celda para cualquier hecho $g$ en cualquier iteración $i$ **es exactamente la misma para ambas heurísticas**:
+$$T_i^s(g) = \min(T_{i-1}^s(g), c_g)$$
+
+La operación de **suma** ($\sum$) en la heurística $h^{add}$ únicamente se utiliza en dos situaciones:
+
+- 1.  **Para calcular el coste de las precondiciones de una acción con múltiples requisitos**: $c_{pre(a)} = \sum T_{i-1}^s(g')$.
+- 2.  **Para calcular el valor final de la heurística** sumando los costes de los objetivos una vez la tabla se ha estabilizado por completo.
+
+Pero al actualizar la celda de un hecho, **siempre nos quedamos con el mínimo** entre el coste que ya tenía el hecho en el paso anterior y el coste de la mejor acción que lo genera en este paso. No se suman.
+
+### Resumen para recordar en el examen:
+
+En la tabla de hechos, tanto para $h^{max}$ como para $h^{add}$, **los costes nunca pueden subir de una iteración a otra**. El paso de actualización siempre lleva un $\min()$, lo que significa que los costes de los hechos solo pueden mantenerse igual o disminuir a medida que descubrimos acciones más baratas para alcanzarlos [Excerpt 89].
 
 </div>
