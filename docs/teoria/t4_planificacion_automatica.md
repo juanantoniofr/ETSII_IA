@@ -1146,6 +1146,8 @@ Sabiendo que nuestro objetivo global es $G = \{H_1, H_4, H_5\}$, aplicamos las f
 
 </div>
 
+<div class="highlight-exercise">
+
 ## Ejercicio 12
 
 Consideremos el siguiente problema de planificación automática:
@@ -1181,18 +1183,18 @@ $T_0(H_4)$ = $\infty$
 $T_0(H_5)$ = $\infty$
 $T_0(H_6)$ = $\infty$
 
-**Paso 1: Iteración 1 ($T_1$)**
+#### Paso 1: Iteración 1 ($T_1$)
 
-- Evaluamos cuánto costaría aplicar las acciones basándonos en $T_0$:
+**Evaluamos cuánto costaría aplicar las acciones basándonos en $T_0$**
 
 - **Acción A** (pre: $H_1$): Coste base = $T_0(H_1)$ + 3 = $\infty$ + 3 = $\infty$
-- **Acción B** (pre: $H_3$ y $H_4$): Coste base = \max(T(H_3), T(H_4)) + 2 = $\infty$ + 2 = $\infty$
+- **Acción B** (pre: $H_3$ y $H_4$): Coste base = $\max(T_0(H_3), T_0(H_4)) + 2 = \infty + 2 = \infty$
 - **Acción C** (pre: $H_4$): Coste base = $\infty$ + 2 = $\infty$
 - **Acción D** (pre: $H_2$): Coste base = 0 + 3 = 3 **Añade $H\_4, H\_5, H\_6$**
-- **Acción E** (pre: $H_4$ y $H_6$): Coste base = \max(T(H_3), T(H_6)) + 3 = $\infty$ + 3 = $\infty$
+- **Acción E** (pre: $H_4$ y $H_6$): Coste base = $\max(T_0(H_4), T_0(H_6)) + 3 = $\infty$ + 3 = $\infty$
 - **Acción F** (pre: $H_3$): Coste base = $\infty$ + 3 = $\infty$
 
-Actualizamos los costes mínimos para cada hecho ($T_1$):
+**Actualizamos los costes mínimos para cada hecho ($T_1$)**
 
 - $T_1(H_1) = \min(\infty, \infty) = \infty$
 - $T_1(H_2) = \min(0, \infty) = 0$
@@ -1201,38 +1203,71 @@ Actualizamos los costes mínimos para cada hecho ($T_1$):
 - $T_1(H_5) = \min(\infty, 3 \text{ [por D]}) = 3$
 - $T_1(H_6) = \min(\infty, 3 \text{ [por D]}) = 3$
 
-**Paso 2: Iteración 2 ($T_2$)**
+#### Paso 2: Iteración 2 ($T_2$)
 
-- Evaluamos cuánto costaría aplicar las acciones basándonos en $T_1$:
+**Evaluamos cuánto costaría aplicar las acciones basándonos en $T_1$**
 
 - **Acción A** (pre: $H_1$): Coste base = $T_1(H_1)$ + 3 = $\infty$ + 3 = $\infty$
-- **Acción B** (pre: $H_3$ y $H_4$): Coste base = \max(T(H_3), T(H_4)) + 2 = $\infty$ + 2 = $\infty$
+- **Acción B** (pre: $H_3$ y $H_4$):
+  - Coste base $h^{max}$ = $\max(T_1(H_3), T_1(H_4)) + 2 = $\infty$ + 2 = $\infty$
+  - Coste base $h^{add}$ = $(T_1(H_3) + T_1(H_4)) + 2 = \infty + 3 + 2 = \infty$
 - **Acción C** (pre: $H_4$): Coste base = 3 + 2 = 5 **Añade $H\_3, H\_6$**
 - **Acción D** (pre: $H_2$): Coste base = 0 + 3 = 3 **Añade $H\_4, H\_5, H\_6$**
-- **Acción E** (pre: $H_4$ y $H_6$): Coste base = \max(T(H_3), T(H_6)) + 3 = $\infty$ + 3 = $\infty$
-- **Acción F** (pre: $H_3$): Coste base = $\infty$ + 3 = $\infty$
+- **Acción E** (pre: $H_4$ y $H_6$): **Añade $H\_1, H\_2, H\_5$**
+  - Coste base $h^{max}$ = $\max(T_1(H_4), T_1(H_6)) + 3 = \max(3,3) + 3 = 6$
+  - Coste base $h^{add}$ = $(T_1(H_4) + T_1(H_6)) + 3 = (3 + 3) + 3 = 9$
+- **Acción F** (pre: $H_3$): Coste base = $\infty$ + 3 = $\infty$ **Añade $H\_1, H\_2, H\_6$**
 
-Actualizamos los costes mínimos para cada hecho ($T_2$):
+**Actualizamos los costes mínimos para cada hecho ($T_2$)**
 
-- $T_2(H_1) = \min(\infty, \infty) = \infty$
-- $T_2(H_2) = \min(0, \infty) = 0$
-- $T_2(H_3) = \min(\infty, 5 \text{ [por C]}) = 5$
-- $T_2(H_4) = \min(3, 3 \text{ [por D]}) = 3$
-- $T_2(H_5) = \min(3, 3 \text{ [por D]}) = 3$
-- $T_2(H_6) = \min(3, \max(3 \text{ [por D], 5 \text{ [por C]}})) = 3$
+Para todos los hechos ($H_1$ a $H_6$), manteniendo estrictamente tu estructura de desglose y aplicando la notación dual unificada `[h^max, h^add]`, queda de la siguiente manera:
 
-**Paso 3: Iteración 3 ($T_3$)**
+- **$T_2(H_1)$**:
+  - Coste acción E: $h^{max}$ = 6, $h^{add}$ = 9
+  - Coste acción F: $\infty$
+  - $T_2(H_1) = [h^{max} = \min(\infty, 6) = 6 \text{ y } h^{add} = \min(\infty, 9) = 9] =$
 
-- Evaluamos cuánto costaría aplicar las acciones basándonos en $T_2$:
+- **$T_2(H_2)$**:
+  - Coste acción B: $\infty$
+  - Coste acción E: $h^{max}$ = 6, $h^{add}$ = 9
+  - Coste acción F: $\infty$
+  - $T_2(H_2) = [h^{max} = \min(0, 6) = 0 \text{ y } h^{add} = \min(0, 9) = 0] = $
+
+- **$T_2(H_3)$**:
+  - Coste acción A: $\infty$
+  - Coste acción C: $h^{max}$ = 5, $h^{add}$ = 5
+  - $T_2(H_3) = [h^{max} = \min(\infty, 5) = 5 \text{ y } h^{add} = \min(\infty, 5) = 5] =$
+
+- **$T_2(H_4)$**:
+  - Coste acción A: $\infty$
+  - Coste acción D: $h^{max}$ = 3, $h^{add}$ = 3
+  - $T_2(H_4) = [h^{max} = \min(3, 3) = 3 \text{ y } h^{add} = \min(3, 3) = 3] =$
+
+- **$T_2(H_5)$**:
+  - Coste acción B: $\infty$
+  - Coste acción D: $h^{max}$ = 3, $h^{add}$ = 3
+  - Coste acción E: $h^{max}$ = 6, $h^{add}$ = 9
+  - $T_2(H_5) = [h^{max} = \min(3, 3, 6) = 3 \text{ y } h^{add} = \min(3, 3, 9) = 3] =$
+
+- **$T_2(H_6)$**:
+  - Coste acción B: $\infty$
+  - Coste acción C: $h^{max}$ = 5, $h^{add}$ = 5
+  - Coste acción D: $h^{max}$ = 3, $h^{add}$ = 3
+  - Coste acción F: $\infty$
+  - $T_2(H_6) = [h^{max} = \min(3, 3, 5) = 3 \text{ y } h^{add} = \min(3, 3, 5) = 3] =$
+
+#### Paso 3: Iteración 3 ($T_3$)
+
+**Evaluamos cuánto costaría aplicar las acciones basándonos en $T_2$**
 
 - **Acción A** (pre: $H_1$): Coste base = $T_2(H_1)$ + 3 = $\infty$ + 3 = $\infty$
-- **Acción B** (pre: $H_3$ y $H_4$): Coste base = \max(T(H_3), T(H_4)) + 2 = 5 + 2 = 7 **Añade $H\_2, H\_5, H\_6$**
+- **Acción B** (pre: $H_3$ y $H_4$): Coste base = $\max(T_2(H_3), T_2(H_4)) + 2 = 5 + 2 = 7 **Añade $H\_2, H\_5, H\_6$\*\*
 - **Acción C** (pre: $H_4$): Coste base = 3 + 2 = 5 **Añade $H\_3, H\_6$**
 - **Acción D** (pre: $H_2$): Coste base = 0 + 3 = 3 **Añade $H\_4, H\_5, H\_6$**
-- **Acción E** (pre: $H_4$ y $H_6$): Coste base = \max(T(H_3), T(H_6)) + 3 = 3 + 3 = 6 **Añade $H\_1, H\_2, H\_5$**
+- **Acción E** (pre: $H_4$ y $H_6$): Coste base = $\max(T_2(H_3), T_2(H_6)) + 3 = 3 + 3 = 6 **Añade $H\_1, H\_2, H\_5$\*\*
 - **Acción F** (pre: $H_3$): Coste base = 5 + 3 = 8 **Añade $H\_1, H\_2, H\_6$**
 
-Actualizamos los costes mínimos para cada hecho ($T_3$):
+**Actualizamos los costes mínimos para cada hecho ($T_3$)**
 
 - $T_3(H_1) = \min(\infty, \max(6 \text{ [por E]}, 8 \text{ [por F]})) = 8$
 - $T_3(H_2) = \min(0, \max(7 \text{ [por B]}, 6 \text{ [por E]}, 8 \text{ [por F]})) = 0$
@@ -1241,27 +1276,27 @@ Actualizamos los costes mínimos para cada hecho ($T_3$):
 - $T_3(H_5) = \min(3, \max(7 \text{ [por B]}, 3 \text{ [por D]}, 6 \text{ [por E]})) = 3$
 - $T_3(H_6) = \min(3, \max(7 \text{ [por B]}, 5 \text{ [por C]}, 5 \text{ [por D]}, 8 \text{ [por F]})) = 3$
 
-**Paso 4: Iteración 3 ($T_4$)**
+#### Paso 4: Iteración 4 ($T_4$)
 
-- Evaluamos cuánto costaría aplicar las acciones basándonos en $T_3$:
+**Evaluamos cuánto costaría aplicar las acciones basándonos en $T_3$**:
 
 - **Acción A** (pre: $H_1$): Coste base = $T_3(H_1)$ + 3 = 8 + 3 = 11 **Añade $H\_3, H\_4$**
-- **Acción B** (pre: $H_3$ y $H_4$): Coste base = \max(T(H_3), T(H_4)) + 2 = 5 + 2 = 7 **Añade $H\_2, H\_5, H\_6$**
+- **Acción B** (pre: $H_3$ y $H_4$): Coste base = $\max(T_3(H_3), T_3(H_4)) + 2 = 5 + 2 = 7 **Añade $H\_2, H\_5, H\_6$\*\*
 - **Acción C** (pre: $H_4$): Coste base = 3 + 2 = 5 **Añade $H\_3, H\_6$**
 - **Acción D** (pre: $H_2$): Coste base = 0 + 3 = 3 **Añade $H\_4, H\_5, H\_6$**
-- **Acción E** (pre: $H_4$ y $H_6$): Coste base = \max(T(H_3), T(H_6)) + 3 = 3 + 3 = 6 **Añade $H\_1, H\_2, H\_5$**
+- **Acción E** (pre: $H_4$ y $H_6$): Coste base = $\max(T_3(H_3), T_3(H_6)) + 3 = 3 + 3 = 6 **Añade $H\_1, H\_2, H\_5$\*\*
 - **Acción F** (pre: $H_3$): Coste base = 5 + 3 = 8 **Añade $H\_1, H\_2, H\_6$**
 
-Actualizamos los costes mínimos para cada hecho ($T_3$):
+**Actualizamos los costes mínimos para cada hecho ($T_4$)**:
 
-- $T_3(H_1) = \min(11, \max(6 \text{ [por E]}, 8 \text{ [por F]})) = 8$
-- $T_3(H_2) = \min(0, \max(7 \text{ [por B]}, 6 \text{ [por E]}, 8 \text{ [por F]})) = 0$
-- $T_3(H_3) = \min(5, \max(11 \text{ [por A]}, 5 \text{ [por C]})) = 5$
-- $T_3(H_4) = \min(3, \max(11 \text{ [por A]}, 3 \text{ [por D]})) = 3$
-- $T_3(H_5) = \min(3, \max(7 \text{ [por B]}, 3 \text{ [por D]}, 6 \text{ [por E]})) = 3$
-- $T_3(H_6) = \min(3, \max(7 \text{ [por B]}, 5 \text{ [por C]}, 5 \text{ [por D]}, 8 \text{ [por F]})) = 3$
+- $T_4(H_1) = \min(11, \max(6 \text{ [por E]}, 8 \text{ [por F]})) = 8$
+- $T_4(H_2) = \min(0, \max(7 \text{ [por B]}, 6 \text{ [por E]}, 8 \text{ [por F]})) = 0$
+- $T_4(H_3) = \min(5, \max(11 \text{ [por A]}, 5 \text{ [por C]})) = 5$
+- $T_4(H_4) = \min(3, \max(11 \text{ [por A]}, 3 \text{ [por D]})) = 3$
+- $T_4(H_5) = \min(3, \max(7 \text{ [por B]}, 3 \text{ [por D]}, 6 \text{ [por E]})) = 3$
+- $T_4(H_6) = \min(3, \max(7 \text{ [por B]}, 5 \text{ [por C]}, 5 \text{ [por D]}, 8 \text{ [por F]})) = 3$
 
-A partir de esta iteración los valores se establizan, tenemos entoces los costes de cada hecho como:
+A partir de esta iteración los valores se estabilizan, tenemos entonces los costes de cada hecho como:
 
 - $C(H_1) = 8$
 - $C(H_2) = 0$
@@ -1270,4 +1305,50 @@ A partir de esta iteración los valores se establizan, tenemos entoces los coste
 - $C(H_5) = 3$
 - $C(H_6) = 3$
 
-Por lo tanto h^{max}(I) = max(C(H_3), C(H_4), C(H_5)) = max(5, 3, 3) = 5
+#### Por lo tanto
+
+- $h^{max}(I) = \max(C(H_3), C(H_4), C(H_5)) = \max(5, 3, 3) = 5$
+- $h^{add}(I) = C(H_3) + C(H_4) + C(H_5) = 5 + 3 + 3 = 11$
+
+</div>
+
+<div class="summary">
+
+¡Has planteado dos dudas excelentes que suelen ser los puntos conflictivos típicos al preparar este tema para el examen! Vamos a resolverlas con total precisión matemática y metodológica:
+
+### 1. ¿Para qué sirve registrar los hechos que se añaden al estado inicial?
+
+Registrar qué hechos "añade" cada acción que se vuelve aplicable en una iteración tiene una utilidad tanto teórica como extremadamente práctica para ahorrar tiempo en el examen:
+
+- **Utilidad metodológica (en el examen):** El algoritmo de programación dinámica te obliga a calcular para cada hecho $g$ el valor $T_i^s(g) = \min(T_{i-1}^s(g), c_g)$ . Si tuvieras que revisar todas las acciones del problema para cada una de las celdas en cada iteración, tardarías una eternidad. Al anotar que la **Acción D** es la única que ha "desbloqueado" un coste finito (coste 3) y que añade $\{H_4, H_5, H_6\}$, sabes de golpe que **solo los hechos $H_4, H_5, H_6$ pueden cambiar su coste** en esta iteración. El resto de hechos ($H_1, H_3$) seguirán siendo $\infty$ sin necesidad de que pierdas tiempo recalculándolos.
+
+- **Utilidad teórica:** Permite hacer un seguimiento de la "frontera de alcanzabilidad" en el problema relajado. Te dice qué nuevos hechos de la base de datos se vuelven "accesibles" (pasan de coste $\infty$ a un coste finito) gracias a las acciones que has podido activar con los recursos del estado anterior.
+
+---
+
+### 2. ¿Cuando hay más de un hecho como pre-condición, además del máximo, no deberíamos calcular la suma en vista de calcular $h^+$?
+
+Aquí hay una **confusión conceptual muy común** entre las heurísticas $h^{max}$, $h^{add}$ y $h^+$ que debes separar claramente en tus apuntes:
+
+- **La heurística $h^+$ NO se calcula con la tabla de programación dinámica:** El valor de $h^+(s)$ representa el coste de un _plan relajado óptimo_ [Excerpt 87]. La única forma de calcular $h^+(s)$ de forma exacta es aplicando el algoritmo voraz explorando **todas las ramas posibles** (todas las combinaciones de acciones), medir el coste de cada plan relajado válido y quedarte con el mínimo [Excerpt 87]. Como este cálculo es de coste exponencial (NP-difícil), en la práctica no se usa una tabla para él [Excerpt 87, 91].
+- **La tabla sirve para aproximar $h^+$ a través de $h^{max}$ y $h^{add}$ [Excerpt 91]:** Dado que el Ejercicio 12 te pide calcular expresamente tanto $h^{max}$ como $h^{add}$, **sí, debes calcular la suma de las precondiciones, pero únicamente para rellenar la tabla de $h^{add}$**.
+
+Para tu examen, la regla de oro para combinar precondiciones en tus tablas es:
+
+1.  **Si estás calculando la tabla de $h^{max}$:** Para cualquier acción con múltiples precondiciones, calculas su coste utilizando el **máximo** de los costes de sus precondiciones en la iteración anterior [Excerpt 88].
+    $$c_{pre(a)} = \max(T_{i-1}(g') \mid g' \in pre(a))$$
+2.  **Si estás calculando la tabla de $h^{add}$:** Para esa misma acción, calculas su coste utilizando la **suma** de los costes de sus precondiciones.
+    $$c_{pre(a)} = \sum_{g' \in pre(a)} T_{i-1}(g')$$
+
+#### ¿Cómo se traduce esto a tu ejercicio 12?
+
+En la iteración 1 ($T_1$) que has escrito, como todos los valores de las precondiciones de las acciones con más de una variable ($H_3$, $H_4$, $H_6$) parten de $\infty$ en $T_0$, el resultado de la suma y del máximo coincide ($\infty + \infty = \infty$ y $\max(\infty, \infty) = \infty$).
+
+Pero en las siguientes iteraciones, cuando esos hechos tomen valores numéricos (por ejemplo, si en $T_1$ ya tienes que $H_4=3$ y $H_6=3$), verás la diferencia al evaluar la **Acción E** (pre: $H_4$ y $H_6$; coste: 3):
+
+- En la tabla de **$h^{max}$**: $c_{pre(E)} = \max(3, 3) = 3$. El coste base de la acción E sería $3 + 3 = 6$.
+- En la tabla de **$h^{add}$**: $c_{pre(E)} = 3 + 3 = 6$. El coste base de la acción E sería $6 + 3 = 9$.
+
+Por lo tanto, para resolver el Ejercicio 12 al completo, debes desarrollar **dos procesos de tablas paralelos** (o una sola tabla con las celdas divididas en dos): uno aplicando la regla del máximo ($h^{max}$) y otro aplicando la regla de la suma ($h^{add}$).
+
+</div>
