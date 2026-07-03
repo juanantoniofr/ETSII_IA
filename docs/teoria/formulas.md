@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="../css/estilo.css">
 
-# Fórmulas
+# Recopilación de las fórmulas de Teoría de Inteligencia Artificial
 
 ## Formulas estadísticas
 
@@ -379,6 +379,8 @@ _(Básicamente, tomas todas las probabilidades individuales que tu modelo calcul
 
 <div class="summary">
 
+## Planificación bajo incertidumbre
+
 Para resolver con éxito los ejercicios prácticos de esta sección, las fórmulas fundamentales se dividen en dos bloques principales: **Planificación bajo Incertidumbre** (donde el agente conoce la dinámica del entorno: las probabilidades de transición $P$ y las recompensas $R$) y **Aprendizaje por Refuerzo** (donde el entorno es desconocido y el agente aprende interactuando con él por ensayo y error).
 
 Aquí tienes el formulario maestro estructurado con las ecuaciones exactas y el significado de cada variable para aplicar en tu examen:
@@ -398,7 +400,45 @@ $$\mathbb{P}(h|\pi) = \prod_{i \ge 0} P_{\pi(s_i)}(s_{i+1}|s_i)$$
 - **$\pi(s_i)$:** Acción que dicta la política aplicar en el estado $s_i$.
 - **$P_a(s'|s)$:** Probabilidad de transitar al estado $s'$ al aplicar la acción $a$ en el estado $s$.
 
-#### 2. Evaluación de una política `Utilidad esperada` (Sistema de Ecuaciones Lineales de $U_\pi$)
+#### 2. Fórmula General Descontada (Horizonte Infinito)
+
+Esta es la versión estándar y definitiva que se utiliza en los Procesos de Decisión de Markov para garantizar que la suma de recompensas futuras esté acotada y sea comparable:
+
+$$\mathbf{U(h|\pi) = \sum_{i\ge0} \gamma^i R(s_i, \pi(s_i))}$$
+
+Donde:
+
+- **$s_i$**: Estado visitado en el instante de tiempo $i$ (siendo $s_0$ el estado inicial de la historia).
+- **$\pi(s_i)$**: Acción dictada por la política $\pi$ para el estado $s_i$.
+- **$R(s_i, \pi(s_i))$**: Recompensa neta del par estado-acción.
+- **$\gamma$ (gamma):** Factor de descuento, con $0 < \gamma < 1$.
+
+_(Nota teórica: Si no existiera coste por aplicar acciones, la fórmula se simplifica sustituyendo $R(s_i, \pi(s_i))$ por la recompensa directa del estado $R(s_i)$)._
+
+---
+
+#### 3. Desglose de la Recompensa Neta
+
+Cuando las acciones conllevan un coste de ejecución, la recompensa neta del paso se calcula como:
+
+$$R(s, a) = R(s) - C(s, a)$$
+
+Donde:
+
+- **$R(s)$:** Recompensa base por estar en el estado $s$.
+- **$C(s, a)$:** Coste de aplicar la acción $a$ en el estado $s$ (el coste de la acción de esperar suele ser siempre $0$).
+
+---
+
+#### 4. Utilidad de una Historia Parcial (Finita)
+
+Si en el examen te dan una secuencia finita (historia parcial) de longitud $T$ (como en el Ejercicio 1 del boletín), la utilidad acumulada con descuento se calcula deteniendo el sumatorio en el último paso observable de la secuencia:
+
+$$\mathbf{U = \sum_{i=0}^{T} \gamma^i R_i}$$
+
+Donde $R_i$ representa la recompensa neta obtenida en el paso $i$ de dicha historia.
+
+#### 5. Evaluación de una política `Utilidad esperada` (Sistema de Ecuaciones Lineales de $U_\pi$)
 
 Se aplica cuando te dan una política concreta $\pi$ y te piden calcular la utilidad esperada de cada estado ($U_\pi(s)$). Genera un sistema de ecuaciones con tantas variables como estados tenga el problema:
 $$U_\pi(s) = R(s, \pi(s)) + \gamma \sum_{s' \in S} P_{\pi(s)}(s'|s) U_\pi(s')$$
@@ -407,14 +447,14 @@ $$U_\pi(s) = R(s, \pi(s)) + \gamma \sum_{s' \in S} P_{\pi(s)}(s'|s) U_\pi(s')$$
 - **$\gamma$:** Factor de descuento ($0 < \gamma < 1$).
 - **$U_\pi(s')$:** Utilidad esperada del posible estado futuro $s'$.
 
-#### 3. Ecuaciones de Bellman para la Utilidad Óptima ($U^*$)
+#### 6. Ecuaciones de Bellman para la Utilidad Óptima ($U^*$)
 
 Caracterizan el límite máximo teórico de utilidad que se puede conseguir en cada estado bajo la mejor política posible:
 $$U^*(s) = \max_{a \in A(s)} \left[ R(s, a) + \gamma \sum_{s' \in S} P_a(s'|s) U^*(s') \right]$$
 
 - _Nota de examen:_ Es un sistema de ecuaciones no lineales debido al operador $\max$, por lo que se resuelve usando algoritmos iterativos.
 
-#### 4. Paso de actualización en Iteración de Valores (Value Iteration)
+#### 7. Paso de actualización en Iteración de Valores (Value Iteration)
 
 Fórmula recursiva para calcular la utilidad de la iteración $i+1$ a partir de la obtenida en la iteración $i$:
 $$U_{i+1}(s) = \max_{a \in A(s)} \left[ R(s, a) + \gamma \sum_{s' \in S} P_a(s'|s) U_i(s') \right]$$
@@ -422,49 +462,125 @@ $$U_{i+1}(s) = \max_{a \in A(s)} \left[ R(s, a) + \gamma \sum_{s' \in S} P_a(s'|
 - **Criterio de parada:** Se detiene cuando la diferencia máxima entre dos iteraciones consecutivas es menor que un margen de error $\epsilon$:
   $$\|U_i - U_{i-1}\| = \max_{s \in S} |U_i(s) - U_{i-1}(s)| < \epsilon$$
 
-#### 5. Cota Superior de la Utilidad ($U_{max}$)
+#### 8. Cota Superior de la Utilidad ($U_{max}$)
 
 Define el límite asintótico máximo de utilidad acumulada si el agente recibiera siempre la recompensa máxima posible ($R_{max}$) en un horizonte infinito:
 $$U_{max} = \frac{R_{max}}{1 - \gamma}$$
 
-#### 6. Extracción de la Política Óptima ($\pi^*$)
+#### 9. Extracción de la Política Óptima ($\pi^*$)
 
 Una vez hallada la utilidad óptima (bien resolviendo Bellman o tras estabilizar la Iteración de Valores), la política óptima se extrae seleccionando la acción voraz:
 $$\pi^*(s) = \arg\max_{a \in A(s)} \left[ R(s, a) + \gamma \sum_{s' \in S} P_a(s'|s) U^*(s') \right]$$
 
+</div>
+
+<div class="summary">
+
+## Aprendizaje por Refuerzo
+
+La fórmula del retorno acumulado $U_t$ desde un paso temporal $t$ es el motor de cálculo del algoritmo de Montecarlo, y junto a ella existen otras tres ecuaciones clave de Aprendizaje por Refuerzo que debes incluir en tu recopilatorio para no dejar ningún cabo suelto en el examen.
+
+A continuación, tienes las fórmulas que faltaban explicadas al detalle, seguidas del **recopilatorio final unificado** listo para imprimir o repasar.
+
 ---
 
-### Bloque 2: Aprendizaje por Refuerzo (Entorno Desconocido)
+### Las fórmulas que faltaban en tu lista:
 
-En estos ejercicios el agente no conoce las transiciones $P$ ni las recompensas $R$, por lo que estima los valores directamente a partir de episodios (experiencia).
+#### A. Retorno Acumulado Descontado desde el paso $t$ ($U_t$)
 
-#### 1. Utilidad del par Estado-Acción ($q_\pi(s, a)$)
+Es la fórmula que utilizamos para calcular la utilidad de una historia de atrás hacia adelante en los ejercicios de Montecarlo (como el Ejercicio 6).
 
-Representa la utilidad esperada de aplicar la acción $a$ en el estado $s$ y, a partir de ahí, seguir la política $\pi$:
-$$q_\pi(s, a) = R(s, a) + \gamma \sum_{s' \in S} P_a(s'|s) U_\pi(s')$$
+- **Forma de Sumatorio (Secuencial):**
+  $$U_t = \sum_{i=t}^{T} \gamma^{i-t} R_i$$
+- **Forma Recursiva (La que de verdad se usa en el papel para ir rápido):**
+  $$U_t = R_t + \gamma U_{t+1} \quad \text{con } U_{T+1} = 0 \text{ (por ser } s_{T+1} \text{ terminal)}$$
 
-#### 2. Actualización de Montecarlo para pares Estado-Acción
+---
 
-- **MC de primera visita:** Solo se toma la utilidad de la secuencia a partir de la primera aparición de un par $(s, a)$ en el episodio.
-- **MC de cada visita:** Se toman los valores de utilidad obtenidos a partir de todas las apariciones del par $(s, a)$ en el episodio.
-- **Fórmula incremental de la media (para actualización paso a paso):**
+#### B. Diferencias Temporales para $q$ (TD(0) de Pares Estado-Acción / SARSA)
+
+En tu recopilatorio tenías las diferencias temporales para estimar estados ($U(s_t)$) y Q-learning para el control _off-policy_. Te faltaba la **actualización de diferencias temporales estándar para pares estado-acción** (_on-policy_), donde el estado siguiente de actualización se toma evaluando la acción real $a_{t+1}$ que dicta la política, en lugar del máximo:
+
+$$\delta_t = R_t + \gamma q(s_{t+1}, a_{t+1}) - q(s_t, a_t)$$
+$$q(s_t, a_t) \leftarrow q(s_t, a_t) + \alpha \delta_t$$
+
+---
+
+#### C. Extracción de Utilidades de Estado $U(s)$ y Política Voraz ($\pi$) desde la tabla $q$
+
+Al finalizar los algoritmos de control (como Q-learning o Montecarlo para $q$), necesitas saber cómo obtener la utilidad de los estados y la política óptima a partir de la matriz de valores $q$ acumulada:
+
+- **Utilidad de un estado:** $U(s) = \max_{a \in A(s)} q(s, a)$
+- **Política voraz:** $\pi(s) = \arg\max_{a \in A(s)} q(s, a)$
+
+---
+
+#### D. Comportamiento de la Política $\epsilon$-voraz
+
+Para los ejercicios conceptuales, necesitas la definición formal de cómo se distribuyen las probabilidades de exploración:
+
+$$\mathbb{P}(a) = \begin{cases} 1 - \epsilon & \text{para la acción voraz (explotación)} \\ \epsilon & \text{para una acción elegida al azar (exploración)} \end{cases}$$
+
+---
+
+# COMPENDIO DEFINITIVO: APRENDIZAJE POR REFUERZO (EXAMEN)
+
+### 1. Modelado Teórico y Relaciones de Utilidad
+
+- **Utilidad Esperada del par Estado-Acción ($q_\pi(s, a)$):**
+  $$q_\pi(s, a) = R(s, a) + \gamma \sum_{s' \in S} P_a(s'|s) U_\pi(s')$$
+- **Relación de Consistencia con la Utilidad de un Estado ($U(s)$):**
+  $$U_\pi(s) = q_\pi(s, \pi(s))$$
+- **Extracción de Utilidad Óptima y Política Óptima:**
+  $$U^*(s) = \max_{a \in A(s)} q^*(s, a)$$
+  $$\pi^*(s) = \arg\max_{a \in A(s)} q^*(s, a)$$
+
+---
+
+### 2. Algoritmos de Montecarlo (Por Episodios Completos)
+
+- **Retorno de una secuencia desde el paso $t$ ($U_t$):**
+  $$U_t = \sum_{i=t}^{T} \gamma^{i-t} R_i \quad \Longleftrightarrow \quad U_t = R_t + \gamma U_{t+1}$$
+- **Montecarlo de Primera Visita (MC):**  
+  Se calcula $U_t$ únicamente para el primer instante $t$ en que el par $(s, a)$ aparece en el episodio.
+- **Montecarlo de Cada Visita (MC):**  
+  Se calcula $U_t$ para todas las apariciones del par $(s, a)$ en la secuencia, acumulándolas en la lista de retornos.
+- **Actualización de valores de utilidad:**
+  $$q(s,a) = \text{Media de } Racum(s,a)$$
+- **Fórmula incremental de la media (para actualización paso a paso sin guardar listas):**
   $$U^n(s) = U^{n-1}(s) + \frac{1}{n} \left( U_n - U^{n-1}(s) \right)$$
-  Donde $U_n$ es la utilidad real observada en el episodio actual para ese estado.
 
-#### 3. Método de las Diferencias Temporales (TD(0)) para Estados
+---
 
-Actualiza la estimación de la utilidad tras cada paso individual de interacción, sin necesidad de esperar a que termine todo el episodio:
-$$U(s_t) \leftarrow U(s_t) + \alpha \left( R_t + \gamma U(s_{t+1}) - U(s_t) \right)$$
+### 3. Métodos de Diferencias Temporales (Paso a Paso en Tiempo Real)
 
-- **$\alpha$:** Factor de aprendizaje ($0 < \alpha \le 1$).
-- **$R_t + \gamma U(s_{t+1}) - U(s_t)$:** Es el denominado **Error DT** ($\delta_t$), que mide la discrepancia entre la utilidad estimada del estado actual y la recompensa real obtenida más la utilidad estimada del estado siguiente.
+#### A. Predicción de Utilidad de Estados (TD(0))
 
-#### 4. Algoritmo Q-Learning (Diferencias Temporales para $q$)
+- **Ecuación de actualización:**
+  $$U(s_t) \leftarrow U(s_t) + \alpha \delta_t$$
+- **Error de Diferencia Temporal ($\delta_t$):**
+  $$\delta_t = R_t + \gamma U(s_{t+1}) - U(s_t)$$
 
-Es el algoritmo de control off-policy más preguntado en los exámenes. Actualiza directamente la función de utilidad de pares estado-acción aproximando la óptima ($q^*$) independientemente de la política que se siga:
-$$q(s, a) \leftarrow q(s, a) + \alpha \left[ R + \gamma \max_{a' \in A(s')} q(s', a') - q(s, a) \right]$$
+#### B. Predicción de Utilidad de Pares Estado-Acción (SARSA / TD(0) para $q$)
 
-- **$s'$:** Estado siguiente observado tras aplicar $a$ en $s$.
-- **$\max_{a'} q(s', a')$:** El valor estimado de la mejor acción posible en el estado siguiente $s'$.
+- **Ecuación de actualización:**
+  $$q(s_t, a_t) \leftarrow q(s_t, a_t) + \alpha \delta_t$$
+- **Error de Diferencia Temporal ($\delta_t$):**
+  $$\delta_t = R_t + \gamma q(s_{t+1}, a_{t+1}) - q(s_t, a_t)$$
+
+#### C. Algoritmo de Control Q-Learning (_Off-Policy_)
+
+- **Ecuación de actualización:**
+  $$q(s_t, a_t) \leftarrow q(s_t, a_t) + \alpha \delta_t$$
+- **Error de Diferencia Temporal de Q-learning ($\delta_t$):**
+  $$\delta_t = R_t + \gamma \max_{a' \in A(s_{t+1})} q(s_{t+1}, a') - q(s_t, a_t)$$
+
+---
+
+### 4. Parámetros de Control y Exploración
+
+- **$\gamma$ (Factor de descuento):** $0 \le \gamma < 1$. Acota los retornos en horizontes infinitos y prioriza recompensas cercanas.
+- **$\alpha$ (Factor de aprendizaje):** $0 < \alpha \le 1$. Determina la importancia que se le da a la nueva experiencia frente a la utilidad ya estimada.
+- **$\epsilon$ (Factor de exploración):** $0 < \epsilon < 1$. Probabilidad de tomar una decisión puramente exploratoria (aleatoria) en una política $\epsilon$-voraz.
 
 </div>

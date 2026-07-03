@@ -151,7 +151,7 @@ Repitiendo este proceso de experimentar, promediar ganancias y ajustar la polít
 
 <div class="summary">
 
-### Montecarlo explicadpo a mi forma
+## Montecarlo explicado a mi forma
 
 **1. El Escenario (Sin modelo del entorno)**
 Buscamos encontrar la política óptima ($\pi^*$) pero **no conocemos la dinámica del sistema**: ignoramos las probabilidades de transición ($P(s'|s,a)$) y la función de recompensas exactas ($R(s,a)$) `. Solo conocemos el conjunto de estados, las acciones aplicables y asumimos que existe un **estado terminal** (absorbente) al que siempre se acaba llegando para finalizar las partidas `.
@@ -180,25 +180,231 @@ Repitiendo este proceso miles de veces (generar episodio $\rightarrow$ retrospec
 
 </div>
 
-## Método de las difereferencias temporales
+<div class="highlight-exercise">
 
-¡Exactamente! Has dado con la clave del funcionamiento del algoritmo. El método **"inventa"** temporalmente ese valor futuro, algo que en la teoría formal se denomina usar una **estimación** ``.
+## Ejercicio 6: modelo ilustrativo de Montecarlo
 
-A diferencia de Montecarlo, que espera pacientemente a que termine la partida para conocer la verdad absoluta de la historia, el método de las diferencias temporales **consulta su propia memoria** para ver qué valor numérico tiene guardado en ese preciso instante para el estado destino $s_{t+1}$, y lo usa como si fuera un hecho seguro ``.
+Para presentar la resolución de un ejercicio de **Montecarlo en Aprendizaje por Refuerzo** de forma que un corrector de examen pueda calificarlo en 10 segundos con total seguridad, la clave radica en **desglosar el episodio de atrás hacia adelante en una tabla unificada**.
+
+A continuación, resolvemos de forma óptima y ultra-visual el **Ejercicio 6 del boletín de problemas**, aplicando tanto el método de **Primera Visita** como el de **Cada Visita** con inicios exploratorios.
+
+---
+
+### Datos Iniciales del Problema (Ejercicio 6) [Excerpt 13, 14, 155, 156]
+
+- **Estados:** $S = \{s_1, s_2, s_3\}$ ($s_3$ es terminal)
+- **Acciones:** $A = \{a_1, a_2, a_3\}$
+- **Parámetros:** $\gamma = 0.9$ [Excerpt 13, 155] | Valores iniciales: $q(s,a) = 0$ | Listas $Racum(s,a) = []$
+- **Regla de desempate en argmáx:** Se elige la primera acción con valor máximo.
+- **Episodio a evaluar:**
+
+  $$\mathbf{s_2 \xrightarrow{a_1, R_0=-1} s_2 \xrightarrow{a_2, R_1=-1} s_1 \xrightarrow{a_2, R_2=-1} s_2 \xrightarrow{a_2, R_3=-1} s_1 \xrightarrow{a_2, R_4=-1} s_2 \xrightarrow{a_2, R_5=-1} s_3 \text{ (terminal)}}$$
+
+---
+
+### Paso 1: Tabla de Análisis del Episodio (Cálculo de Retornos $U_t$)
+
+Para evitar errores matemáticos, calculamos los retornos $U_t$ de atrás hacia adelante (desde $t=5$ hasta $t=0$) usando la fórmula recursiva de actualización: **$U_t = R_t + \gamma U_{t+1}$** (con $U_6 = 0$ por ser $s_3$ terminal):
+
+| Paso ($t$) | Par $(s_t, a_t)$ | Recompensa ($R_t$) | Estado Siguiente ($s_{t+1}$) | Cálculo del Retorno Acumulado ($U_t$)        | ¿Primera Visita del Par? |
+| :--------: | :--------------: | :----------------: | :--------------------------: | :------------------------------------------- | :----------------------: |
+|  **$5$**   |   $(s_2, a_2)$   |        $-1$        |       $s_3$ (terminal)       | $U_5 = -1.0$                                 |     **Sí** (último)      |
+|  **$4$**   |   $(s_1, a_2)$   |        $-1$        |            $s_2$             | $U_4 = -1 + 0.9(-1.0) = \mathbf{-1.9}$       |      No (ver $t=2$)      |
+|  **$3$**   |   $(s_2, a_2)$   |        $-1$        |            $s_1$             | $U_3 = -1 + 0.9(-1.9) = \mathbf{-2.71}$      |      No (ver $t=1$)      |
+|  **$2$**   |   $(s_1, a_2)$   |        $-1$        |            $s_2$             | $U_2 = -1 + 0.9(-2.71) = \mathbf{-3.439}$    |          **Sí**          |
+|  **$1$**   |   $(s_2, a_2)$   |        $-1$        |            $s_1$             | $U_1 = -1 + 0.9(-3.439) = \mathbf{-4.0951}$  |          **Sí**          |
+|  **$0$**   |   $(s_2, a_1)$   |        $-1$        |            $s_2$             | $U_0 = -1 + 0.9(-4.0951) = \mathbf{-4.6856}$ |          **Sí**          |
+
+---
+
+### Paso 2: Caso A - Actualización por Montecarlo de Primera Visita
+
+Bajo el algoritmo de **Primera Visita**, solo actualizamos $q(s,a)$ con los retornos correspondientes a la primera vez que apareció cada par en la secuencia (marcados con **Sí** en la tabla anterior):
+
+1.  **Par $(s_2, a_1)$** (ocurre primero en $t=0$):
+    - $Racum(s_2, a_1) \leftarrow [-4.6856]$
+    - $q(s_2, a_1) = \mathbf{-4.69}$
+2.  **Par $(s_2, a_2)$** (ocurre primero en $t=1$)
+    - $Racum(s_2, a_2) \leftarrow [-4.0951]$
+    - $q(s_2, a_2) = \mathbf{-4.10}$
+3.  **Par $(s_1, a_2)$** (ocurre primero en $t=2$):
+    - $Racum(s_1, a_2) \leftarrow [-3.439]$
+    - $q(s_1, a_2) = \mathbf{-3.44}$
+
+#### Tabla $q(s, a)$ resultante (Primera Visita):
+
+|  Estado   |  $a_1$  |  $a_2$  | $a_3$ |
+| :-------: | :-----: | :-----: | :---: |
+| **$s_1$** |  $0.0$  | $-3.44$ | $0.0$ |
+| **$s_2$** | $-4.69$ | $-4.10$ | $0.0$ |
+
+#### Derivación de la Nueva Política Voraz ($\pi'$):
+
+- **$\pi'(s_1)$** $= \arg\max(0.0, -3.44, 0.0) \rightarrow$ Empate entre $a_1$ y $a_3$. Aplicando desempate por primer índice: **$\mathbf{a_1}$**.
+- **$\pi'(s_2)$** $= \arg\max(-4.69, -4.10, 0.0) \rightarrow$ El máximo es $0.0$: **$\mathbf{a_3}$**.
+
+---
+
+### Paso 3: Caso B - Actualización por Montecarlo de Cada Visita
+
+Bajo el algoritmo de **Cada Visita**, añadimos todos los retornos calculados a las listas correspondientes:
+
+1.  **Par $(s_2, a_1)$**:
+    - $Racum(s_2, a_1) \leftarrow [-4.6856]$
+    - $q(s_2, a_1) = \text{Media}([-4.6856]) = \mathbf{-4.69}$
+2.  **Par $(s_2, a_2)$** (aparece en $t=1$, $t=3$ y $t=5$):
+    - $Racum(s_2, a_2) \leftarrow [-4.0951, -2.71, -1.0]$
+    - $q(s_2, a_2) = \text{Media}([-4.0951, -2.71, -1.0]) = \frac{-7.8051}{3} = \mathbf{-2.60}$
+3.  **Par $(s_1, a_2)$** (aparece en $t=2$ y $t=4$):
+    - $Racum(s_1, a_2) \leftarrow [-3.439, -1.9]$
+    - $q(s_1, a_2) = \text{Media}([-3.439, -1.9]) = \frac{-5.339}{2} = \mathbf{-2.67}$
+
+#### Tabla $q(s, a)$ resultante (Cada Visita):
+
+|  Estado   |  $a_1$  |  $a_2$  | $a_3$ |
+| :-------: | :-----: | :-----: | :---: |
+| **$s_1$** |  $0.0$  | $-2.67$ | $0.0$ |
+| **$s_2$** | $-4.69$ | $-2.60$ | $0.0$ |
+
+#### Derivación de la Nueva Política Voraz ($\pi'$):
+
+- **$\pi'(s_1)$** $= \arg\max(0.0, -2.67, 0.0) \rightarrow$ Empate entre $a_1$ y $a_3$: **$\mathbf{a_1}$**.
+- **$\pi'(s_2)$** $= \arg\max(-4.69, -2.60, 0.0) \rightarrow$ El máximo es $0.0$: **$\mathbf{a_3}$**.
+
+---
+
+### ¿Por qué este formato es perfecto para tu examen?
+
+- **El corrector no tiene que leer texto:** solo busca el bloque de retornos del Paso 1 para verificar que la matemática es correcta, mira tu matriz de valores $q$ para comprobar la media y valida la política final.
+- **Explicita las reglas de desempate:** Justificar matemáticamente por qué eliges $a_1$ en $s_1$ (por desempate posicional de argmáx sobre el valor nulo de $a_3$ no visitado) te dará el 100% de la puntuación por rigurosidad.
+
+</div>
+
+<div class="highlight-theory">
+
+## Método de las diferencias temporales
+
+¡Exactamente! Has dado con la clave del funcionamiento del algoritmo. El método **"inventa"** temporalmente ese valor futuro, algo que en la teoría formal se denomina usar una **estimación**.
+
+A diferencia de Montecarlo, que espera pacientemente a que termine la partida para conocer la verdad absoluta de la historia, el método de las diferencias temporales **consulta su propia memoria** para ver qué valor numérico tiene guardado en ese preciso instante para el estado destino $s_{t+1}$, y lo usa como si fuera un hecho seguro.
 
 El proceso de esta "invención" funciona así:
 
-1. Antes de que el agente empiece a moverse por el entorno, se inicializa su tabla de utilidades con valores completamente arbitrarios (generalmente ceros o números aleatorios) ``.
-2. Al dar el salto de $s_t$ a $s_{t+1}$, el entorno le da un golpe de realidad inmediato entregándole una recompensa $R_t$.
-3. Para evaluar cómo de buena ha sido esa jugada sin tener que seguir jugando hasta el final, el agente **mira su tabla de valoraciones actual y extrae su propia "adivinanza" del estado en el que acaba de caer ($U(s_{t+1})$)** ``.
-4. Finalmente, suma esa verdad a corto plazo ($R_t$) con su invención a largo plazo ($\gamma U(s_{t+1})$), y usa ese cóctel para corregir y actualizar el valor del estado que acaba de abandonar ($U(s_t)$) ``.
+1. Antes de que el agente empiece a moverse por el entorno, se inicializa su tabla de utilidades con valores completamente arbitrarios (generalmente ceros o números aleatorios).
+2. Al dar el salto de $s_t$ a $s_{t+1}$, el entorno le da un golpe de realidad inmediato entregándole una recompensa $R_t$
+3. Para evaluar cómo de buena ha sido esa jugada sin tener que seguir jugando hasta el final, el agente **mira su tabla de valoraciones actual y extrae su propia "adivinanza" del estado en el que acaba de caer ($U(s_{t+1})$)**.
+4. Finalmente, suma esa verdad a corto plazo ($R_t$) con su invención a largo plazo ($\gamma U(s_{t+1})$), y usa ese cóctel para corregir y actualizar el valor del estado que acaba de abandonar ($U(s_t)$).
 
 **¿Por qué funciona si al principio está adivinando basándose en ceros?**
 Durante los primeros pasos, sus invenciones son pésimas y totalmente erróneas. Sin embargo, conforme el agente explora y choca repetidamente contra los estados terminales del juego (donde la recompensa real es definitiva y no hay nada más que adivinar), esos valores reales exactos empiezan a "contagiarse" hacia los estados inmediatamente anteriores.
 
-Paso a paso, cada estado va actualizando su valor apoyándose en la estimación de su vecino, de forma que los valores reales fluyen como una ola desde el final del juego hacia el principio. La teoría matemática nos garantiza que **estas estimaciones basadas en otras estimaciones acaban convergiendo con total seguridad hacia la utilidad real óptima** ($U^*$ o $q^*$), siempre y cuando se ajuste correctamente la tasa de aprendizaje ($\alpha$) a lo largo del tiempo ``.
+Paso a paso, cada estado va actualizando su valor apoyándose en la estimación de su vecino, de forma que los valores reales fluyen como una ola desde el final del juego hacia el principio. La teoría matemática nos garantiza que **estas estimaciones basadas en otras estimaciones acaban convergiendo con total seguridad hacia la utilidad real óptima** ($U^*$ o $q^*$), siempre y cuando se ajuste correctamente la tasa de aprendizaje ($\alpha$) a lo largo del tiempo.
 
-Esa es precisamente la mayor innovación de las diferencias temporales: el agente **aprende haciendo predicciones basadas en sus propias predicciones anteriores**, corrigiendo continuamente su nivel de error gracias a la pequeña porción de realidad que recolecta en cada paso ($R_t$) ``.
+Esa es precisamente la mayor innovación de las diferencias temporales: el agente **aprende haciendo predicciones basadas en sus propias predicciones anteriores**, corrigiendo continuamente su nivel de error gracias a la pequeña porción de realidad que recolecta en cada paso ($R_t$).
+
+</div>
+
+<div class="highlight-exercise">
+
+## Ejercicio 8: Modelo ilustrativo de Diferencias Temporales
+
+Para presentar la resolución de un ejercicio de **Diferencias Temporales (DT)** de forma que sea impecable y facilísima de calificar por cualquier evaluador en un examen, la mejor estrategia es estructurar el desarrollo mediante una **tabla de transiciones paso a paso** acompañada de un desglose aritmético explícito.
+
+A continuación, resolvemos de manera óptima el **Ejercicio 8 del boletín de problemas**, el cual aplica el algoritmo de diferencias temporales para el control (**Q-learning**).
+
+---
+
+### Datos Iniciales del Problema (Ejercicio 8) [8: 159]
+
+- **Estados:** $S = \{s_1, s_2, s_3, s_4\}$
+- **Acciones:** $A = \{a_1, a_2\}$ (todas aplicables en cada estado).
+- **Parámetros:** Factor de descuento $\gamma = 0.9$, Factor de aprendizaje $\alpha = 0.5$
+- **Valores Iniciales:** $q(s,a) = 0, \quad \forall s \in S, \forall a \in A$
+- **Episodio Generado:**
+
+  $$\mathbf{s_1 \xrightarrow{a_1, R=10} s_2 \xrightarrow{a_1, R=20} s_3 \xrightarrow{a_2, R=30} s_4 \xrightarrow{a_1, R=70} s_1 \xrightarrow{a_2, R=20} s_3 \xrightarrow{a_1, R=60} s_2}$$
+
+---
+
+### Fórmula de Actualización (Q-learning / Diferencias Temporales para $q$)
+
+El algoritmo estima directamente la función de utilidad óptima de pares estado-acción mediante la siguiente ecuación recursiva de diferencias temporales:
+
+$$q(s, a) \leftarrow q(s, a) + \alpha \cdot \underbrace{\left[ R + \gamma \cdot \max_{a' \in A(s')} q(s', a') - q(s, a) \right]}_{\text{Error DT } (\delta_t)}$$
+
+---
+
+### Paso 1: Tabla de Seguimiento del Episodio (Fácil de Corregir)
+
+Esta tabla recoge la evolución cronológica de cada paso de tiempo, mostrando de forma directa el cálculo del **Error de Diferencia Temporal ($\delta_t$)** y el nuevo valor actualizado:
+
+| Paso ($t$) | Transición $(s \to a \to R \to s')$ |      $\max_{a'} q(s', a')$      | Ecuación de Actualización Aritmética |     Nuevo Valor $q(s, a)$      |
+| :--------: | :---------------------------------- | :-----------------------------: | :----------------------------------- | :----------------------------: |
+|  **$0$**   | $s_1 \xrightarrow{a_1, 10} s_2$     |              $0.0$              | $0 + 0.5 \cdot [10 + 0.9(0) - 0]$    |  $q(s_1, a_1) = \mathbf{5.0}$  |
+|  **$1$**   | $s_2 \xrightarrow{a_1, 20} s_3$     |              $0.0$              | $0 + 0.5 \cdot [20 + 0.9(0) - 0]$    | $q(s_2, a_1) = \mathbf{10.0}$  |
+|  **$2$**   | $s_3 \xrightarrow{a_2, 30} s_4$     |              $0.0$              | $0 + 0.5 \cdot [30 + 0.9(0) - 0]$    | $q(s_3, a_2) = \mathbf{15.0}$  |
+|  **$3$**   | $s_4 \xrightarrow{a_1, 70} s_1$     |  $\max(5.0, 0) = \mathbf{5.0}$  | $0 + 0.5 \cdot [70 + 0.9(5.0) - 0]$  | $q(s_4, a_1) = \mathbf{37.25}$ |
+|  **$4$**   | $s_1 \xrightarrow{a_2, 20} s_3$     | $\max(0, 15.0) = \mathbf{15.0}$ | $0 + 0.5 \cdot [20 + 0.9(15.0) - 0]$ | $q(s_1, a_2) = \mathbf{16.75}$ |
+|  **$5$**   | $s_3 \xrightarrow{a_1, 60} s_2$     | $\max(10.0, 0) = \mathbf{10.0}$ | $0 + 0.5 \cdot [60 + 0.9(10.0) - 0]$ | $q(s_3, a_1) = \mathbf{34.5}$  |
+
+---
+
+### Paso 2: Desglose Aritmético Detallado (Por si el corrector quiere ver el desarrollo)
+
+- **Paso 0 ($t=0$):**
+  $$\delta_0 = 10 + 0.9 \cdot \max(q(s_2,a_1), q(s_2,a_2)) - q(s_1, a_1) = 10 + 0.9(0) - 0 = 10$$
+  $$q(s_1, a_1) \leftarrow 0 + 0.5(10) = \mathbf{5.0}$$
+- **Paso 1 ($t=1$):**
+  $$\delta_1 = 20 + 0.9 \cdot \max(q(s_3,a_1), q(s_3,a_2)) - q(s_2, a_1) = 20 + 0.9(0) - 0 = 20$$
+  $$q(s_2, a_1) \leftarrow 0 + 0.5(20) = \mathbf{10.0}$$
+- **Paso 2 ($t=2$):**
+  $$\delta_2 = 30 + 0.9 \cdot \max(q(s_4,a_1), q(s_4,a_2)) - q(s_3, a_2) = 30 + 0.9(0) - 0 = 30$$
+  $$q(s_3, a_2) \leftarrow 0 + 0.5(30) = \mathbf{15.0}$$
+- **Paso 3 ($t=3$):** _(¡Ojo! Aquí $q(s_1, a_1)$ ya vale 5.0)_
+  $$\delta_3 = 70 + 0.9 \cdot \max(q(s_1,a_1), q(s_1,a_2)) - q(s_4, a_1) = 70 + 0.9(5.0) - 0 = 74.5$$
+  $$q(s_4, a_1) \leftarrow 0 + 0.5(74.5) = \mathbf{37.25}$$
+- **Paso 4 ($t=4$):** _(¡Ojo! Aquí $q(s_3, a_2)$ ya vale 15.0)_
+  $$\delta_4 = 20 + 0.9 \cdot \max(q(s_3,a_1), q(s_3,a_2)) - q(s_1, a_2) = 20 + 0.9(15.0) - 0 = 33.5$$
+  $$q(s_1, a_2) \leftarrow 0 + 0.5(33.5) = \mathbf{16.75}$$
+- **Paso 5 ($t=5$):** _(¡Ojo! Aquí $q(s_2, a_1)$ ya vale 10.0)_
+  $$\delta_5 = 60 + 0.9 \cdot \max(q(s_2,a_1), q(s_2,a_2)) - q(s_3, a_1) = 60 + 0.9(10.0) - 0 = 69.0$$
+  $$q(s_3, a_1) \leftarrow 0 + 0.5(69.0) = \mathbf{34.5}$$
+
+---
+
+### Paso 3: Matriz $Q$ Resultante (Estado Final)
+
+Una vez finalizado el episodio, la tabla de valores de utilidad $q(s, a)$ se presenta de forma concentrada para su comprobación inmediata:
+
+|  Estado   | Acción $a_1$ | Acción $a_2$ |
+| :-------: | :----------: | :----------: |
+| **$s_1$** |    $5.0$     |   $16.75$    |
+| **$s_2$** |    $10.0$    |    $0.0$     |
+| **$s_3$** |    $34.5$    |    $15.0$    |
+| **$s_4$** |   $37.25$    |    $0.0$     |
+
+---
+
+### Paso 4: Política Voraz Derivada ($\pi$)
+
+Asociamos a cada estado la acción con el valor de utilidad $q$ más alto (aplicando desempate por el primer argumento en caso de igualdad, aunque aquí no es necesario):
+
+$$\pi(s_1) = \mathbf{a_2} \quad (16.75 > 5.0)$$
+$$\pi(s_2) = \mathbf{a_1} \quad (10.0 > 0.0)$$
+$$\pi(s_3) = \mathbf{a_1} \quad (34.5 > 15.0)$$
+$$\pi(s_4) = \mathbf{a_1} \quad (37.25 > 0.0)$$
+
+---
+
+### 💡 Tip de Examen sobre la diferencia entre Q-learning y Diferencias Temporales tradicionales (TD(0))
+
+En la parte teórica de tu examen, si te preguntan en qué se diferencia el algoritmo que acabamos de aplicar de la técnica tradicional de Diferencias Temporales:
+
+- **Diferencias Temporales estándar (TD(0)) es un método de predicción:** Se utiliza cuando ya tenemos una política fija $\pi$ y queremos estimar únicamente la utilidad de los estados $U_\pi(s)$ sumando la recompensa actual y la utilidad estimada del siguiente estado:
+  $$U(s_t) \leftarrow U(s_t) + \alpha \left[ R_t + \gamma U(s_{t+1}) - U(s_t) \right]$$
+- **Q-learning es un método de control (optimización):** No requiere que le den una política fija; en su lugar, aproxima directamente los valores óptimos $q^*(s,a)$ de pares estado-acción de forma independiente a la política que se esté ejecutando en ese momento (_off-policy_), aplicando el operador de maximización ($\max_{a'}$) sobre el siguiente estado.
+
+</div>
 
 ## Algoritmo Q-Learning
 
@@ -284,3 +490,271 @@ Una vez que la tabla $q$ está completamente estabilizada con los valores defini
 $\pi^*(s) = arg\ m\hat{a}x_a q(s,a)$
 
 Es exactamente la misma filosofía de ahorro de recursos que estudiamos en el algoritmo de _Iteración de Valores_: el sistema prefiere operar a ciegas solo con números durante todo el entrenamiento y gastar el esfuerzo de deducir cuáles son las mejores acciones una sola vez al final, cuando ya tiene la garantía de que su tabla matemática es perfecta.
+
+<div class="highlight-exercise">
+
+## Ejercicio 7 del robot en la cuadrícula\*\* utilizando la imagen que has compartido.
+
+Este tipo de ejercicio es un clásico de examen y resolverlo de forma estructurada te asegurará la máxima nota de forma directa.
+
+---
+
+### Paso 1: Interpretación de la Cuadrícula y Valores $q$ Iniciales
+
+![alt text](t5_ejercicio7_cuadricula.png)
+
+La cuadrícula es una malla de **3 columnas (0, 1, 2)** y **2 filas (0, 1)**. La casilla verde **$(2, 1)$** es el **estado terminal**.
+
+Leyendo los números junto a las flechas de tu gráfico, extraemos la función de utilidad $q(s, a)$ inicial para cada casilla:
+
+- **Casilla $(0, 0)$ (Abajo-Izquierda):**
+  - $q((0,0), \text{arriba}) = \mathbf{4}$
+  - $q((0,0), \text{derecha}) = \mathbf{6}$
+- **Casilla $(0, 1)$ (Arriba-Izquierda):**
+  - $q((0,1), \text{abajo}) = \mathbf{4}$
+  - $q((0,1), \text{derecha}) = \mathbf{8}$
+- **Casilla $(1, 1)$ (Arriba-Centro):**
+  - $q((1,1), \text{abajo}) = \mathbf{4}$
+  - $q((1,1), \text{derecha}) = \mathbf{16}$
+- **Casilla $(1, 0)$ (Abajo-Centro):**
+  - $q((1,0), \text{arriba}) = \mathbf{8}$
+  - $q((1,0), \text{derecha}) = \mathbf{10}$
+- **Casilla $(2, 0)$ (Abajo-Derecha):**
+  - $q((2,0), \text{arriba}) = \mathbf{20}$
+- **Casilla $(2, 1)$ (Terminal - Verde):** Al ser terminal, su utilidad futura máxima es siempre **$0.0$**.
+
+---
+
+### Paso 2: Fórmula de Actualización de Q-learning
+
+La ecuación de diferencias temporales para aproximar los valores $q^*$ óptimos es [9: 60]:
+$$q(s, a) \leftarrow q(s, a) + \alpha \cdot \left[ R + \gamma \cdot \max_{a' \in A(s')} q(s', a') - q(s, a) \right]$$
+
+#### El "Atajo" Matemático del Examen:
+
+Dado que el enunciado te indica que **$\alpha = 1$** y **$\gamma = 0.6$**, la fórmula se simplifica enormemente eliminando el término de valor anterior
+
+$$q(s, a) \leftarrow R + 0.6 \cdot \max_{a' \in A(s')} q(s', a')$$
+
+---
+
+### Paso 3: Resolución Paso a Paso del Episodio (Fácil de Corregir)
+
+Analizamos de manera cronológica cada una de las 5 transiciones del episodio (**lo da el enunciado**) del robot:
+
+**Episodio:**
+
+| Estado | Acción  | Recompensa |
+| ------ | ------- | ---------- |
+| (0,0)  | arriba  | 0          |
+| (0,1)  | derecha | 0          |
+| (1,1)  | abajo   | 0          |
+| (1,0)  | derecha | 0          |
+| (2,0)  | arriba  | 20         |
+| (2,1)  |         |            |
+
+#### 1. Transición: $(0, 0) \xrightarrow{\text{arriba}, R=0} (0, 1)$
+
+- **Valor anterior:** $q((0,0), \text{arriba}) = 4$
+- **Estado siguiente:** $(0, 1)$, cuyas acciones disponibles son $\{\text{abajo}, \text{derecha}\}$.
+- **Máximo del estado siguiente:** $\max[q((0,1), \text{abajo}), q((0,1), \text{derecha})] = \max(4, 8) = \mathbf{8}$
+- **Cálculo:**
+  $$\delta_0 = 0 + 0.6 \cdot (8) - 4 = 4.8 - 4 = \mathbf{0.8}$$
+  $$q((0,0), \text{arriba}) \leftarrow 4 + 1.0 \cdot (0.8) = \mathbf{4.8}$$
+
+#### 2. Transición: $(0, 1) \xrightarrow{\text{derecha}, R=0} (1, 1)$
+
+- **Valor anterior:** $q((0,1), \text{derecha}) = 8$
+- **Estado siguiente:** $(1, 1)$, cuyas acciones disponibles son $\{\text{abajo}, \text{derecha}\}$.
+- **Máximo del estado siguiente:** $\max[q((1,1), \text{abajo}), q((1,1), \text{derecha})] = \max(4, 16) = \mathbf{16}$
+- **Cálculo:**
+  $$\delta_1 = 0 + 0.6 \cdot (16) - 8 = 9.6 - 8 = \mathbf{1.6}$$
+  $$q((0,1), \text{derecha}) \leftarrow 8 + 1.0 \cdot (1.6) = \mathbf{9.6}$$
+
+#### 3. Transición: $(1, 1) \xrightarrow{\text{abajo}, R=0} (1, 0)$
+
+- **Valor anterior:** $q((1,1), \text{abajo}) = 4$
+- **Estado siguiente:** $(1, 0)$, cuyas acciones disponibles son $\{\text{arriba}, \text{derecha}\}$.
+- **Máximo del estado siguiente:** $\max[q((1,0), \text{arriba}), q((1,0), \text{derecha})] = \max(8, 10) = \mathbf{10}$
+- **Cálculo:**
+  $$\delta_2 = 0 + 0.6 \cdot (10) - 4 = 6.0 - 4 = \mathbf{2.0}$$
+  $$q((1,1), \text{abajo}) \leftarrow 4 + 1.0 \cdot (2.0) = \mathbf{6.0}$$
+
+#### 4. Transición: $(1, 0) \xrightarrow{\text{derecha}, R=0} (2, 0)$
+
+- **Valor anterior:** $q((1,0), \text{derecha}) = 10$
+- **Estado siguiente:** $(2, 0)$, cuya única acción disponible es $\{\text{arriba}\}$.
+- **Máximo del estado siguiente:** $\max[q((2,0), \text{arriba})] = \mathbf{20}$
+- **Cálculo:**
+  $$\delta_3 = 0 + 0.6 \cdot (20) - 10 = 12.0 - 10 = \mathbf{2.0}$$
+  $$q((1,0), \text{derecha}) \leftarrow 10 + 1.0 \cdot (2.0) = \mathbf{12.0}$$
+
+#### 5. Transición: $(2, 0) \xrightarrow{\text{arriba}, R=20} (2, 1)$
+
+- **Valor anterior:** $q((2,0), \text{arriba}) = 20$
+- **Estado siguiente:** $(2, 1)$ (**Terminal - Casilla Verde**).
+- **Máximo del estado siguiente:** Al ser terminal, su valor futuro es **$0.0$**.
+- **Cálculo:**
+  $$\delta_4 = 20 + 0.6 \cdot (0) - 20 = \mathbf{0.0}$$
+  $$q((2,0), \text{arriba}) \leftarrow 20 + 1.0 \cdot (0.0) = \mathbf{20.0} \text{(Permanece inalterado)}$$
+
+---
+
+### Paso 4: Matriz $Q$ Resultante (Estado Final)
+
+Para que el corrector verifique tu resultado de un solo vistazo, preséntale la tabla final comparando los valores antes y después de la interacción:
+
+|  Estado $s$  | Acción $a$ | Valor $q$ Inicial | Cálculo de Actualización | Valor $q$ Final |
+| :----------: | :--------: | :---------------: | :----------------------- | :-------------: |
+| **$(0, 0)$** |   arriba   |        $4$        | $0 + 0.6 \cdot (8)$      |    **$4.8$**    |
+| **$(0, 0)$** |  derecha   |        $6$        | _No visitado_            |    **$6.0$**    |
+| **$(0, 1)$** |   abajo    |        $4$        | _No visitado_            |    **$4.0$**    |
+| **$(0, 1)$** |  derecha   |        $8$        | $0 + 0.6 \cdot (16)$     |    **$9.6$**    |
+| **$(1, 1)$** |   abajo    |        $4$        | $0 + 0.6 \cdot (10)$     |    **$6.0$**    |
+| **$(1, 1)$** |  derecha   |       $16$        | _No visitado_            |   **$16.0$**    |
+| **$(1, 0)$** |   arriba   |        $8$        | _No visitado_            |    **$8.0$**    |
+| **$(1, 0)$** |  derecha   |       $10$        | $0 + 0.6 \cdot (20)$     |   **$12.0$**    |
+| **$(2, 0)$** |   arriba   |       $20$        | $20 + 0.6 \cdot (0)$     |   **$20.0$**    |
+
+---
+
+### Paso 5: Nueva Política Voraz Derivada ($\pi'$)
+
+Una vez actualizados los valores, extraemos la política voraz buscando la acción con la utilidad $q$ más alta en cada casilla:
+
+- **$\pi'((0,0))$** $= \arg\max(4.8, 6.0) \rightarrow$ **derecha** _(¡Ojo! La política ha cambiado de arriba a derecha porque $6.0 > 4.8$)_.
+- **$\pi'((0,1))$** $= \arg\max(4.0, 9.6) \rightarrow$ **derecha**.
+- **$\pi'((1,1))$** $= \arg\max(6.0, 16.0) \rightarrow$ **derecha**.
+- **$\pi'((1,0))$** $= \arg\max(8.0, 12.0) \rightarrow$ **derecha**.
+- **$\pi'((2,0))$** $= \arg\max(20.0) \rightarrow$ **arriba**.
+
+### Veamos este último paso con detalle:
+
+Esos números dentro del **$\arg\max(\dots)$** provienen de comparar los valores de la función **$q(s, a)$** para **todas las acciones posibles** en cada casilla, una vez que hemos terminado de simular y actualizar todo el episodio.
+
+La regla general para obtener la política voraz es:
+
+$$\pi'(s) = \arg\max_{a} q(s, a)$$
+
+Aquí tienes el desglose exacto de dónde sale cada número para cada una de las casillas:
+
+---
+
+### 1. Casilla $(0, 0)$ (Abajo-Izquierda)
+
+Las dos acciones posibles en esta casilla son **$\{\text{arriba}, \text{derecha}\}$**. Sus valores tras el episodio son:
+
+- **$q((0,0), \text{arriba})$:** **$4.8$** _(era $4.0$ originalmente, pero lo actualizamos en el Paso 1 de la simulación)_.
+- **$q((0,0), \text{derecha})$:** **$6.0$** _(era $6.0$ y permanece intacto porque el robot no usó la acción "derecha" estando en esta casilla)_.
+
+Al aplicar la fórmula:
+$$\pi'((0,0)) = \arg\max_{a} q((0,0), a) = \arg\max \left( \begin{array}{cc} q((0,0), \text{arriba}) = \mathbf{4.8}, \\ q((0,0), \text{derecha}) = \mathbf{6.0} \end{array} \right) \rightarrow \text{\textbf{derecha}}$$
+Como $6.0 > 4.8$, la política se mantiene en **derecha**.
+
+---
+
+### 2. Casilla $(0, 1)$ (Arriba-Izquierda)
+
+Las dos acciones posibles son **$\{\text{abajo}, \text{derecha}\}$**. Sus valores finales son:
+
+- **$q((0,1), \text{abajo})$:** **$4.0$** _(permanece intacto porque no se visitó en el episodio)_.
+- **$q((0,1), \text{derecha})$:** **$9.6$** _(era $8.0$ y se actualizó en el Paso 2)_.
+
+Al aplicar la fórmula:
+$$\pi'((0,1)) = \arg\max_{a} q((0,1), a) = \arg\max \left( \begin{array}{cc} q((0,1), \text{abajo}) = \mathbf{4.0}, \\ q((0,1), \text{derecha}) = \mathbf{9.6} \end{array} \right) \rightarrow \text{\textbf{derecha}}$$
+Como $9.6 > 4.0$, la política se mantiene en **derecha**.
+
+---
+
+### 3. Casilla $(1, 1)$ (Arriba-Centro)
+
+Las dos acciones posibles son **$\{\text{abajo}, \text{derecha}\}$**. Sus valores finales son:
+
+- **$q((1,1), \text{abajo})$:** **$6.0$** _(era $4.0$ y se actualizó en el Paso 3)_.
+- **$q((1,1), \text{derecha})$:** **$16.0$** _(permanece en su altísimo valor inicial de $16.0$ porque no se usó en el episodio)_.
+
+Al aplicar la fórmula:
+$$\pi'((1,1)) = \arg\max_{a} q((1,1), a) = \arg\max \left( \begin{array}{cc} q((1,1), \text{abajo}) = \mathbf{6.0}, \\ q((1,1), \text{derecha}) = \mathbf{16.0} \end{array} \right) \rightarrow \text{\textbf{derecha}}$$
+Como $16.0 > 6.0$, la política se mantiene en **derecha**.
+
+---
+
+### 4. Casilla $(1, 0)$ (Abajo-Centro)
+
+Las dos acciones posibles son **$\{\text{arriba}, \text{derecha}\}$**. Sus valores finales son:
+
+- **$q((1,0), \text{arriba})$:** **$8.0$** _(permanece intacto porque no se usó)_.
+- **$q((1,0), \text{derecha})$:** **$12.0$** _(era $10.0$ y se actualizó en el Paso 4)_.
+
+Al aplicar la fórmula:
+$$\pi'((1,0)) = \arg\max_{a} q((1,0), a) = \arg\max \left( \begin{array}{cc} q((1,0), \text{arriba}) = \mathbf{8.0}, \\ q((1,0), \text{derecha}) = \mathbf{12.0} \end{array} \right) \rightarrow \text{\textbf{derecha}}$$
+Como $12.0 > 8.0$, la política se mantiene en **derecha**.
+
+---
+
+### 5. Casilla $(2, 0)$ (Abajo-Derecha)
+
+En esta casilla, según los movimientos posibles del robot en el gráfico, la única acción ejecutable para no salirse del mapa es **$\{\text{arriba}\}$**. Su valor final es:
+
+- **$q((2,0), \text{arriba})$:** **$20.0$** _(se evaluó en el Paso 5 y se mantuvo en $20.0$)_.
+
+Al aplicar la fórmula:
+$$\pi'((2,0)) = \arg\max_{a} q((2,0), a) = \arg\max \left( \begin{array}{c} q((2,0), \text{arriba}) = \mathbf{20.0} \end{array} \right) \rightarrow \text{\textbf{arriba}}$$
+Al no haber otras alternativas disponibles, la política asocia directamente la acción **arriba**.
+
+---
+
+### La política voraz anterior (u original).
+
+La **política voraz anterior** (u original) no viene redactada explícitamente en el enunciado como una lista de instrucciones, sino que **se deduce directamente de los valores iniciales de la función $q(s, a)$** indicados en el gráfico de la cuadrícula antes de comenzar las actualizaciones.
+
+En el aprendizaje por refuerzo, la política voraz (_greedy_) asociada a una función $q$ en cualquier momento se define simplemente eligiendo la acción que tiene el valor de utilidad más alto en cada estado:
+$$\pi(s) = \arg\max_{a} q(s, a)$$
+
+Para entender el origen de las comparaciones y corregir un pequeño desliz de mi explicación anterior, analicemos detalladamente de dónde proceden estos conceptos:
+
+---
+
+### 1. Deducción de la Política Anterior (Antes del Episodio)
+
+Si aplicamos la definición de política voraz a los números que aparecen en tu gráfico original antes de que el robot se mueva:
+
+- **En la casilla $(0, 0)$:** Los valores son $q(\text{arriba}) = 4$ y $q(\text{derecha}) = 6$.  
+  $$\pi_{\text{anterior}}((0,0)) = \arg\max(4, 6) = \mathbf{\text{derecha}}$$
+- **En la casilla $(0, 1)$:** Los valores son $q(\text{abajo}) = 4$ y $q(\text{derecha}) = 8$.  
+  $$\pi_{\text{anterior}}((0,1)) = \arg\max(4, 8) = \mathbf{\text{derecha}}$$
+- **En la casilla $(1, 1)$:** Los valores son $q(\text{abajo}) = 4$ y $q(\text{derecha}) = 16$.  
+  $$\pi_{\text{anterior}}((1,1)) = \arg\max(4, 16) = \mathbf{\text{derecha}}$$
+- **En la casilla $(1, 0)$:** Los valores son $q(\text{arriba}) = 8$ y $q(\text{derecha}) = 10$.  
+  $$\pi_{\text{anterior}}((1,0)) = \arg\max(8, 10) = \mathbf{\text{derecha}}$$
+- **En la casilla $(2, 0)$:** Solo hay una acción con valor $q(\text{arriba}) = 20$.  
+  $$\pi_{\text{anterior}}((2,0)) = \mathbf{\text{arriba}}$$
+
+---
+
+### 2. ¿Por qué el robot va "arriba" en $(0,0)$ si su política voraz era "derecha"?
+
+Esta es la clave del aprendizaje por refuerzo: **el episodio que te da el enunciado no tiene por qué seguir la política voraz actual** [16, 86; 9: 51, 61].
+
+Para poder aprender la utilidad de todo el mapa, el agente necesita **explorar** [9: 51]. Por ello, Q-learning utiliza políticas exploratorias (como la política $\epsilon$-voraz) para generar las trayectorias, lo que permite que el robot tome la acción _arriba_ en $(0,0)$ voluntariamente para ver qué ocurre, a pesar de que su instinto voraz (_greedy_) le decía que la mejor opción conocida era ir a la _derecha_ [16, 86; 9: 51, 61].
+
+---
+
+### 3. ¿Por qué decimos "la política cambia" o "se mantiene"? (Fe de erratas)
+
+Decimos esto al comparar la política voraz que calculamos **al final** (tras actualizar la tabla $q$ con la experiencia del episodio) frente a la política voraz que había **al principio**.
+
+Al revisar la comparación del primer estado, vemos que cometí un error de interpretación en mi mensaje anterior al decir que cambiaba. Hagamos la comparación correcta:
+
+- **En la casilla $(0, 0)$:**
+  - _Antes:_ El máximo era _derecha_ ($6 > 4$).
+  - _Después de actualizar:_ $q(\text{arriba})$ sube de $4$ a $4.8$. Al evaluar $\arg\max(4.8, 6.0)$, el máximo sigue siendo $6.0$ (_derecha_).
+  - _Conclusión:_ La política **se mantiene** en **derecha**. (Mi indicación anterior de que había cambiado fue un lapsus, ya que la acción _derecha_ ya era la óptima antes de empezar).
+- **En la casilla $(0, 1)$:**
+  - _Antes:_ El máximo era _derecha_ ($8 > 4$).
+  - _Después:_ $q(\text{derecha})$ sube a $9.6$. Al evaluar $\arg\max(4, 9.6)$, el máximo sigue siendo $9.6$ (_derecha_).
+  - _Conclusión:_ La política **se mantiene** en **derecha**.
+
+En este ejercicio 7 de examen en particular, si compruebas todos los estados uno a uno, verás que **la política voraz se mantiene idéntica en todas las casillas**. Aunque hemos mejorado y refinado los valores numéricos de las utilidades de las acciones que ha probado el robot, ninguna de estas actualizaciones ha sido lo suficientemente grande como para hacer que una acción mala supere a la que ya era la mejor acción registrada inicialmente.
+
+</div>

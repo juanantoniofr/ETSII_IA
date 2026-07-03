@@ -1,6 +1,65 @@
-<link rel="stylesheet" href="../../css/estilo.css">
+<link rel="stylesheet" href="../css/estilo.css">
 
 # Ejercicios de planificación bajo incertidumbre
+
+<div class="summary">
+
+**La utilidad de un estado y la utilidad de una historia miran siempre hacia el futuro, y nunca dependen de cómo se haya llegado a ese estado en el pasado.**
+
+Tu confusión proviene de una idea muy común: pensar que una "historia" es el camino que recorre el agente en el pasado para _llegar_ a un estado. Sin embargo, en la planificación bajo incertidumbre y el aprendizaje por refuerzo, las definiciones matemáticas funcionan exactamente al revés:
+
+---
+
+### 1. La Historia ($h$) siempre se despliega hacia el FUTURO
+
+En la teoría de Procesos de Decisión de Markov, una historia no es el camino recorrido en el pasado para llegar a un estado $s$. Al contrario: **una historia $h$ es una secuencia infinita de estados que se van a visitar en el futuro partiendo desde el estado $s$ como estado inicial:**
+
+$$h = \langle s_0, s_1, s_2, s_3, \dots \rangle \quad \text{donde } s_0 = s$$
+
+Por ejemplo, si un robot está ahora mismo en la localización $l_1$, una posible historia futura es que vaya a $l_2$, luego a $l_3$, y luego se quede allí para siempre.
+
+### 2. La Utilidad de una Historia ($U(h|\pi)$) es un valor concreto
+
+La utilidad de una historia concreta $h$ es simplemente la **suma descontada de todas las recompensas reales** que el agente va a ir cobrando paso a paso a lo largo de ese camino específico de principio a fin:
+
+$$U(h|\pi) = \sum_{i\ge0} \gamma^i R(s_i, \pi(s_i))$$
+
+Este es un valor exacto y determinista porque estás evaluando un único camino concreto (una simulación específica de la que ya conoces cada casilla que se ha pisado).
+
+### 3. La Utilidad de un Estado ($U_\pi(s)$) es un promedio ponderado (Esperanza Matemática)
+
+Como las acciones del agente tienen efectos probabilísticos (no deterministas), desde el estado actual $s$ pueden llegar a ocurrir **muchas historias futuras diferentes** (algunas con mucha probabilidad y otras con muy poca).
+
+Por tanto, la **Utilidad de un Estado** no es más que la **esperanza matemática (el valor promedio esperado) de las utilidades de todas las historias posibles que pueden empezar en ese estado $s$**, ponderadas por la probabilidad de que cada una de ellas ocurra realmente:
+
+$$U_{\pi}(s) = \mathbb{E}[U(h|\pi)] = \sum_{h \in H(s)} \mathbb{P}(h|\pi) U(h|\pi)$$
+
+Donde $H(s)$ representa el conjunto de todas las historias que tienen como **estado inicial** a $s$.
+
+---
+
+### 4. La propiedad de Markov: El pasado no importa
+
+Tu premisa planteaba: _«¿conozco la Utilidad de un estado por el pasado?»_
+
+La respuesta es un rotundo **no**. Por la **propiedad de Markov**, el estado actual $s$ contiene toda la información necesaria para tomar decisiones. Al agente no le importa lo más mínimo si ha tardado 3 pasos o 100 pasos en llegar a $s$, ni qué camino ha tomado para llegar hasta ahí.
+
+La utilidad de ese estado se calcula de forma exclusiva mirando a las recompensas que se van a recibir **desde el estado actual hacia adelante**, asumiendo que el agente seguirá la política $\pi$ a partir de este momento.
+
+---
+
+### En resumen:
+
+- **La Utilidad de una historia** es la suma de recompensas de **un único camino futuro específico** que empieza en $s$.
+- **La Utilidad de un estado** es la media de lo que esperas ganar en **todos los caminos futuros posibles** que empiezan en $s$.
+
+**¿Tiene sentido esta distinción entre un camino futuro concreto y el promedio de todos los caminos futuros?**
+
+En el **Ejercicio 1** de tu boletín te piden justamente calcular la probabilidad y la utilidad de una historia concreta: la historia parcial $\langle s_3, s_3, s_3, s_2, s_2 \rangle$. ¿Quieres que la resolvamos juntos paso a paso para ver cómo se aplican estas fórmulas en papel?
+
+</div>
+
+<div class="highlight-exercise">
 
 ## Ejercicio 1
 
@@ -8,35 +67,37 @@ Consideremos el proceso de decisión de Markov tal que
 
 $S = \{s_1, s_2, s_3\}$
 $A = \{a_1, a_2, a_3\}$
-y $P$ viene dado por:
+
+con las siguientes probabilidades de transición $P$:
 
 **Probabilidades de transición**
 
 - Acción $a_1$
-  | | $$s_1$$ | $$s_2$$ | $$s_3$$ |
-  | ------- | ------- | ------- | ------- |
-  | $$s_2$$ | 0.4 | 0.1 | 0.5 |
-  | $$s_3$$ | 0.5 | 0.0 | 0.5 |
+
+  |       | $s_1$ | $s_2$ | $s_3$ |
+  | ----- | ----- | ----- | ----- |
+  | $s_2$ | 0.4   | 0.1   | 0.5   |
+  | $s_3$ | 0.5   | 0.0   | 0.5   |
 
 - Acción $a_2$
-  | | $$s_1$$ | $$s_2$$ | $$s_3$$ |
-  | ------- | ------- | ------- | ------- |
-  | $$s_1$$ | 0.0 | 0.3 | 0.7 |
-  | $$s_3$$ | 0.0 | 0.5 | 0.5 |
+
+  |       | $s_1$ | $s_2$ | $s_3$ |
+  | ----- | ----- | ----- | ----- |
+  | $s_1$ | 0.0   | 0.3   | 0.7   |
+  | $s_3$ | 0.0   | 0.5   | 0.5   |
 
 - Acción $a_3$
-  | | $$s_1$$ | $$s_2$$ | $$s_3$$ |
-  | ------- | ------- | ------- | ------- |
-  | $$s_1$$ | 0.0 | 0.3 | 0.7 |
-  | $$s_2$$ | 0.8 | 0.2 | 0.0 |
+
+  |       | $s_1$ | $s_2$ | $s_3$ |
+  | ----- | ----- | ----- | ----- |
+  | $s_1$ | 0.0   | 0.3   | 0.7   |
+  | $s_2$ | 0.8   | 0.2   | 0.0   |
 
 Consideremos: $R(s_1) = -1$, $R(s_2) = -0.04$, $R(s_3) = 1$, como recompensas de los estados, 0 como coste de aplicar las acciones y $0.9$ como factor de descuento.
 
-Dada la política
+Dada la política $\pi$:
 
-$\pi(s_1) = a_3,\quad \pi(s_2) = a_3,\quad \pi(s_3) = a_2$
-
-<div class="highlight">
+- $\pi(s_1) = a_3, \pi(s_2) = a_3, \pi(s_3) = a_2$
 
 <b>1. ¿Cuál es la probabilidad inducida por $\pi$ de la historia (parcial) $\langle s_3, s_3, s_3, s_2, s_2 \rangle$?</b>
 
@@ -55,13 +116,14 @@ Al multiplicar todas las probabilidades encadenadas de cada transición, el cál
 
 </div>
 
-<div class="highlight">
+<div class="highlight-exercise">
   
 <b>2. ¿Cuál es la _utilidad inducida_ por $\pi$ de esa historia?</b>
 
 La utilidad de una historia evalúa **todos los estados por los que pasas desde el instante inicial**, aplicando un descuento cada vez mayor a medida que avanzas en el tiempo.
 
 La fórmula teórica correcta para calcular la utilidad de una historia $h$ inducida por una política $\pi$ es:
+
 **$U(h|\pi) = \sum_{i \ge 0} \gamma^i R(s_i, \pi(s_i))$**
 
 Para aplicar esta fórmula a tu ejercicio, debemos tener en cuenta los datos del enunciado:
