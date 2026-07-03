@@ -1,6 +1,10 @@
+<link rel="stylesheet" href="../css/estilo.css">
+
 # Aprendizaje por refuerzo
 
 ## Algunos conceptos clave:
+
+<div class="highlight-theory">
 
 ### A. Bases del Aprendizaje:
 
@@ -45,6 +49,72 @@ Donde:
 - **$\pi(s_i)$**: Es la acción que la política prescribe realizar cuando se está en el estado $s_i$.
 - **$P_{\pi(s_i)}(s_{i+1}|s_i)$**: Es la probabilidad de que, al aplicar la acción indicada por la política en el estado actual, el sistema transicione al siguiente estado de la historia.
 
+</div>
+
+<div class="summary">
+
+En la planificación bajo incertidumbre y el aprendizaje por refuerzo, la **Utilidad** representa el **valor o beneficio acumulado que un agente espera recibir a largo plazo** a partir de un estado o de una secuencia de decisiones (historia).
+
+Para comprender qué significa este concepto en el mundo real, la clave está en diferenciarlo de la **Recompensa inmediata** y analizar cómo se modela el comportamiento humano y empresarial:
+
+---
+
+### 1. Recompensa (Corto Plazo) vs. Utilidad (Largo Plazo)
+
+En el mundo real, tomamos decisiones constantemente donde sacrificamos el beneficio inmediato para asegurar el éxito futuro. El formalismo matemático captura esto separando ambos conceptos:
+
+- **La Recompensa ($R$):** Es el estímulo o feedback inmediato (positivo o negativo) que el entorno da al agente justo después de realizar una acción. En el mundo real, equivale a la **satisfacción momentánea** o al flujo de caja instantáneo (como el placer de comer un pastel o el ingreso por una venta puntual hoy).
+- **La Utilidad ($U$):** Es la suma de todas las recompensas que se van a recibir desde el momento actual hacia el futuro. En el mundo real, representa el **éxito estratégico, la sostenibilidad o el valor de ciclo de vida**.
+
+#### El ejemplo de la empresa (Ejercicio 5 de tu boletín):
+
+Considera una empresa que puede estar en la situación de ser **"pobre pero conocida"**.
+
+- Su **recompensa inmediata** en ese estado es $0$ (ya que la recompensa de ser pobre es nula).
+- Sin embargo, su **utilidad** a largo plazo es potencialmente **muy alta**. ¿Por qué? Porque al ser "conocida", existe una probabilidad de transición muy favorable del 50% de pasar a ser "rica y conocida" en la siguiente campaña si no gasta en publicidad, o de mantenerse en una posición fuerte.
+- La utilidad mide que, estratégicamente, estar en ese estado es valioso para el negocio a largo plazo, aunque hoy la cuenta bancaria esté a cero.
+
+---
+
+### 2. El Factor de Descuento ($\gamma$): La Impaciencia y la Incertidumbre
+
+En tus fuentes, la utilidad se calcula aplicando un factor de descuento $\gamma$ (donde $0 \le \gamma < 1$) a las recompensas futuras:
+$$U = \sum_{i\ge0} \gamma^{i} R_i$$
+
+En el mundo real, este factor de descuento tiene dos traducciones perfectas:
+
+1.  **Preferencia temporal (Impaciencia):** Un euro hoy vale más que un euro dentro de diez años. Los seres humanos y las organizaciones devaluamos las ganancias lejanas porque preferimos disfrutar de los beneficios en el "presente extendido".
+2.  **Riesgo e Incertidumbre:** Cuanto más lejano es el futuro, más impredecible se vuelve el entorno. El descuento amortigua la contribución de eventos lejanos porque existe la posibilidad de que el "juego termine" antes (por ejemplo, que la empresa quiebre o que el agente deje de operar), reduciendo el impacto de lo que ocurra en un horizonte efectivo muy lejano.
+
+---
+
+### 3. La Utilidad Esperada ($U_{\pi}$): Tomar Decisiones Bajo Riesgo
+
+En un entorno con incertidumbre, las acciones no tienen efectos deterministas (al aplicar una acción, pueden ocurrir cosas distintas con diferentes probabilidades).
+
+En el mundo real, la **Utilidad Esperada** representa **el valor promedio ponderado por el riesgo** de seguir una determinada estrategia (política $\pi$).
+
+#### El ejemplo del robot mensajero:
+
+Imagina un robot que debe moverse entre localizaciones. Para ir de la localización $l_1$ a la $l_4$, puede elegir el "camino directo" $ir(l_1, l_4)$ que es muy rápido (bajo coste/alta recompensa), pero tiene un riesgo del 50% de fallar y dejarlo atascado. O puede elegir dar un rodeo más largo pero 100% seguro.
+
+- La **utilidad esperada de la política directa** pondera matemáticamente el beneficio de llegar rápido frente a la alta probabilidad de quedarse atascado y perder tiempo (recompensas negativas acumuladas).
+- La política óptima de un agente en el mundo real es aquella que **maximiza la utilidad esperada ante la incertidumbre física del entorno**, encontrando el equilibrio perfecto entre velocidad y seguridad.
+
+---
+
+### 4. El Límite de la Utilidad ($U_{max}$)
+
+Tus fuentes definen que la utilidad máxima que puede aspirar a tener cualquier trayectoria está acotada superiormente por:
+
+$$U_{max} = \frac{R_{max}}{1 - \gamma}$$
+
+En el mundo real, esto representa el **techo utópico de rendimiento**. Es el valor que obtendría un agente si tuviera la "suerte extrema" de experimentar un éxito absoluto y constante de manera infinita. Este límite es fundamental para los algoritmos, ya que nos da una referencia para saber cuándo una estrategia es lo suficientemente buena como para dejar de entrenar al agente (criterio de parada).
+
+</div>
+
+<div class="highlight-theory">
+
 ## Método de montecarlo
 
 Has entendido perfectamente el escenario del problema: al no tener el "mapa interno del entorno" (las funciones de probabilidad de transición $P$ ni las recompensas $R$), el agente está ciego y los algoritmos clásicos que usaban ecuaciones matemáticas interconectadas ya no sirven.
@@ -77,6 +147,10 @@ El agente juega un episodio hasta el final $\rightarrow$ Calcula exactamente cu�
 
 Repitiendo este proceso de experimentar, promediar ganancias y ajustar la política miles de veces, el agente termina descubriendo empíricamente la política óptima $\pi^*$ sin haber conocido jamás las reglas ocultas del entorno.
 
+</div>
+
+<div class="summary">
+
 ### Montecarlo explicadpo a mi forma
 
 **1. El Escenario (Sin modelo del entorno)**
@@ -103,6 +177,8 @@ Una vez finalizada la historia, el algoritmo la recorre **desde el final hacia e
 - **Mejora de la política:** Actualizamos al instante la política para ese estado $s_i$ mediante el criterio voraz, asignándole la acción que hace que la función $q$ sea **máxima** ($\pi(s_i) \leftarrow arg\ m\hat{a}x_a q(s_i, a)$).
 
 Repitiendo este proceso miles de veces (generar episodio $\rightarrow$ retrospectiva $\rightarrow$ promediar $\rightarrow$ actualizar política voraz), las estimaciones empíricas convergen por la Ley Fuerte de los Grandes Números y la política se vuelve óptima.
+
+</div>
 
 ## Método de las difereferencias temporales
 

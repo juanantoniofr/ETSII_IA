@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="../css/estilo.css" type="text/css" />
 # Planificación bajo incertidumbre
 
 ## Algunos conceptos fundamentales
@@ -43,7 +44,7 @@ Reuniendo todas las piezas tal, la construcción teórica es exactamente esta:
 
 Esa cifra global consolida todos los futuros posibles y te da el valor real de estar en ese estado. De hecho, el objetivo final de todos los algoritmos de resolución (como la iteración de valores o la iteración de políticas) es maximizar precisamente ese valor para encontrar la **política óptima ($\pi^*$)**: aquella que te asegure la mayor utilidad esperada independientemente de los contratiempos del entorno.
 
-## El salto a los sistemas de ecacuaciones
+## El salto a los sistemas de ecuaciones
 
 Como hemos visto, la utilidad de un estado evalúa todo el futuro que se abre a partir de él. Por tanto, la ecuación establece una **interdependencia geométrica**: la utilidad esperada del estado actual $s$ se calcula en función de la utilidad esperada de los posibles estados futuros $s'$ a los que el sistema puede transitar tras aplicar la acción.
 
@@ -67,6 +68,8 @@ Para lograr esta maximización de forma eficiente, la teoría utiliza dos algori
 
 En resumen: no iteramos a ciegas sobre el conjunto de todas las políticas posibles, sino que usamos las herramientas del cálculo numérico (ya sea resolviendo sistemas lineales sucesivos o iterando las ecuaciones no lineales de Bellman) para **ir puliendo la solución de manera guiada hasta chocar con el techo matemático ($U^*$)**.
 
+<div class="highlight-theory">
+
 ### Algoritmo de iteración de valores
 
 Verificando tus pasos con la teoría, el esqueleto del algoritmo hace justo lo que propones:
@@ -88,7 +91,9 @@ Esto logra que la ecuación se comporte como una serie geométrica convergente. 
 
 Gracias a esto, llegará inevitablemente una iteración en la que el impacto numérico de mirar un paso extra hacia el futuro será tan minúsculo que la diferencia entre $U_i$ y $U_{i-1}$ pasará a ser menor que tu margen de error prefijado $\epsilon$ `. En ese instante, los valores se estabilizan, asegurándole al algoritmo que ha chocado con el techo óptimo y puede terminar con éxito `.
 
-<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+</div>
+
+<div class="summary">
 
 **Resumen: Algoritmo de Iteración de Valores en Procesos de Decisión de Markov**
 
@@ -149,7 +154,7 @@ Para saber si una acción es la mejor, el algoritmo pone dos cosas en una balanz
 
 </div>
 
-<div style="border-left: 4px solid #0dcaf0; padding: 0.5em; background: #eef7fb; color: #222; padding:30px 20px; margin-bottom: 40px" >
+<div class="highlight-theory">
 
 **Algoritmo de iteración de políticas**
 
@@ -177,5 +182,59 @@ Aquí el algoritmo compara la nueva política ($\pi_1$) con la vieja ($\pi_0$) y
 
 **En resumen visual de la diferencia:**
 Mientras que la _iteración de valores_ daba miles de vueltas actualizando una tabla de números y solo sacaba la política de acciones al final del todo, la **iteración de políticas** da vueltas actualizando directamente la lista de acciones, deteniéndose a resolver un sistema de ecuaciones completo en cada salto para comprobar si esa lista ha dejado de cambiar.
+
+</div>
+
+<div class="summary">
+
+Tu razonamiento general es **excelente y demuestra que has captado perfectamente el flujo estratégico** del problema en Procesos de Decisión de Markov: desde la evaluación lineal de una política dada hasta la necesidad de buscar la política óptima salvando la no linealidad de Bellman.
+
+Sin embargo, para asegurar un examen perfecto, **debes corregir un error matemático de índices y matizar una confusión muy común (y peligrosa) sobre qué algoritmo resuelve sistemas de ecuaciones**.
+
+Aquí tienes la verificación, corrección y matización detallada de tu razonamiento:
+
+---
+
+### 1. Corrección del sentido de la fórmula (Los Índices)
+
+- **Tu frase:** _"...obteniendo el valor de $U_i$ en función de $U_{i+1}(s')$..."\_
+- **La corrección:** Es exactamente al revés. El algoritmo de iteración de valores calcula la utilidad de la nueva iteración, **$U_{i+1}(s)$**, basándose en los valores de utilidad que ya conocíamos de la iteración anterior, **$U_i(s')$**.
+- La ecuación matemática de actualización del paso $i+1$ es:
+  $$U_{i+1}(s) = \max_{a \in A(s)} \left( R(s,a) + \gamma \sum_{s' \in S} P_a(s'|s) U_i(s') \right)$$
+
+---
+
+### 2. La trampa del examen: ¿Se resuelven sistemas de ecuaciones en la Iteración de Valores?
+
+- **Tu frase:** _"...Es decir, planteamos sistemas de ecuaciones de forma iterativa hasta que se estabilizan..."_
+- **La corrección (Matiz crucial):** **No.** En el algoritmo de _Iteración de Valores_ (Value Iteration) **nunca se plantean ni se resuelven sistemas de ecuaciones lineales**.
+  - Lo que se hace es una **actualización directa (o asignación aritmética)**. Para cada estado $s$, simplemente miras los números de la columna anterior $U_i$, aplicas la fórmula del máximo y las probabilidades, y el resultado lo apuntas directamente en la casilla de $U_{i+1}(s)$. Es un proceso computacionalmente muy barato por paso porque solo requiere sumas y multiplicaciones.
+- **¿Dónde sí se resuelven sistemas de ecuaciones en cada iteración?** En el algoritmo de **Iteración de Políticas** (Policy Iteration). En este algoritmo, para evaluar la política actual $\pi_i$ en cada paso, sí es obligatorio plantear y resolver un sistema de $n$ ecuaciones lineales con $n$ incógnitas para hallar su utilidad exacta $U_i$.
+
+---
+
+### 3. Matiz sobre la Utilidad Óptima ($U^*$) y el Criterio de Parada
+
+- **Tu frase:** _"...Llegado a este punto decimos que hemos calculado la Utilidad óptima $U^*$ ..."_
+- **El matiz:** En realidad, como el horizonte es infinito, el algoritmo no suele llegar a la $U^*$ matemática exacta, sino que se detiene cuando la diferencia máxima entre dos pasos consecutivos es menor que un margen de error $\epsilon$ prefijado:
+
+  $$\|U_i - U_{i-1}\| = \max_{s \in S} |U_i(s) - U_{i-1}(s)| < \epsilon$$
+
+- La teoría garantiza que cuando se cumple este criterio de parada, la utilidad calculada $U_i$ está **extremadamente cerca** de la óptima real ($U^*$), con un error acotado por:
+
+  $$\|U_i - U^*\| < \frac{2\gamma}{1-\gamma}\epsilon$$
+
+- A partir de esa $U_i$ casi óptima, extraemos de manera voraz una política que está garantizado que sí es la **política óptima exacta ($\pi^*$)**.
+
+---
+
+### Resumen comparativo para fijar ideas de cara al examen
+
+| Característica             | Iteración de Valores (_Value Iteration_)                                                            | Iteración de Políticas (_Policy Iteration_)                                             |
+| :------------------------- | :-------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
+| **¿Qué inicializa?**       | Una función de utilidad arbitraria $U_0$.                                                           | Una política arbitraria $\pi_0$.                                                        |
+| **¿Qué calcula por paso?** | Actualizaciones directas aplicando el operador de Bellman (con el $\max$).                          | Resuelve un **sistema de ecuaciones lineales** para evaluar la política actual $\pi_i$. |
+| **Criterio de parada**     | Cuando los valores de utilidad dejan de cambiar significativamente: $\|U_i - U_{i-1}\| < \epsilon$. | Cuando la política sugerida es idéntica a la anterior: $\pi_{i} = \pi_{i-1}$.           |
+| **Resultado final**        | Devuelve una aproximación de $U^*$ y extrae la política óptima $\pi^*$.                             | Devuelve directamente la política óptima exacta $\pi^*$.                                |
 
 </div>

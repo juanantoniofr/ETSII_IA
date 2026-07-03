@@ -376,3 +376,95 @@ $$\Large Perplejidad(w) = 2^{-\frac{1}{N} \sum_{i=1}^M \log_2 \mathbb{P}(w_i)}$$
 _(Básicamente, tomas todas las probabilidades individuales que tu modelo calculó para la secuencia de prueba, les aplicas logaritmo en base 2, las sumas, divides por el número total de términos y elevas 2 a la menos todo eso)_.
 
 </div>
+
+<div class="summary">
+
+Para resolver con éxito los ejercicios prácticos de esta sección, las fórmulas fundamentales se dividen en dos bloques principales: **Planificación bajo Incertidumbre** (donde el agente conoce la dinámica del entorno: las probabilidades de transición $P$ y las recompensas $R$) y **Aprendizaje por Refuerzo** (donde el entorno es desconocido y el agente aprende interactuando con él por ensayo y error).
+
+Aquí tienes el formulario maestro estructurado con las ecuaciones exactas y el significado de cada variable para aplicar en tu examen:
+
+---
+
+### Bloque 1: Planificación bajo Incertidumbre (Procesos de Decisión de Markov)
+
+Este bloque se resuelve aplicando métodos de programación dinámica cuando disponemos de un modelo completo del sistema.
+
+#### 1. Probabilidad de una historia (o trayectoria) parcial
+
+Se utiliza para calcular la probabilidad de experimentar una secuencia específica de estados bajo una política de acciones $\pi$:
+$$\mathbb{P}(h|\pi) = \prod_{i \ge 0} P_{\pi(s_i)}(s_{i+1}|s_i)$$
+
+- **$s_i$:** Estado en el instante de tiempo $i$.
+- **$\pi(s_i)$:** Acción que dicta la política aplicar en el estado $s_i$.
+- **$P_a(s'|s)$:** Probabilidad de transitar al estado $s'$ al aplicar la acción $a$ en el estado $s$.
+
+#### 2. Evaluación de una política `Utilidad esperada` (Sistema de Ecuaciones Lineales de $U_\pi$)
+
+Se aplica cuando te dan una política concreta $\pi$ y te piden calcular la utilidad esperada de cada estado ($U_\pi(s)$). Genera un sistema de ecuaciones con tantas variables como estados tenga el problema:
+$$U_\pi(s) = R(s, \pi(s)) + \gamma \sum_{s' \in S} P_{\pi(s)}(s'|s) U_\pi(s')$$
+
+- **$R(s, a)$:** Recompensa neta del par estado-acción, calculada como $R(s) - C(s, a)$ (recompensa del estado menos el coste de la acción).
+- **$\gamma$:** Factor de descuento ($0 < \gamma < 1$).
+- **$U_\pi(s')$:** Utilidad esperada del posible estado futuro $s'$.
+
+#### 3. Ecuaciones de Bellman para la Utilidad Óptima ($U^*$)
+
+Caracterizan el límite máximo teórico de utilidad que se puede conseguir en cada estado bajo la mejor política posible:
+$$U^*(s) = \max_{a \in A(s)} \left[ R(s, a) + \gamma \sum_{s' \in S} P_a(s'|s) U^*(s') \right]$$
+
+- _Nota de examen:_ Es un sistema de ecuaciones no lineales debido al operador $\max$, por lo que se resuelve usando algoritmos iterativos.
+
+#### 4. Paso de actualización en Iteración de Valores (Value Iteration)
+
+Fórmula recursiva para calcular la utilidad de la iteración $i+1$ a partir de la obtenida en la iteración $i$:
+$$U_{i+1}(s) = \max_{a \in A(s)} \left[ R(s, a) + \gamma \sum_{s' \in S} P_a(s'|s) U_i(s') \right]$$
+
+- **Criterio de parada:** Se detiene cuando la diferencia máxima entre dos iteraciones consecutivas es menor que un margen de error $\epsilon$:
+  $$\|U_i - U_{i-1}\| = \max_{s \in S} |U_i(s) - U_{i-1}(s)| < \epsilon$$
+
+#### 5. Cota Superior de la Utilidad ($U_{max}$)
+
+Define el límite asintótico máximo de utilidad acumulada si el agente recibiera siempre la recompensa máxima posible ($R_{max}$) en un horizonte infinito:
+$$U_{max} = \frac{R_{max}}{1 - \gamma}$$
+
+#### 6. Extracción de la Política Óptima ($\pi^*$)
+
+Una vez hallada la utilidad óptima (bien resolviendo Bellman o tras estabilizar la Iteración de Valores), la política óptima se extrae seleccionando la acción voraz:
+$$\pi^*(s) = \arg\max_{a \in A(s)} \left[ R(s, a) + \gamma \sum_{s' \in S} P_a(s'|s) U^*(s') \right]$$
+
+---
+
+### Bloque 2: Aprendizaje por Refuerzo (Entorno Desconocido)
+
+En estos ejercicios el agente no conoce las transiciones $P$ ni las recompensas $R$, por lo que estima los valores directamente a partir de episodios (experiencia).
+
+#### 1. Utilidad del par Estado-Acción ($q_\pi(s, a)$)
+
+Representa la utilidad esperada de aplicar la acción $a$ en el estado $s$ y, a partir de ahí, seguir la política $\pi$:
+$$q_\pi(s, a) = R(s, a) + \gamma \sum_{s' \in S} P_a(s'|s) U_\pi(s')$$
+
+#### 2. Actualización de Montecarlo para pares Estado-Acción
+
+- **MC de primera visita:** Solo se toma la utilidad de la secuencia a partir de la primera aparición de un par $(s, a)$ en el episodio.
+- **MC de cada visita:** Se toman los valores de utilidad obtenidos a partir de todas las apariciones del par $(s, a)$ en el episodio.
+- **Fórmula incremental de la media (para actualización paso a paso):**
+  $$U^n(s) = U^{n-1}(s) + \frac{1}{n} \left( U_n - U^{n-1}(s) \right)$$
+  Donde $U_n$ es la utilidad real observada en el episodio actual para ese estado.
+
+#### 3. Método de las Diferencias Temporales (TD(0)) para Estados
+
+Actualiza la estimación de la utilidad tras cada paso individual de interacción, sin necesidad de esperar a que termine todo el episodio:
+$$U(s_t) \leftarrow U(s_t) + \alpha \left( R_t + \gamma U(s_{t+1}) - U(s_t) \right)$$
+
+- **$\alpha$:** Factor de aprendizaje ($0 < \alpha \le 1$).
+- **$R_t + \gamma U(s_{t+1}) - U(s_t)$:** Es el denominado **Error DT** ($\delta_t$), que mide la discrepancia entre la utilidad estimada del estado actual y la recompensa real obtenida más la utilidad estimada del estado siguiente.
+
+#### 4. Algoritmo Q-Learning (Diferencias Temporales para $q$)
+
+Es el algoritmo de control off-policy más preguntado en los exámenes. Actualiza directamente la función de utilidad de pares estado-acción aproximando la óptima ($q^*$) independientemente de la política que se siga:
+$$q(s, a) \leftarrow q(s, a) + \alpha \left[ R + \gamma \max_{a' \in A(s')} q(s', a') - q(s, a) \right]$$
+
+- **$s'$:** Estado siguiente observado tras aplicar $a$ en $s$.
+- **$\max_{a'} q(s', a')$:** El valor estimado de la mejor acción posible en el estado siguiente $s'$.
+
+</div>
