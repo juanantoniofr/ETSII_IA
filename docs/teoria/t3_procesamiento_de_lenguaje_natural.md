@@ -379,16 +379,16 @@ cuando se usa cada una de las siguientes técnicas para abordar el problema de l
 
 1. modelo bigrama:
 
-N = 49, ya que el corpus de entrenamiento tiene 49 términos (contando el símbolo de inicio ⟨s⟩ y el símbolo de fin ⟨/s⟩). Suma de todas las frecuencias de los bigramas es 49.
-
 | Unigramas                   | Frecuencia | P(t) = Frecuencia / N |
 | --------------------------- | ---------- | --------------------- |
 | ⟨s⟩                         | 10         | no se genera          |
-| a                           | 19         | 19/50 ≈ 0.38          |
-| b                           | 15         | 15/50 ≈ 0.30          |
-| c                           | 5          | 5/50 ≈ 0.10           |
-| ⟨/s⟩                        | 10         | 10/50 ≈ 0.20          |
-| N = Suma de las frecuencias | 50         | -                     |
+| a                           | 19         | 19/49 ≈ 0.388         |
+| b                           | 15         | 15/49 ≈ 0.306         |
+| c                           | 5          | 5/49 ≈ 0.102          |
+| ⟨/s⟩                        | 10         | 10/49 ≈ 0.204         |
+| N = Suma de las frecuencias | 49         | -                     |
+
+`Los inicios <s> no se cuentan, pero los finales </s> sí, ya que son parte de la secuencia.`
 
 2. cálculo de probabilidades:
    ​
@@ -451,11 +451,11 @@ A continuación tienes la tabla completa con todas las combinaciones posibles de
 | $\langle s\rangle \rightarrow b$                |                 4                 |                 5 / 14                 |
 | $\langle s\rangle \rightarrow c$                |                 1                 |                 2 / 14                 |
 | $\langle s\rangle \rightarrow \langle/s\rangle$ |                 0                 |                 1 / 14                 |
-| **Contexto `a`**                                |                                   |      _(Denominador: 22 + 4 = 26)_      |
-| $a \rightarrow a$                               |                10                 |                11 / 26                 |
-| $a \rightarrow b$                               |                 3                 |                 4 / 26                 |
-| $a \rightarrow c$                               |                 3                 |                 4 / 26                 |
-| $a \rightarrow \langle/s\rangle$                |                 6                 |                 7 / 26                 |
+| **Contexto `a`**                                |                                   |      _(Denominador: 19 + 4 = 23)_      |
+| $a \rightarrow a$                               |                10                 |                11 / 23                 |
+| $a \rightarrow b$                               |                 3                 |                 4 / 23                 |
+| $a \rightarrow c$                               |                 3                 |                 4 / 23                 |
+| $a \rightarrow \langle/s\rangle$                |                 6                 |                 7 / 23                 |
 | **Contexto `b`**                                |                                   |      _(Denominador: 15 + 4 = 19)_      |
 | $b \rightarrow a$                               |                 6                 |                 7 / 19                 |
 | $b \rightarrow b$                               |                 6                 |                 7 / 19                 |
@@ -484,9 +484,9 @@ Sumamos 1 en el numerador ($5+1 = 6$) y 4 al denominador ($10+4 = 14$).
 _Resultado:_ $\mathbf{6 / 14}$
 
 **3. Un fin de frase: $\mathbb{P}(\langle/s\rangle|a)$**
-¿Qué probabilidad hay de que la frase termine si estamos en la letra `a`? Como dijimos, la letra `a` aparece 22 veces en total, y observando el corpus, es la última letra de la frase en 6 ocasiones (las secuencias 2, 3, 4, 7, 9 y 10).
-Sumamos 1 al numerador ($6+1 = 7$) y 4 al denominador ($22+4 = 26$).
-_Resultado:_ $\mathbf{7 / 26}$
+¿Qué probabilidad hay de que la frase termine si estamos en la letra `a`? Como dijimos, la letra `a` aparece 19 veces en total, y observando el corpus, es la última letra de la frase en 6 ocasiones (las secuencias 2, 3, 4, 7, 9 y 10).
+Sumamos 1 al numerador ($6+1 = 7$) y 4 al denominador ($19+4 = 23$).
+_Resultado:_ $\mathbf{7 / 23}$
 
 **4. Un bigrama que no existe en el corpus: $\mathbb{P}(c|b)$**
 Si buscas en todas las frases de entrenamiento, la letra `b` jamás va seguida de una `c` (frecuencia = 0). Sin suavizado, la probabilidad sería 0 absoluto. Sin embargo, sabemos que la letra `b` actúa como contexto 15 veces. Aplicando Laplace, "inventamos" una ocurrencia fantasma en el numerador ($0+1 = 1$) y sumamos el vocabulario al denominador ($15+4 = 19$).
@@ -496,6 +496,71 @@ _Resultado:_ $\mathbf{1 / 19}$
 La letra `c` aparece muy pocas veces en el corpus. Si las contamos, actúa como contexto de la palabra siguiente en tan solo 4 ocasiones en total. De esas 4 veces, va seguida de la letra `b` en 2 ocasiones (en las secuencias 8 y 9).
 Sumamos 1 al numerador ($2+1 = 3$) y sumamos 4 a las escasas 4 apariciones de la letra c en el denominador ($4+4 = 8$).
 _Resultado:_ $\mathbf{3 / 8}$
+
+</div>
+
+<div class="summary">
+
+### Retroceso (_backoff_)
+
+Si estamos evaluando la secuencia $y = abcde$ en un modelo de 5-gramas ($n=5$), el término que tiene probabilidad cero por no aparecer en el corpus es la probabilidad condicional de la última palabra dado todo su contexto anterior:
+
+$$\mathbb{P}(e|abcd) = 0$$
+
+Al aplicar la técnica de **retroceso (_backoff_)**, la regla matemática dicta que debemos reducir el tamaño del contexto eliminando el término más antiguo de la historia (el situado más a la izquierda, es decir, la $a$).
+
+Por tanto, en cada paso de retroceso nos quedaremos con las siguientes secuencias para consultar sus ocurrencias en el corpus:
+
+1.  **Primer retroceso:** Reducimos el contexto de 4 palabras a 3. Nos quedamos con la secuencia **$bcde$** para calcular la probabilidad:
+    $$\mathbb{P}(e|bcd)$$
+2.  **Segundo retroceso** (si el 4-grama $bcde$ tampoco aparece en el corpus): Reducimos el contexto a 2 palabras. Nos quedamos con la secuencia **$cde$** para calcular la probabilidad:
+    $$\mathbb{P}(e|cd)$$
+3.  **Tercer retroceso** (si el trigrama $cde$ tampoco aparece): Reducimos el contexto a 1 palabra. Nos quedamos con la secuencia **$de$** para calcular la probabilidad:
+    $$\mathbb{P}(e|d)$$
+4.  **Cuarto retroceso** (si el bigrama $de$ tampoco aparece): Eliminamos por completo el contexto y nos quedamos con el unigrama **$e$** para calcular su probabilidad directa basada en la frecuencia global del término en el corpus:
+    $$\mathbb{P}(e)$$
+
+En resumen, **en el primer paso de retroceso te quedas con la secuencia de cola $bcde$** (evaluando la probabilidad de $e$ dado el contexto abreviado $bcd$).
+
+</div>
+
+<div class="summary">
+
+### Interpolación lineal
+
+**La interpolación lineal aborda el problema de las estimaciones nulas de una manera completamente diferente al retroceso (_backoff_), combinando siempre la información de todos los niveles de n-gramas de manera simultánea.**
+
+Si aplicamos la técnica de interpolación lineal al mismo caso de la secuencia de 5-gramas $y = abcde$ para estimar la probabilidad condicional de la última palabra dado su contexto, $\mathbb{P}(e|abcd)$, la probabilidad no se calcula basándose en un único nivel de contexto, sino como la **suma ponderada de las probabilidades de todos los n-gramas disponibles (desde el unigrama hasta el 5-grama)**:
+
+$$\mathbf{\mathbb{P}(e|abcd) = \lambda_1 \mathbb{P}_1(e) + \lambda_2 \mathbb{P}_2(e|d) + \lambda_3 \mathbb{P}_3(e|cd) + \lambda_4 \mathbb{P}_4(e|bcd) + \lambda_5 \mathbb{P}_5(e|abcd)}$$
+
+Donde las probabilidades de cada nivel corresponden a:
+
+- **$\mathbb{P}_1(e)$:** Probabilidad del unigrama $e$.
+- **$\mathbb{P}_2(e|d)$:** Probabilidad del bigrama $e$ dado $d$.
+- **$\mathbb{P}_3(e|cd)$:** Probabilidad del trigrama $e$ dado $cd$.
+- **$\mathbb{P}_4(e|bcd)$:** Probabilidad del 4-grama $e$ dado $bcd$.
+- **$\mathbb{P}_5(e|abcd)$:** Probabilidad del 5-grama $e$ dado $abcd$.
+
+### Las restricciones de los coeficientes ($\lambda$)
+
+Para garantizar que el resultado de esta mezcla siga siendo una distribución de probabilidad matemática coherente, los coeficientes de ponderación $\lambda_i$ deben cumplir obligatoriamente dos condiciones en tu examen:
+
+1.  **Ser estrictamente positivos:** $\lambda_1, \lambda_2, \lambda_3, \lambda_4, \lambda_5 > 0$.
+2.  **Sumar exactamente uno:** $\sum_{i=1}^{5} \lambda_i = 1$.
+
+---
+
+### ¿Por qué este "atajo" evita que la probabilidad sea cero?
+
+A diferencia de la estimación por máxima verosimilitud clásica (donde si la secuencia de 5 palabras $abcde$ no aparece en el corpus, la probabilidad cae a $0$ de golpe), en la interpolación lineal **el valor final no se anula**.
+
+Aunque el término de mayor orden sea cero por no existir en el corpus de entrenamiento ($\mathbb{P}_5(e|abcd) = 0$), el resto de los términos de menor orden —como la probabilidad del unigrama $\mathbb{P}_1(e)$ o del bigrama $\mathbb{P}_2(e|d)$— aportarán un valor mayor que cero (siempre que la palabra $e$ haya aparecido alguna vez sola o acompañada de $d$ en el texto de entrenamiento).
+
+### Diferencia clave para la teoría del examen:
+
+- **En el Retroceso (_Backoff_):** Es una estrategia "disyuntiva" (o exclusiva). El modelo usa el n-grama de orden 5; si su frecuencia es 0, lo descarta por completo y salta a probar el orden 4, y así sucesivamente. Solo utiliza un nivel de información para el cálculo final.
+- **En la Interpolación:** Es una estrategia de "mezcla continua". El modelo **siempre** suma las estimaciones de todos los niveles (del 1 al 5) multiplicadas por sus pesos $\lambda$, compartiendo y suavizando la probabilidad entre los contextos más específicos y los más generales.
 
 </div>
 

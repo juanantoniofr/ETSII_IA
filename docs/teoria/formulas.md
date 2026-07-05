@@ -38,13 +38,64 @@ Es la medida directa de dispersión que acompaña a la media.
 
 ---
 
-**Un apunte práctico para el ordenador:**
+<div class="clarification">
+
+## Varianza vs Desviación Típica
+
+Ambas medidas estadísticas sirven para cuantificar la **dispersión** de un conjunto de datos (es decir, qué tan alejados o concentrados están los valores respecto a su media). Sin embargo, cumplen roles distintos en el análisis de datos.
+
+La diferencia fundamental entre ambas radica en **las unidades de medida en las que se expresan**.
+
+---
+
+### 1. La Varianza ($\sigma^2$ o $s^2$)
+
+La varianza es el promedio de las diferencias al cuadrado entre cada dato y la media aritmética:
+
+$$\sigma^2 = \frac{\sum_{i=1}^{n} (x_i - \mu)^2}{n}$$
+
+- **Sus unidades:** Al elevar al cuadrado las diferencias para evitar que los valores positivos y negativos se cancelen entre sí, el resultado queda expresado en **unidades al cuadrado**. Por ejemplo, si tus datos son salarios en _euros_, la varianza se expresará en _euros al cuadrado_ ($\text{euros}^2$).
+- **¿Qué te dice de los datos?** \* **Penaliza los valores extremos:** Debido al exponente al cuadrado, los datos que están muy alejados de la media (los valores atípicos) aumentan drásticamente el valor de la varianza.
+- **Utilidad matemática:** Conceptualmente no es intuitiva para el ser humano (nadie piensa en "euros al cuadrado" o "metros al cuadrado de altura"), pero es el motor fundamental de la estadística inferencial. Es indispensable para modelos matemáticos, optimización de algoritmos, regresiones y análisis de varianza (ANOVA).
+
+---
+
+### 2. La Desviación Típica o Estándar ($\sigma$ o $s$)
+
+La desviación típica es simplemente la raíz cuadrada positiva de la varianza:
+
+$$\sigma = \sqrt{\sigma^2}$$
+
+- **Sus unidades:** Al aplicar la raíz cuadrada, revertimos el efecto del cuadrado y devolvemos la medida a las **mismas unidades originales de los datos** (en nuestro ejemplo, _euros_).
+- **¿Qué te dice de los datos?**
+- **Distancia promedio intuitiva:** Te indica aproximadamente cuánto se desvía, en promedio, un dato típico respecto a la media del grupo. Si la media de un salario es $1500\text{ €}$ y la desviación típica es $150\text{ €}$, sabes directamente cómo se distribuyen los sueldos en el mundo real.
+- **Reglas de distribución:** En distribuciones normales (o con forma de campana), te permite aplicar la regla empírica del **68 - 95 - 99.7**:
+
+- Aproximadamente el **68%** de los datos se encuentra a una distancia de $\pm 1\sigma$ de la media.
+- El **95%** está dentro de $\pm 2\sigma$.
+- El **99.7%** está dentro de $\pm 3\sigma$.
+
+---
+
+### Resumen Comparativo
+
+| Característica          | Varianza ($\sigma^2$)                                            | Desviación Típica ($\sigma$)                                 |
+| ----------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------ |
+| **Unidades**            | Unidades al cuadrado ($\text{m}^2$, $\text{kg}^2$, $\text{€}^2$) | Unidades originales ($\text{m}$, $\text{kg}$, $\text{€}$)    |
+| **Interpretación**      | Difícil de interpretar intuitivamente                            | Muy intuitiva y directa                                      |
+| **Propósito Principal** | Cálculos teóricos, modelos estadísticos y demostraciones         | Reportes descriptivos, gráficos y comprensión del mundo real |
+| **Sensibilidad**        | Muy sensible a valores atípicos (por el cuadrado)                | Sensible, pero en escala lineal comparada con la media       |
+
+---
+
+### Un apunte práctico para el ordenador
+
 Aunque dominar la teoría es vital para los ejercicios en papel, cuando resuelvas problemas programando en Python con la biblioteca **Pandas**, todo esto está automatizado.
 
 - Puedes calcular la media aritmética invocando directamente la función `.mean()` sobre tus datos.
 - Si aplicas la función `.describe()` a un _DataFrame_, Python te devolverá al instante una tabla estadística completa que incluye la media (`mean`), la desviación típica (`std`), y los valores mínimos y máximos de todas tus columnas de datos.
 
-Tienes toda la razón, mis disculpas. Al centrarme en explicarte los conceptos y para qué servían, omití darte sus ecuaciones matemáticas exactas. Aquí las tienes detalladas paso a paso:
+</div>
 
 ### 1. Coeficiente de Determinación ($R^2$)
 
@@ -216,6 +267,223 @@ Para que una red neuronal pueda entrenarse utilizando el método del descenso po
 
 </div>
 
+<div class="highlight-theory">
+
+### Derivada de la función tangente hiperbólica
+
+Partiendo de
+
+$$
+\tanh(z)=\frac{e^z-e^{-z}}{e^z+e^{-z}},
+$$
+
+vamos a derivarla usando la regla del cociente:
+
+$$
+\left(\frac{u}{v}\right)'=\frac{u'v-uv'}{v^2}.
+$$
+
+Definimos:
+
+$$
+u=e^z-e^{-z},
+\qquad
+v=e^z+e^{-z}.
+$$
+
+Sus derivadas son:
+
+$$
+u'=e^z+e^{-z},
+\qquad
+v'=e^z-e^{-z}.
+$$
+
+Sustituyendo:
+
+$$
+\tanh'(z)
+=
+\frac{(e^z+e^{-z})(e^z+e^{-z})-(e^z-e^{-z})(e^z-e^{-z})}
+     {(e^z+e^{-z})^2}.
+$$
+
+Desarrollamos los cuadrados del numerador:
+
+$$
+(e^z+e^{-z})^2
+=
+e^{2z}+2+e^{-2z},
+$$
+
+$$
+(e^z-e^{-z})^2
+=
+e^{2z}-2+e^{-2z}.
+$$
+
+Restando:
+
+$$
+e^{2z}+2+e^{-2z}
+-
+\left(e^{2z}-2+e^{-2z}\right)
+=
+4.
+$$
+
+Por tanto,
+
+$$
+\tanh'(z)
+=
+\frac{4}{(e^z+e^{-z})^2}.
+$$
+
+Y como
+
+$$
+\tanh^2(z)
+=
+\left(\frac{e^z-e^{-z}}{e^z+e^{-z}}\right)^2,
+$$
+
+tenemos
+
+$$
+1-\tanh^2(z)
+=
+1-
+\left(\frac{e^z-e^{-z}}{e^z+e^{-z}}\right)^2.
+$$
+
+Llevando a común denominador:
+
+$$
+=
+\frac{(e^z+e^{-z})^2-(e^z-e^{-z})^2}
+     {(e^z+e^{-z})^2}.
+$$
+
+Usando la identidad
+
+$$
+(a+b)^2-(a-b)^2=4ab,
+$$
+
+con $$a=e^z$$ y $$b=e^{-z}$$,
+
+$$
+=
+\frac{4e^ze^{-z}}
+     {(e^z+e^{-z})^2}
+=
+\frac{4}
+     {(e^z+e^{-z})^2}.
+$$
+
+Así obtenemos:
+
+$$
+\boxed{
+\frac{d}{dz}\tanh(z)
+=
+\frac{4}{(e^z+e^{-z})^2}
+=
+1-\tanh^2(z)
+}
+$$
+
+que demuestra la equivalencia de ambas expresiones.
+
+</div>
+
+<div class="highlight-theory">
+
+### Derivada de la función softmax
+
+La derivada de la función **softmax** es un cálculo fundamental en el entrenamiento de redes neuronales multiclase. A diferencia de otras funciones de activación como la sigmoide (donde la salida de una neurona solo depende de su propia entrada), **cada salida de la función softmax depende de las entradas de todas las neuronas de esa capa**.
+
+Por este motivo, para calcular su derivada debemos evaluar el impacto de cualquier entrada $z_j$ sobre cualquier salida $a_i$.
+
+Dada la función softmax para un vector de entradas $z = (z_1, \dots, z_n)^T$:
+
+$$a_i = \text{softmax}(z)_i = \frac{e^{z_i}}{\sum_{k=1}^{n} e^{z_k}} = \frac{e^{z_i}}{S}$$
+
+Donde definimos la suma del denominador como $S = \sum_{k=1}^{n} e^{z_k}$.
+
+Para calcular la derivada parcial $\frac{\partial a_i}{\partial z_j}$ aplicamos la regla del cociente, considerando que la derivada del denominador respecto a $z_j$ es $\frac{\partial S}{\partial z_j} = e^{z_j}$. Esto nos obliga a distinguir **dos casos matemáticos**:
+
+---
+
+### Caso 1: Cuando $i = j$ (Derivada respecto a su propia entrada)
+
+Evaluamos cómo cambia la salida $a_i$ cuando varía su propia entrada neta $z_i$:
+
+$$\frac{\partial a_i}{\partial z_i} = \frac{\partial}{\partial z_i} \left(\frac{e^{z_i}}{S}\right) = \frac{\left(\frac{\partial e^{z_i}}{\partial z_i}\right) \cdot S - e^{z_i} \cdot \left(\frac{\partial S}{\partial z_i}\right)}{S^2}$$
+
+Sustituyendo las derivadas elementales $\frac{\partial e^{z_i}}{\partial z_i} = e^{z_i}$ y $\frac{\partial S}{\partial z_i} = e^{z_i}$:
+
+$$\frac{\partial a_i}{\partial z_i} = \frac{e^{z_i} \cdot S - e^{z_i} \cdot e^{z_i}}{S^2} = \frac{e^{z_i}(S - e^{z_i})}{S^2}$$
+
+Separamos la fracción en dos partes:
+
+$$\frac{\partial a_i}{\partial z_i} = \left(\frac{e^{z_i}}{S}\right) \cdot \left(\frac{S - e^{z_i}}{S}\right) = \left(\frac{e^{z_i}}{S}\right) \cdot \left(1 - \frac{e^{z_i}}{S}\right)$$
+
+Sustituyendo de nuevo por la definición de $a_i$:
+
+$$\mathbf{\frac{\partial a_i}{\partial z_i} = a_i (1 - a_i)}$$
+
+---
+
+### Caso 2: Cuando $i \neq j$ (Derivada respecto a la entrada de otra neurona)
+
+Evaluamos cómo cambia la salida $a_i$ cuando varía la entrada $z_j$ de una neurona vecina. En este caso, el numerador $e^{z_i}$ actúa como una constante respecto a $z_j$ (su derivada es $0$):
+
+$$\frac{\partial a_i}{\partial z_j} = \frac{\partial}{\partial z_j} \left(\frac{e^{z_i}}{S}\right) = \frac{0 \cdot S - e^{z_i} \cdot \left(\frac{\partial S}{\partial z_j}\right)}{S^2}$$
+
+Sustituyendo la derivada del denominador $\frac{\partial S}{\partial z_j} = e^{z_j}$:
+
+$$\frac{\partial a_i}{\partial z_j} = \frac{- e^{z_i} \cdot e^{z_j}}{S^2} = - \left(\frac{e^{z_i}}{S}\right) \cdot \left(\frac{e^{z_j}}{S}\right)$$
+
+Sustituyendo por las activaciones correspondientes $a_i$ y $a_j$:
+
+$$\mathbf{\frac{\partial a_i}{\partial z_j} = - a_i a_j}$$
+
+---
+
+### Expresión Unificada (Delta de Kronecker)
+
+Para escribir la derivada de la función softmax en una única línea de forma elegante y compacta en tu examen, se utiliza la **Delta de Kronecker ($\delta_{ij}$)**, la cual toma el valor $1$ si $i = j$ y $0$ si $i \neq j$:
+
+$$\mathbf{\frac{\partial a_i}{\partial z_j} = a_i (\delta_{ij} - a_j)}$$
+
+---
+
+### 💡 Atajo de Examen: Combinación de Softmax con Entropía Cruzada Categorica
+
+En las preguntas de desarrollo de retropropagación del examen, la función de salida **softmax** siempre se empareja con la función de coste de **entropía cruzada categórica**:
+
+$$C = -\sum_{k=1}^{n} y_k \log_e(a_k)$$
+
+Si te piden calcular el error en la capa de salida ($\Delta^L = \frac{\partial C}{\partial z^L}$), debes aplicar la regla de la cadena multivariable debido a la interdependencia de softmax:
+
+$$\Delta_j^L = \frac{\partial C}{\partial z_j^L} = \sum_{i=1}^{n} \frac{\partial C}{\partial a_i^L} \frac{\partial a_i^L}{\partial z_j^L}$$
+
+Sustituyendo la derivada de la entropía cruzada ($\frac{\partial C}{\partial a_i^L} = -\frac{y_i}{a_i^L}$) y nuestra derivada de softmax:
+
+$$\Delta_j^L = \sum_{i=1}^{n} \left( -\frac{y_i}{a_i^L} \right) \cdot a_i^L (\delta_{ij} - a_j^L) = \sum_{i=1}^{n} -y_i (\delta_{ij} - a_j^L)$$
+
+$$\Delta_j^L = -\sum_{i=1}^{n} y_i \delta_{ij} + a_j^L \sum_{i=1}^{n} y_i$$
+
+Sabiendo que $\delta_{ij}$ anula todos los sumandos excepto cuando $i=j$, y que la suma de las etiquetas reales de probabilidad de un vector _one-hot_ es exactamente $\sum y_i = 1$:
+
+$$\mathbf{\Delta_j^L = a_j^L - y_j} \quad \Longleftrightarrow \quad \mathbf{\Delta^L = a^L - y}$$
+
+¡Este resultado es sumamente limpio y te ahorrará valiosos minutos de desarrollo algebraico en el examen!
+
+</div>
+
 <div class="summary">
 
 ### Funciones de coste
@@ -323,7 +591,12 @@ Se usa cuando nos importa la frecuencia entera de repetición de cada palabra si
 
 **2. Predicción de un nuevo documento:**
 Para clasificar un texto nuevo, usas la versión con logaritmos para evitar desbordamientos, multiplicando por el número de veces ($n_{D,t}$) que aparece la palabra en el texto de prueba:
+
 $$\hat{c} = \arg \max_{c \in C} \left( \log \mathbb{P}(c) + \sum_{t \in V} n_{D,t} \log \mathbb{P}(t|c) \right)$$
+
+versión equivalente sin logaritmos:
+
+$$\hat{c} = \arg \max_{c \in C} \left( \mathbb{P}(c) \prod_{t \in V} \mathbb{P}(t|c)^{n_{D,t}} \right)$$
 
 ---
 

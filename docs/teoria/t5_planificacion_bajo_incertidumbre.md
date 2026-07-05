@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="../css/estilo.css" type="text/css" />
+
 # Planificación bajo incertidumbre
 
 ## Algunos conceptos fundamentales

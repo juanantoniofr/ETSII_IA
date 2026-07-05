@@ -78,3 +78,12 @@ h3 {
   padding: 5px;
   width: 80%;
 }
+
+.clarification {
+  border-top: 4px solid #030330;
+  border-bottom: 4px solid #030330;
+  width: 80%;
+  margin: 30px auto;
+  border-radius: 15px;
+  padding: 20px;
+}
