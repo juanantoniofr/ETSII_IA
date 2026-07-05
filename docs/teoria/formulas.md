@@ -247,6 +247,32 @@ Si tu objetivo es predecir un número continuo (ejemplo: el precio de una casa o
 - **Predicción final (Hojas):** La predicción que devolverá la hoja del árbol para cualquier dato nuevo será matemáticamente la **media aritmética** de los valores objetivos de los ejemplos de entrenamiento asociados a esa hoja:
   $$\text{ETIQUETA}(\mathcal{D}) = \frac{1}{|\mathcal{D}|} \sum_{(x,y) \in \mathcal{D}} y = \overline{y}$$
 
+<div class="clarification">
+
+## Varianza de un nodo como función de impureza en CART (Problemas de Regresión)
+
+En el algoritmo **CART** para tareas de **regresión**, la función de impureza que se utiliza para evaluar y dividir un nodo es la **varianza** del subconjunto de ejemplos $\mathcal{D}$ asociados a dicho nodo.
+
+La fórmula matemática para calcular la varianza de un nodo es:
+$$\mathbf{Var(\mathcal{D}) = \frac{1}{|\mathcal{D}|} \sum_{(x,y) \in \mathcal{D}} (y - \bar{y})^2}$$
+
+Donde los componentes de la ecuación se definen como:
+
+- **$|\mathcal{D}|$**: La **cantidad total de ejemplos** que pertenecen al nodo actual.
+- **$y$**: El **valor real del atributo objetivo** de cada ejemplo individual $(x,y)$ contenido en el nodo.
+- **$\bar{y}$**: La **media de los valores del atributo objetivo** de todos los ejemplos del nodo, la cual se calcula con la fórmula:
+  $$\mathbf{\bar{y} = \frac{1}{|\mathcal{D}|} \sum_{(x,y) \in \mathcal{D}} y}$$
+
+---
+
+### Conceptos clave de la varianza para el examen:
+
+- **Rango y pureza:** La varianza de un nodo siempre toma un valor **mayor o igual que 0**. Toma el valor **exactamente cero ($0$)** únicamente cuando el nodo es **totalmente puro**, lo que significa que todos los ejemplos asociados a él tienen exactamente el mismo valor en el atributo objetivo.
+- **Criterio de parada (No Divisible):** En el flujo recursivo del árbol, un nodo con varianza cero no se puede dividir más (es _nodivisible_) y se convierte automáticamente en una hoja.
+- **Etiquetado del nodo hoja:** Cuando un nodo se detiene y se convierte en hoja, la etiqueta predictiva final que el árbol le asigna es **la media $\bar{y}$** de los valores del atributo objetivo de los ejemplos que quedaron asociados a esa hoja.
+
+</div>
+
 </div>
 
 ## Redes Neuronales
@@ -612,8 +638,20 @@ _(Donde $tf$ es las veces que aparece $t$ en el documento, $N$ es el total de do
 **2. Predicción de un nuevo documento:**
 
 - **Métrica (Similitud del Coseno):** Se calcula el coseno entre el vector del documento nuevo y cada ejemplo de entrenamiento:
+
   $$sim(D_1, D_2) = \frac{D_1 \cdot D_2}{||D_1||_2 \times ||D_2||_2}$$
-- **Regla de Decisión:** Te quedas con los $k$ documentos que saquen el valor de similitud más alto y asignas la clase mayoritaria entre ellos.
+
+$$\mathbf{sim(D_1, D_2) = \frac{D_1 \cdot D_2}{\|D_1\|_2 \|D_2\|_2} = \frac{\sum_{i=1}^{n} tf\text{-}idf_{t_i, D_1} \cdot tf\text{-}idf_{t_i, D_2}}{\sqrt{\sum_{i=1}^{n} (tf\text{-}idf_{t_i, D_1})^2} \cdot \sqrt{\sum_{i=1}^{n} (tf\text{-}idf_{t_i, D_2})^2}}}$$
+
+### Términos de la fórmula:
+
+- **$\mathbf{sim(D_1, D_2)}$**: Representa la **métrica de similitud del coseno** entre el documento $D_1$ y el documento $D_2$, calculada como el coseno del ángulo que forman sus representaciones vectoriales.
+- **$\mathbf{D_1 \cdot D_2}$**: Es el **producto escalar** (o producto interno) entre los vectores de pesos de ambos documentos.
+- **$\mathbf{\|D_1\|_2}$ y $\mathbf{\|D_2\|_2}$**: Corresponden a la **norma euclídea** (o longitud del vector de norma $L_2$) de los documentos $D_1$ y $D_2$ respectivamente. Sirve para normalizar la longitud de los textos de forma que los documentos más largos no dominen la puntuación por el simple hecho de contener más palabras.
+- **$\mathbf{n}$**: Es la **cardinalidad del vocabulario** de términos prefijado, $V = \{t_1, \dots, t_n\}$.
+- **$\mathbf{tf\text{-}idf_{t_i, D}}$**: Es el **peso del término** $t_i$ en el documento $D$, obtenido al multiplicar su frecuencia local ($tf$) por la frecuencia documental inversa ($idf$) del término en el corpus.
+
+* **Regla de Decisión:** Te quedas con los $k$ documentos que saquen el valor de similitud más alto y asignas la clase mayoritaria entre ellos.
 
 ---
 
@@ -631,6 +669,34 @@ Para calcular la probabilidad de una palabra dado un contexto, usas una de estas
 - **C. Interpolación:** Mezcla varios modelos asignando pesos $\lambda$ que deben sumar 1:
   $$\mathbb{P}(w_m|w_{m-1}) = \lambda_1 \mathbb{P}_{\text{unigrama}}(w_m) + \lambda_2 \mathbb{P}_{\text{bigrama}}(w_m|w_{m-1})$$
 
+<div class="clarification">
+
+## n-gramas de orden superior igual a cero en interpolación lineal
+
+En la interpolación lineal, salvamos la situación de que la probabilidad de un n-grama de orden superior sea cero ($\mathbb{P}_4(d|abc) = 0$) calculando la probabilidad final como una suma ponderada de n-gramas de múltiples órdenes (desde el unigrama hasta el 4-grama) de forma simultánea.
+
+La fórmula matemática para estimar la probabilidad condicional de la palabra $d$ dado su contexto anterior $abc$ mediante interpolación se define de la siguiente manera:
+
+$$\mathbf{\mathbb{P}(d|abc) = \lambda_4 \mathbb{P}_4(d|abc) + \lambda_3 \mathbb{P}_3(d|bc) + \lambda_2 \mathbb{P}_2(d|c) + \lambda_1 \mathbb{P}_1(d)}$$
+
+Donde cada uno de los términos que componen la ecuación se desglosan de esta forma:
+
+- **$\mathbf{\mathbb{P}_4(d|abc)}$**: Probabilidad por máxima verosimilitud del 4-grama. En este escenario vale **$0$** porque la secuencia exacta de cuatro términos `abcd` no aparece en el corpus de entrenamiento [34: 401, 406].
+- **$\mathbf{\mathbb{P}_3(d|bc)}$**: Probabilidad del trigrama, que evalúa el término de destino basándose únicamente en un contexto reducido de dos palabras (`bc`) [34: 401, 404].
+- **$\mathbf{\mathbb{P}_2(d|c)}$**: Probabilidad del bigrama, evaluando la palabra de destino basándose solo en la palabra inmediatamente anterior (`c`) [34: 401, 403].
+- **$\mathbf{\mathbb{P}_1(d)}$**: Probabilidad del unigrama, que es la frecuencia relativa global del término $d$ de manera independiente en todo el corpus [34: 401, 403].
+- **$\mathbf{\lambda_4, \lambda_3, \lambda_2, \lambda_1}$**: Coeficientes de peso o de ponderación asignados a cada nivel. Deben cumplir de manera obligatoria las restricciones de ser **estrictamente mayores que cero** ($\lambda_i > 0$) y **sumar exactamente uno** ($\lambda_4 + \lambda_3 + \lambda_2 + \lambda_1 = 1$).
+
+### ¿Por qué este mecanismo de mezcla resuelve la probabilidad nula?
+
+Aunque la secuencia completa de cuatro palabras `abcd` nunca se haya visto durante el entrenamiento y su parámetro de orden superior sea nulo ($\mathbb{P}_4(d|abc) = 0$), el valor final de la probabilidad condicional calculada **no se anula**:
+
+1.  La ecuación sigue sumando y acumulando de manera ponderada los aportes de las probabilidades de los n-gramas de niveles inferiores ($\lambda_3 \mathbb{P}_3 + \lambda_2 \mathbb{P}_2 + \lambda_1 \mathbb{P}_1$) [34: 423].
+2.  Mientras el término de destino $d$ haya aparecido al menos una vez en todo el texto de entrenamiento, la probabilidad de su unigrama será positiva ($\mathbb{P}_1(d) > 0$), lo que garantiza que **la probabilidad interpolada final sea estrictamente mayor que cero ($\mathbb{P}(d|abc) > 0$)**.
+3.  Esto previene el colapso del modelo de lenguaje, evitando que la probabilidad global de una frase completa de examen se reduzca a cero simplemente porque contenía una combinación de palabras muy específica que no estaba registrada en el corpus.
+
+</div>
+
 **2. Predicción final de una frase completa:**
 Para evaluar la probabilidad de que exista toda la frase generada, multiplicas las probabilidades condicionales acotadas o sumas sus logaritmos:
 
@@ -647,6 +713,36 @@ $$\log \mathbb{P}(w) \cong \sum_{m=1}^M \log \mathbb{P}(w_m|w_{m-(n-1)} \dots w_
 Teniendo tu modelo de n-gramas anterior entrenado y un documento nuevo de prueba con $N$ términos totales (incluyendo símbolos $\langle/s\rangle$), mides el desempeño del modelo usando base logarítmica:
 $$\Large Perplejidad(w) = 2^{-\frac{1}{N} \sum_{i=1}^M \log_2 \mathbb{P}(w_i)}$$
 _(Básicamente, tomas todas las probabilidades individuales que tu modelo calculó para la secuencia de prueba, les aplicas logaritmo en base 2, las sumas, divides por el número total de términos y elevas 2 a la menos todo eso)_.
+
+<div class="clarification">
+
+## Cómo se calcula la perplejidad de un modelo de lenguaje
+
+La perplejidad es una métrica de evaluación intrínseca para modelos de lenguaje que se calcula sobre un corpus de prueba compuesto por una o varias secuencias de términos. La perplejidad de un conjunto de secuencias $W_1, \dots, W_M$ se define matemáticamente mediante dos expresiones equivalentes: la forma multiplicativa (con raíz geométrica) y la forma logarítmica (utilizada en la práctica para evitar desbordamientos numéricos por abajo):
+
+### 1. Fórmulas de la Perplejidad
+
+- **Forma multiplicativa original:**
+  $$\text{Perplejidad}(W_1 \dots W_M) = \sqrt[N]{\frac{1}{\prod_{i=1}^{M} P(W_i)}}$$
+
+- **Forma logarítmica práctica:**
+  $$\text{Perplejidad}(W_1 \dots W_M) = 2^{-\frac{1}{N} \sum_{i=1}^{M} \log_2 P(W_i)}$$
+
+---
+
+### 2. Explicación de cada término
+
+- **$\text{Perplejidad}(W_1 \dots W_M)$**: Representa el valor final de la métrica sobre el corpus de prueba. Mide de manera intrínseca la "duda" o sorpresa del modelo ante los textos reales de prueba. Un modelo de lenguaje es considerado mejor cuanto menor sea su nivel de perplejidad sobre dicho corpus.
+- **$W_1, \dots, W_M$** (escrito a veces en minúsculas $w_1 \dots w_M$): Son las **$M$ secuencias o frases de prueba** individuales que integran el corpus de evaluación.
+- **$M$**: Es la **cantidad total de secuencias** evaluadas en el corpus de prueba.
+- **$P(W_i)$**: Es la **probabilidad condicional conjunta** que el modelo de n-gramas asigna a la secuencia de prueba $W_i$. Se calcula descomponiendo la frase como el producto de las probabilidades de cada término dado su contexto previo limitado de $n-1$ palabras.
+- **$\prod_{i=1}^{M} P(W_i)$**: Representa el **producto de las probabilidades** individuales de cada una de las secuencias. Equivale matemáticamente a la probabilidad conjunta que asigna el modelo a la totalidad del corpus de prueba.
+- **$N$**: Es la **cantidad total de términos** (tokens) sumando todas las secuencias del corpus de prueba. Se contabilizan únicamente las palabras del vocabulario $V$ y los símbolos especiales de fin de secuencia `</s>`, omitiendo los símbolos de inicio `<s>` ya que estos nunca se predicen. Este valor sirve como factor de normalización para que la perplejidad no dependa del tamaño del texto evaluado.
+- **$\sqrt[N]{\dots}$**: Representa la **raíz de orden $N$** (media geométrica inversa). Normaliza la probabilidad inversa del corpus por la longitud total $N$ para garantizar que modelos evaluados con textos de distintas longitudes puedan compararse de forma justa.
+- **$\log_2$**: Es el **logaritmo en base 2**. Al aplicarlo a las probabilidades condicionales en la versión práctica, se previene que el producto de probabilidades muy pequeñas colapse en un desbordamiento numérico por abajo (_underflow_) en el computador.
+- **$2^{\dots}$**: Es la base de la potencia (exponenciación en base 2). Deshace el efecto del logaritmo anterior para devolver la perplejidad a su escala original.
+
+</div>
 
 </div>
 
