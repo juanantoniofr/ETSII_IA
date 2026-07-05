@@ -350,9 +350,7 @@ $$P(w_{i}|w_{i-(n-1)}...w_{i-1}) = \frac{C(w_{i-(n-1)}...w_{i}) + k}{C(w_{i-(n-1
 
 <div class="highlight-exercise">
 
-#### 1.4.1 Ejercicios
-
-**Ejercicio 8**
+## Modelos de lenguaje n-grama - ejercicio 8
 
 Consideremos el vocabulario V = {a, b, c} y el corpus de entrenamiento formado por las siguientes secuencias de términos:
 
@@ -375,9 +373,7 @@ cuando se usa cada una de las siguientes técnicas para abordar el problema de l
 - 2. Aplicar retroceso: si P(t1 | t2) se estima como 0, entonces usar P(t1) en su lugar.
 - 3. Aplicar la interpolación lineal 1/2P(t1 | t2) + 1/2P(t1).
 
-- Solución:
-
-1. modelo bigrama:
+### Solución
 
 | Unigramas                   | Frecuencia | P(t) = Frecuencia / N |
 | --------------------------- | ---------- | --------------------- |
@@ -390,8 +386,8 @@ cuando se usa cada una de las siguientes técnicas para abordar el problema de l
 
 `Los inicios <s> no se cuentan, pero los finales </s> sí, ya que son parte de la secuencia.`
 
-2. cálculo de probabilidades:
-   ​
+**Cálculo de probabilidades**
+​
 
 | Bigramas  | Frecuencia | Suavizado de Laplace (k=1)        |  Retroceso (si 0→P(y))  | Interpolación (λ=1/2) - $1/2 C(x)/C(xy) + 1/2  P(y)$ |
 | --------- | ---------- | --------------------------------- | :---------------------: | :--------------------------------------------------: |
@@ -412,21 +408,21 @@ cuando se usa cada una de las siguientes técnicas para abordar el problema de l
 | c c       | 0          | (0 + 1) / (4 + 4) = 1/8 ≈ 0.125   |   P(c) = 4/49 ≈ 0.082   |       1/2 (0/4) + 1/2 (10/49) = 0 + 0.1 = 0.1        |
 | c `⟨/s⟩`  | 1          | (0 + 1) / (4 + 4) = 1/8 ≈ 0.125   |       1/4 = 0.25        |       1/2 (0/4) + 1/2 (10/49) = 0 + 0.1 = 0.1        |
 
-- La probabilidad de la secuencia ⟨s⟩a c c b c c c c b c⟨/s⟩ se calcula como el producto de las probabilidades de cada bigrama en la secuencia, utilizando cada una de las técnicas:
+#### 1. Calcula la probabilidad de la secuencia ⟨s⟩a c c b c c c c b c⟨/s⟩ se calcula como el producto de las probabilidades de cada bigrama en la secuencia, utilizando cada una de las técnicas:
 
-- 1. Aplicar un suavizado de Laplace.
+**1. Aplicar un suavizado de Laplace.**
 
-  $$P(⟨s⟩a c c b c c c c b c⟨/s⟩) = P(a \| ⟨s⟩) P(c \| a) P(c \| c) P(b \| c) P(c \| b) P(c \| c) P(c \| c) P(c \| c) P(b \| c) P(c \| b) P(⟨/s⟩ \| c)$$
-  $$= 0.049 \times 0.167 \times 0.125 \times 0.053 \times 0.375 \times 0.125 \times 0.125 \times 0.125 \times 0.053 \times 0.375 \times 0.125$$
+$$P(⟨s⟩a c c b c c c c b c⟨/s⟩) = P(a \| ⟨s⟩) P(c \| a) P(c \| c) P(b \| c) P(c \| b) P(c \| c) P(c \| c) P(c \| c) P(b \| c) P(c \| b) P(⟨/s⟩ \| c)$$
+$$= 0.049 \times 0.167 \times 0.125 \times 0.053 \times 0.375 \times 0.125 \times 0.125 \times 0.125 \times 0.053 \times 0.375 \times 0.125$$
 
-- 2. Aplicar retroceso: si P(t1 | t2) se estima como 0, entonces usar P(t1) en su lugar.
+**2. Aplicar retroceso (backoff): si P(t1 | t2) se estima como 0, entonces usar P(t1) en su lugar.**
 
-  $$P(⟨s⟩a c c b c c c c b c⟨/s⟩) = P(a \| ⟨s⟩) P(c \| a) P(c \| c) P(b \| c) P(c \| b) P(c \| c) P(c \| c) P(c \| c) P(b \| c) P(c \| b) P(⟨/s⟩ \| c)$$
-  $$= 0.5 \times 0.15 \times 0.082 \times 0.082 \times 0.15 \times 0.082 \times 0.082 \times 0.082 \times 0.082 \times 0.15 \times 0.25$$
+$$P(⟨s⟩a c c b c c c c b c⟨/s⟩) = P(a \| ⟨s⟩) P(c \| a) P(c \| c) P(b \| c) P(c \| b) P(c \| c) P(c \| c) P(c \| c) P(b \| c) P(c \| b) P(⟨/s⟩ \| c)$$
+$$= 0.5 \times 0.15 \times 0.082 \times 0.082 \times 0.15 \times 0.082 \times 0.082 \times 0.082 \times 0.082 \times 0.15 \times 0.25$$
 
-- 3. Aplicar la interpolación lineal 1/2P(t1 | t2) + 1/2P(t1).
-     $$P(⟨s⟩a c c b c c c c b c⟨/s⟩) = P(a \| ⟨s⟩) P(c \| a) P(c \| c) P(b \| c) P(c \| b) P(c \| c) P(c \| c) P(c \| c) P(b \| c) P(c \| b) P(⟨/s⟩ \| c)$$
-     $$= 0.45 \times 0.175 \times 0.1 \times 0.1 \times 0.175 \times 0.1 \times 0.1 \times 0.1 \times 0.1 \times 0.175 \times 0.1$$
+**3. Aplicar la interpolación lineal 1/2P(t1 | t2) + 1/2P(t1).**
+$$P(⟨s⟩a c c b c c c c b c⟨/s⟩) = P(a \| ⟨s⟩) P(c \| a) P(c \| c) P(b \| c) P(c \| b) P(c \| c) P(c \| c) P(c \| c) P(b \| c) P(c \| b) P(⟨/s⟩ \| c)$$
+$$= 0.45 \times 0.175 \times 0.1 \times 0.1 \times 0.175 \times 0.1 \times 0.1 \times 0.1 \times 0.1 \times 0.175 \times 0.1$$
 
 </div>
 
@@ -564,11 +560,13 @@ Aunque el término de mayor orden sea cero por no existir en el corpus de entren
 
 </div>
 
-<div class=hihlight-exercise>
+<div class=highlight-exercise>
 
-### Enunciado original
+## Unigrama y perplejidad - Ejercicio 9
 
-**Ejercicio 9:** Consideremos un corpus de entrenamiento consistente en una única secuencia de dígitos en la que el dígito cero ocurre 90 veces y los dígitos del uno al nueve ocurren una sola vez cada uno. Si entrenamos un modelo unigrama a partir de ese corpus, se pide calcular su perplejidad:
+### Enunciado
+
+Consideremos un corpus de entrenamiento consistente en una única secuencia de dígitos en la que el dígito cero ocurre 90 veces y los dígitos del uno al nueve ocurren una sola vez cada uno. Si entrenamos un modelo unigrama a partir de ese corpus, se pide calcular su perplejidad:
 
 1.  Sobre la secuencia $000000000\langle/s\rangle$.
 2.  Sobre la secuencia $010203040\langle/s\rangle$.
