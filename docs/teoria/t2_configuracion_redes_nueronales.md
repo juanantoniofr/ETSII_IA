@@ -33,6 +33,8 @@ Conocer estas configuraciones teóricas no solo garantiza que la red neuronal fu
 
 <div class="summary">
 
+## Parejas de oro: Función de Activación y Función de Coste
+
 Aquí tienes la tabla resumen con las "parejas de oro" para la capa de salida y las derivadas clave de las capas ocultas. Esta tabla te ahorrará muchísimo tiempo al calcular los vectores de error ($\Delta^L$) en el algoritmo de retropropagación:
 
 | Tipo de Problema / Capa           | Función de Activación   | Función de Coste (Pérdida)                | Cálculo Rápido del Error ($\Delta^L$) o Derivada |
@@ -47,7 +49,7 @@ _(**Nota de examen:** En la fórmula de regresión, la $n$ representa la cantida
 
 </div>
 
-<div class="summary">>
+<div class="summary">
 
 ## Diseño y entrenamiento de la red neuronal en tareas de clasificación
 
@@ -80,22 +82,22 @@ Para estimar la pérdida cometida por la red en una predicción frente al objeti
 Consiste en calcular un vector de error local o "Delta" ($\Delta^l$) para cada capa, comenzando desde el final y retrocediendo hacia la entrada.
 
 - **Error en la Capa de Salida ($\Delta^L$):** El diseño de la red neuronal produce un atajo matemático vital. Al combinar matemáticamente la función Sigmoide con la Entropía Binaria (o la Softmax con la Entropía Categórica), la derivada del error se simplifica en una simple resta entre la predicción y el valor real:
-  $$\Delta^L = a^L - y$$.
+  $$\Delta^L = a^L - y$$
 - **Error en las Capas Ocultas ($\Delta^l$):** El error se propaga hacia el interior de la red multiplicando el Delta de la capa superior por la matriz de pesos transpuesta, y aplicando el producto de Hadamard ($\odot$) con la derivada de la función de activación actual (por ejemplo, la derivada de la ReLU):
-  $$\Delta^l = ((W^{l+1})^T \Delta^{l+1}) \odot (g^l)^{\prime}(z^l)$$.
+  $$\Delta^l = ((W^{l+1})^T \Delta^{l+1}) \odot (g^l)^{\prime}(z^l)$$
 - **Cálculo de gradientes locales:** Con los Deltas conocidos, obtenemos los gradientes exactos para este ejemplo específico multiplicando los vectores:
-  Gradiente de Pesos: $\frac{\partial C}{\partial W^l} = \Delta^l (a^{l-1})^T$.
-  Gradiente de Sesgos: $\frac{\partial C}{\partial W_0^l} = \Delta^l$.
+  Gradiente de Pesos: $\frac{\partial C}{\partial W^l} = \Delta^l (a^{l-1})^T$
+  Gradiente de Sesgos: $\frac{\partial C}{\partial W_0^l} = \Delta^l$
 
 ### 4. Descenso Estocástico por el Gradiente (Minilotes)
 
 El descenso estocástico no actualiza los parámetros tras cada ejemplo individual, sino que procesa **minilotes** aleatorios de tamaño $m$ para hacer estimaciones estadísticamente estables del error.
 
-Para ajustar los parámetros finales de la red, se suman las matrices de gradientes calculadas en el Paso 3 para todos los $m$ ejemplos del minilote, y se restan a los parámetros originales multiplicados por una tasa o factor de aprendizaje $\eta$:
+Para ajustar los parámetros finales de la red, se suman las matrices de gradientes calculadas en el Paso 3 para todos los $m$ ejemplos del minilote, y se restan a los parámetros originales multiplicados por una tasa o factor de aprendizaje $\eta$ :
 
 - **Actualización de los Pesos:**
-  $$W^l \leftarrow W^l - \frac{\eta}{m} \sum \left( \Delta^l (a^{l-1})^T \right)$$.
+  $$W^l \leftarrow W^l - \frac{\eta}{m} \sum \left( \Delta^l (a^{l-1})^T \right)$$
 - **Actualización de los Sesgos:**
-  $$W_0^l \leftarrow W_0^l - \frac{\eta}{m} \sum \Delta^l$$.
+  $$W_0^l \leftarrow W_0^l - \frac{\eta}{m} \sum \Delta^l$$
 
 </div>

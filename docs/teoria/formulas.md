@@ -275,6 +275,50 @@ Donde los componentes de la ecuación se definen como:
 
 </div>
 
+<div class="highlight-theory">
+
+## Matriz de Confusión - métricas de evaluación
+
+|                | Predicho: Positivo | Predicho: Negativo |
+| -------------- | ------------------ | ------------------ |
+| Real: Positivo | TP                 | FN                 |
+| Real: Negativo | FP                 | TN                 |
+
+- **Exactitud (Accuracy)**: La proporción de predicciones correctas sobre el total de predicciones.
+
+$$\text{Exactitud} = \frac{TP + TN}{TP + TN + FP + FN}$$
+
+- **Precisión (Precision)**: La proporción de verdaderos positivos sobre el total de predicciones positivas.
+
+  $$\text{Precisión} = \frac{TP}{TP + FP}$$
+
+- **Sensibilidad (Recall o Tasa de verdaderos positivos)**: La proporción de verdaderos positivos sobre el total de casos reales positivos.
+  $$
+  \text{Sensibilidad} = \frac{TP}{TP + FN}
+  $$
+- **Especificidad (Specificity o Tasa de verdaderos negativos)**: La proporción de verdaderos negativos sobre el total de casos reales negativos.
+  $$
+  \text{Especificidad} = \frac{TN}{TN + FP}
+  $$
+- **Valor predictivo negativo (NPV)**: La proporción de verdaderos negativos sobre el total de predicciones negativas.
+  $$
+  \text{NPV} = \frac{TN}{TN + FN}
+  $$
+- **Tasa de falsos positivos (FPR)**: La proporción de falsos positivos sobre el total de casos reales negativos.
+  $$
+  \text{FPR} = \frac{FP}{FP + TN}
+  $$
+- **Tasa de falsos negativos (FNR)**: La proporción de falsos negativos sobre el total de casos reales positivos.
+  $$
+  \text{FNR} = \frac{FN}{FN + TP}
+  $$
+- **F1 Score**: La media armónica de la precisión y la sensibilidad.
+  $$
+  F1 = 2 \cdot \frac{\text{Precisión} \cdot \text{Sensibilidad}}{\text{Precisión} + \text{Sensibilidad}}
+  $$
+
+</div>
+
 ## Redes Neuronales
 
 <div class="summary">
@@ -639,15 +683,15 @@ _(Donde $tf$ es las veces que aparece $t$ en el documento, $N$ es el total de do
 
 - **Métrica (Similitud del Coseno):** Se calcula el coseno entre el vector del documento nuevo y cada ejemplo de entrenamiento:
 
-  $$sim(D_1, D_2) = \frac{D_1 \cdot D_2}{||D_1||_2 \times ||D_2||_2}$$
+  $$sim(D_1, D_2) = \frac{D_1 \cdot D_2}{||D_1|| \times ||D_2||}$$
 
-$$\mathbf{sim(D_1, D_2) = \frac{D_1 \cdot D_2}{\|D_1\|_2 \|D_2\|_2} = \frac{\sum_{i=1}^{n} tf\text{-}idf_{t_i, D_1} \cdot tf\text{-}idf_{t_i, D_2}}{\sqrt{\sum_{i=1}^{n} (tf\text{-}idf_{t_i, D_1})^2} \cdot \sqrt{\sum_{i=1}^{n} (tf\text{-}idf_{t_i, D_2})^2}}}$$
+$$\mathbf{sim(D_1, D_2) = \frac{D_1 \cdot D_2}{\|D_1\| \|D_2\|} = \frac{\sum_{i=1}^{n} tf\text{-}idf_{t_i, D_1} \cdot tf\text{-}idf_{t_i, D_2}}{\sqrt{\sum_{i=1}^{n} (tf\text{-}idf_{t_i, D_1})^2} \cdot \sqrt{\sum_{i=1}^{n} (tf\text{-}idf_{t_i, D_2})^2}}}$$
 
 ### Términos de la fórmula:
 
 - **$\mathbf{sim(D_1, D_2)}$**: Representa la **métrica de similitud del coseno** entre el documento $D_1$ y el documento $D_2$, calculada como el coseno del ángulo que forman sus representaciones vectoriales.
 - **$\mathbf{D_1 \cdot D_2}$**: Es el **producto escalar** (o producto interno) entre los vectores de pesos de ambos documentos.
-- **$\mathbf{\|D_1\|_2}$ y $\mathbf{\|D_2\|_2}$**: Corresponden a la **norma euclídea** (o longitud del vector de norma $L_2$) de los documentos $D_1$ y $D_2$ respectivamente. Sirve para normalizar la longitud de los textos de forma que los documentos más largos no dominen la puntuación por el simple hecho de contener más palabras.
+- **$\mathbf{\|D_1\|}$ y $\mathbf{\|D_2\|}$**: Corresponden a la **norma euclídea** (o longitud del vector de norma $L_2$) de los documentos $D_1$ y $D_2$ respectivamente. Sirve para normalizar la longitud de los textos de forma que los documentos más largos no dominen la puntuación por el simple hecho de contener más palabras.
 - **$\mathbf{n}$**: Es la **cardinalidad del vocabulario** de términos prefijado, $V = \{t_1, \dots, t_n\}$.
 - **$\mathbf{tf\text{-}idf_{t_i, D}}$**: Es el **peso del término** $t_i$ en el documento $D$, obtenido al multiplicar su frecuencia local ($tf$) por la frecuencia documental inversa ($idf$) del término en el corpus.
 

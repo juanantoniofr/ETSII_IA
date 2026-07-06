@@ -21,15 +21,13 @@ Las dos aproximaciones más comunes para el procesamiento de lenguaje natural (P
 
 Para clasificarr documentos lo primero que necesitamos es construir un **modelo de lenguaje** que nos permita representar los documentos de forma numérica. El primero que vamos a ver es el **modelo de bolsa de palabras**.
 
-### 1.1 Modelo de bolsa de palabras
+### Modelo de bolsa de palabras + Naive Bayes Multinomial
 
 Dado un vocabulario finito de términos V prejijado, cada documento se representa como un vector de frecuencias de términos. Por ejemplo, si tenemos el vocabulario V = { "gato", "perro", "pájaro" } y un documento D que contiene las palabras "gato" y "perro", el vector de características para D sería [1, 1, 0].
 
 Una vez construido el modelo, abordamos la clasificación de documentos utilizando algoritmos de aprendizaje supervisado.
 
-### 1.2 Algoritmos de clasificación
-
-#### 1.2.1 Naive Bayes Multinomial
+#### Naive Bayes Multinomial
 
 Para clasificar documentos de texto utilizando el modelo Naive Bayes Multinomial, el algoritmo se apoya en la representación matemática de "bolsa de palabras". A diferencia de los problemas genéricos, aquí las fórmulas se adaptan para manejar vectores de frecuencias completas, ya que la cantidad de veces que se repite una palabra es vital para la decisión.
 
@@ -70,7 +68,9 @@ _(Nota importante: Precisamente por el exponente $n_{D,t}$ y porque necesitamos 
 
 <div class="highlight-exercise">
 
-##### 1.2.1. Ejerecicio 3
+## Bolsa de palabras + Naive Bayes Multinomial - Ejercicio 3
+
+### Enunciado
 
 En las opiniones de diversos espectadores de cinco determinadas películas se han identificado las siguientes palabras clave que las describen:
 
@@ -83,11 +83,11 @@ En las opiniones de diversos espectadores de cinco determinadas películas se ha
 Considerando 𝑉 = {de amores, de disparos, de parejas, divertida, freńetica, ŕapida} como vocabulario de términos y sabiendo que las películas 𝑃𝟣 y 𝑃𝟥 son comedias y las películas 𝑃𝟤 , 𝑃𝟦 y 𝑃𝟧 son de acción, se pide determinar el género de la película 𝑃 descrita por ciertos espectadores como
 𝑃: rápida, de parejas, de disparos, rápida.
 
-Usar para ello la bolsa de palabras como modelo de lenguaje y naive Bayes multinomial con suavizado de Laplace como modelo clasificador.
+Usar para ello la **bolsa de palabras** como modelo de lenguaje y **Naive Bayes Multinomial** con suavizado de Laplace como modelo clasificador.
 
-**Solución:**
+### Solución
 
-1. Construimos el modelo de bolsa de palabras para cada película:
+#### 1. Construimos el modelo de bolsa de palabras para cada película:
 
 |                   | D1 (comedia) | D2 (acción) | D3 (comedia) | D4 (acción) | D5 (acción) | Suma Comedia | Suma Acción |
 | ----------------- | ------------ | ----------- | ------------ | ----------- | ----------- | ------------ | ----------- |
@@ -99,40 +99,52 @@ Usar para ello la bolsa de palabras como modelo de lenguaje y naive Bayes multin
 | rápida            | 0            | 1           | 1            | 0           | 1           | 1            | 2           |
 | Total de Palabras | 4            | 3           | 4            | 4           | 3           | 8 (N_c1)     | 10 (N_c2)   |
 
-2. Calculamos los parámetros del modelo Naive Bayes Multinomial con suavizado de Laplace:
+#### 2. Calculamos los parámetros del modelo Naive Bayes Multinomial con suavizado de Laplace:
+
+**Prioridad de priori de las clases:**
+
+$P(c) = \large \frac{N_c}{N}$
 
 - P(comedia) = 2/5, P(acción) = 3/5, k = 1. => **(de 5 documentos, 2 son comedias y 3 son de acción.)**
 
-3. ¿Cuál será el genero de la película P (definida por el documento D), comedia o acción? => Calculamos P(D|comedia) y P(D|acción):
+**Prioridad a posteriori de los atributos:**
 
-- |V| = 6
+$P(D|c) = \large \prod_{t \in V} P(t|c)^{n_{D,t}}$
 
-- Para comedia:
-  - P(de amores|comedia) = (2 + 1) / (8 + 6) = 3/14
-  - P(de disparos|comedia) = (0 + 1) / (8 + 6) = 1/14
-  - P(de parejas|comedia) = (2 + 1) / (8 + 6) = 3/14
-  - P(divertida|comedia) = (3 + 1) / (8 + 6) = 4/14
-  - P(frenética|comedia) = (0 + 1) / (8 + 6) = 1/14
-  - P(rápida|comedia) = (1 + 1) / (8 + 6) = 2/14
+Donde $P(t|c) = \large \frac{N_{c,t} + 1}{\sum_{s \in V} N_{c,s} + |V|}$
 
-- Para acción:
-  - P(de amores|acción) = (1 + 1) / (10 + 6) = 2/16
-  - P(de disparos|acción) = (4 + 1) / (10 + 6) = 5/16
-  - P(de parejas|acción) = (0 + 1) / (10 + 6) = 1/16
-  - P(divertida|acción) = (1 + 1) / (10 + 6) = 2/16
-  - P(frenética|acción) = (2 + 1) / (10 + 6) = 3/16
-  - P(rápida|acción) = (2 + 1) / (10 + 6) = 3/16
+- |V| = 6 (tamaño del vocabulario)
 
-- Aplicamos el modelo Naive Bayes para clasificar la película P, donde D = {rápida, de parejas, de disparos, rápida}.
+**Para la clase comedia:**
 
-  $P(comedia|D) = P(comedia) * P(de amores|comedia)^0 * P(de disparos|comedia)^1 * P(de parejas|comedia)^1 * P(divertida|comedia)^0 * P(frenética|comedia)^0 * P(rápida|comedia)^2$
-  => $P(comedia|D) = $(2/5) * (3/14)^0 * (1/14)^1 * (3/14)^1 * (4/14)^0 * (1/14)^0 * (2/14)^2$
-  => $P(comedia|D) = $(2/5) * (1/14) * (3/14) * (2/14)^2 = (2/5) * (1/14) * (3/14) * (4/196)$ = $(2/5) * (1/14) * (3/14) * (1/49) = 3 / 24010 = **0.00012495**$
+- P(de amores|comedia) = (2 + 1) / (8 + 6) = 3/14
+- P(de disparos|comedia) = (0 + 1) / (8 + 6) = 1/14
+- P(de parejas|comedia) = (2 + 1) / (8 + 6) = 3/14
+- P(divertida|comedia) = (3 + 1) / (8 + 6) = 4/14
+- P(frenética|comedia) = (0 + 1) / (8 + 6) = 1/14
+- P(rápida|comedia) = (1 + 1) / (8 + 6) = 2/14
 
-  $P(acción|D) = P(acción) * P(de amores|acción)^0 * P(de disparos|acción)^1 * P(de parejas|acción)^1 * P(divertida|acción)^0 * P(frenética|acción)^0 * P(rápida|acción)^2$
-  => $P(acción|D) = $(3/5) * (1/16)^0 * (5/16)^1 * (1/16)^1 * (2/16)^0 * (3/16)^0 * (3/16)^2$
-  => $P(acción|D) = $(3/5) * (1/16) * ( 5/16) * (1/16) * (2/16) * (3/16) * (3/16)$
-  => $P(acción|D) = $(3/5) * (1/16) * (5/16) * (1/16) * (2/16) * (3/16) * (3/16) = (3/5) * (1/16) * (5/16) * (1/16) * (2/16) * (3/16) * (3/16)$ = 27 / 65535 = **0.00041199**
+**Para la clase acción:**
+
+- P(de amores|acción) = (1 + 1) / (10 + 6) = 2/16
+- P(de disparos|acción) = (4 + 1) / (10 + 6) = 5/16
+- P(de parejas|acción) = (0 + 1) / (10 + 6) = 1/16
+- P(divertida|acción) = (1 + 1) / (10 + 6) = 2/16
+- P(frenética|acción) = (2 + 1) / (10 + 6) = 3/16
+- P(rápida|acción) = (2 + 1) / (10 + 6) = 3/16
+
+#### 3. ¿Cuál será el genero de la película P (definida por el documento D), comedia o acción? => Calculamos P(D|comedia) y P(D|acción):
+
+**Aplicamos el modelo Naive Bayes para clasificar la película P, donde D = {rápida, de parejas, de disparos, rápida}.**
+
+- $P(comedia|D) = P(comedia) * P(de amores|comedia)^0 * P(de disparos|comedia)^1 * P(de parejas|comedia)^1 * P(divertida|comedia)^0 * P(frenética|comedia)^0 * P(rápida|comedia)^2$
+- => $P(comedia|D) = $(2/5) * (3/14)^0 * (1/14)^1 * (3/14)^1 * (4/14)^0 * (1/14)^0 * (2/14)^2$
+- => $P(comedia|D) = $(2/5) * (1/14) * (3/14) * (2/14)^2 = (2/5) * (1/14) * (3/14) * (4/196)$ = $(2/5) * (1/14) * (3/14) * (1/49) = 3 / 24010 = **0.00012495**$
+
+- $P(acción|D) = P(acción) * P(de amores|acción)^0 * P(de disparos|acción)^1 * P(de parejas|acción)^1 * P(divertida|acción)^0 * P(frenética|acción)^0 * P(rápida|acción)^2$
+- => $P(acción|D) = $(3/5) * (1/16)^0 * (5/16)^1 * (1/16)^1 * (2/16)^0 * (3/16)^0 * (3/16)^2$
+- => $P(acción|D) = $(3/5) * (1/16) * ( 5/16) * (1/16) * (2/16) * (3/16) * (3/16)$
+- => $P(acción|D) = $(3/5) * (1/16) * (5/16) * (1/16) * (2/16) * (3/16) * (3/16) = (3/5) * (1/16) * (5/16) * (1/16) * (2/16) * (3/16) * (3/16)$ = 27 / 65535 = **0.00041199**
 
 - Concluimos que la película P es de acción, ya que **P(acción|D) > P(comedia|D)**.
 - Se clasifica la película P como de acción con un nivel de confianza en tanto por ciento de: P(acción|D) / (P(acción|D) + P(comedia|D)) = 0.00041199 / (0.00041199 + 0.00012495) ≈ **76.8%**.
@@ -231,7 +243,9 @@ En este ejemplo numérico, hemos obtenido **0.4558**, lo que indica una similitu
 
 <div class="highlight-exercise">
 
-### 1.3.1 Ejercicio 4
+## Modelo de lenguaje tf-idf + kNN: Ejercicio 4
+
+### Enunciado
 
 A continuación se muestra el poema 1 del libro de poemas Marinero en tierra de Rafael Alberti, que consta de cinco estrofas, cada una de las cuales la consideramos un documento.
 
@@ -246,47 +260,52 @@ Para pruebas, se añade una estrofa más:
 
 Tomando **V = {la, mar, me, trajiste}** como vocabulario de términos y **{D1, D2, D3, D4} como corpus de entrenamiento**, se pide:
 
-- 1. Obtener la representación de cada una de las estrofas bajo el modelo tf-idf.
-- D1: El mar. La mar. El mar. ¡Solo la mar!
+### Solución
 
-  | Término      | $tf$ | $df$ | $idf = \log_2(4/df)$                   | $tf \times idf$                   |
-  | :----------- | :--- | :--- | :------------------------------------- | :-------------------------------- |
-  | **la**       | 2    | 3    | $\log_2(4/3) \approx \mathbf{0.415}$   | $2 \times 0.415 = \mathbf{0.830}$ |
-  | **mar**      | 4    | 2    | $\log_2(4/2) = \log_2(2) = \mathbf{1}$ | $4 \times 1 = \mathbf{4}$         |
-  | **me**       | 0    | 3    | $\log_2(4/3) \approx \mathbf{0.415}$   | $\mathbf{0}$                      |
-  | **trajiste** | 0    | 1    | $\log_2(4/1) = \log_2(4) = \mathbf{2}$ | $\mathbf{0}$                      |
+**1. Obtener la representación de cada una de las estrofas bajo el modelo tf-idf**
 
-- D2: ¿Por qué me trajiste, padre, a la ciudad?
+$$\large ft-idf(t, d) = tf(t, d) * idf(t)$$
+donde $\large tf(t, d)$ es la frecuencia del término $t$ en el documento $d$ e $\large idf(t)$ es la frecuencia inversa de documentos del término $t$. Concretamente, $\large idf(t) = \log_2(N / df(t))$, donde $N$ es el número total de documentos en el corpus y $df(t)$ es el número de documentos que contienen el término $t$.
 
-  | D2           | tf  | df  | idf                                    | $tf \times idf$                   |
-  | :----------- | :-- | :-- | :------------------------------------- | :-------------------------------- |
-  | **la**       | 1   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $1 \times 0.415 = \mathbf{0.415}$ |
-  | **mar**      | 0   | 2   | $\log_2(4/2) = \log_2(2) = \mathbf{1}$ | $\mathbf{0}$                      |
-  | **me**       | 1   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $1 \times 0.415 = \mathbf{0.415}$ |
-  | **trajiste** | 1   | 1   | $\log_2(4/1) = \log_2(4) = \mathbf{2}$ | $1 \times 2 = \mathbf{2}$         |
+D1: El mar. La mar. El mar. ¡Solo la mar!
 
-- D3: ¿Por qué me desenterraste del mar?
+| Término      | $tf$ | $df$ | $idf = \log_2(4/df)$                   | $tf \times idf$                   |
+| :----------- | :--- | :--- | :------------------------------------- | :-------------------------------- |
+| **la**       | 2    | 3    | $\log_2(4/3) \approx \mathbf{0.415}$   | $2 \times 0.415 = \mathbf{0.830}$ |
+| **mar**      | 4    | 2    | $\log_2(4/2) = \log_2(2) = \mathbf{1}$ | $4 \times 1 = \mathbf{4}$         |
+| **me**       | 0    | 3    | $\log_2(4/3) \approx \mathbf{0.415}$   | $\mathbf{0}$                      |
+| **trajiste** | 0    | 1    | $\log_2(4/1) = \log_2(4) = \mathbf{2}$ | $\mathbf{0}$                      |
 
-  | D3           | tf  | df  | idf                                    | $tf \times idf$                   |
-  | :----------- | :-- | :-- | :------------------------------------- | :-------------------------------- |
-  | **la**       | 0   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $\mathbf{0}$                      |
-  | **mar**      | 1   | 2   | $\log_2(4/2) = \log_2(2) = \mathbf{1}$ | $1 \times 1 = \mathbf{1}$         |
-  | **me**       | 1   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $1 \times 0.415 = \mathbf{0.415}$ |
-  | **trajiste** | 0   | 1   | $\log_2(4/1) = \log_2(4) = \mathbf{2}$ | $\mathbf{0}$                      |
+D2: ¿Por qué me trajiste, padre, a la ciudad?
 
-- D4: En sueños, la marejada me tira del corazón. Se lo quisiera llevar.
+| D2           | tf  | df  | idf                                    | $tf \times idf$                   |
+| :----------- | :-- | :-- | :------------------------------------- | :-------------------------------- |
+| **la**       | 1   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $1 \times 0.415 = \mathbf{0.415}$ |
+| **mar**      | 0   | 2   | $\log_2(4/2) = \log_2(2) = \mathbf{1}$ | $\mathbf{0}$                      |
+| **me**       | 1   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $1 \times 0.415 = \mathbf{0.415}$ |
+| **trajiste** | 1   | 1   | $\log_2(4/1) = \log_2(4) = \mathbf{2}$ | $1 \times 2 = \mathbf{2}$         |
 
-  | D4           | tf  | df  | idf                                    | $tf \times idf$                   |
-  | :----------- | :-- | :-- | :------------------------------------- | :-------------------------------- |
-  | **la**       | 1   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $1 \times 0.415 = \mathbf{0.415}$ |
-  | **mar**      | 1   | 2   | $\log_2(4/2) = \log_2(2) = \mathbf{1}$ | $1 \times 1 = \mathbf{1}$         |
-  | **me**       | 1   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $1 \times 0.415 = \mathbf{0.415}$ |
-  | **trajiste** | 0   | 1   | $\log_2(4/1) = \log_2(4) = \mathbf{2}$ | $\mathbf{0}$                      |
+D3: ¿Por qué me desenterraste del mar?
 
-- 2. Suponiendo que las estrofas D1 y D2 son positivas y que las estrofas D3 y D4 son negativas, clasificar la estrofa D5 como positiva o negativa mediante un modelo kNN que use el coseno del ángulo de sus
-     representaciones tf-idf como medida de similitud entre dos estrofas y k = 3 como cantidad a considerar de estrofas más similares.
+| D3           | tf  | df  | idf                                    | $tf \times idf$                   |
+| :----------- | :-- | :-- | :------------------------------------- | :-------------------------------- |
+| **la**       | 0   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $\mathbf{0}$                      |
+| **mar**      | 1   | 2   | $\log_2(4/2) = \log_2(2) = \mathbf{1}$ | $1 \times 1 = \mathbf{1}$         |
+| **me**       | 1   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $1 \times 0.415 = \mathbf{0.415}$ |
+| **trajiste** | 0   | 1   | $\log_2(4/1) = \log_2(4) = \mathbf{2}$ | $\mathbf{0}$                      |
 
-- D5: Padre, ¿por qué me trajiste acá?
+D4: En sueños, la marejada me tira del corazón. Se lo quisiera llevar.
+
+| D4           | tf  | df  | idf                                    | $tf \times idf$                   |
+| :----------- | :-- | :-- | :------------------------------------- | :-------------------------------- |
+| **la**       | 1   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $1 \times 0.415 = \mathbf{0.415}$ |
+| **mar**      | 1   | 2   | $\log_2(4/2) = \log_2(2) = \mathbf{1}$ | $1 \times 1 = \mathbf{1}$         |
+| **me**       | 1   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $1 \times 0.415 = \mathbf{0.415}$ |
+| **trajiste** | 0   | 1   | $\log_2(4/1) = \log_2(4) = \mathbf{2}$ | $\mathbf{0}$                      |
+
+**2. Suponiendo que las estrofas D1 y D2 son positivas y que las estrofas D3 y D4 son negativas, clasificar la estrofa D5 como positiva o negativa mediante un modelo kNN que use el coseno del ángulo de sus representaciones tf-idf como medida de similitud entre dos estrofas y k = 3 como cantidad a considerar de estrofas más similares.**
+
+D5: Padre, ¿por qué me trajiste acá?
 
 | d5           | tf  | df  | idf                                    | $tf \times idf$                   |
 | :----------- | :-- | :-- | :------------------------------------- | :-------------------------------- |
@@ -295,23 +314,61 @@ Tomando **V = {la, mar, me, trajiste}** como vocabulario de términos y **{D1, D
 | **me**       | 1   | 3   | $\log_2(4/3) \approx \mathbf{0.415}$   | $1 \times 0.415 = \mathbf{0.415}$ |
 | **trajiste** | 1   | 1   | $\log_2(4/1) = \log_2(4) = \mathbf{2}$ | $1 \times 2 = \mathbf{2}$         |
 
-- Postivas: D1, D2
-  $$sim(D5, D1) = \frac{0.415 \cdot 0.830 + 0 \cdot 4 + 0.415 \cdot 0 + 2 \cdot 0}{\sqrt{0.415^2 + 0^2 + 0.415^2 + 2^2} \sqrt{0.830^2 + 4^2 + 0^2 + 0^2}} = \frac{0.34495}{\sqrt{4.173225} \sqrt{16.6889}} = \frac{0.34495}{2.0425 \cdot 4.086} = \mathbf{0.0413}$$
-  $$sim(D5, D2) = \frac{0.415 \cdot 0.415 + 0 \cdot 0 + 0.415 \cdot 0.415 + 2 \cdot 2}{\sqrt{0.415^2 + 0^2 + 0.415^2 + 2^2} \sqrt{0.415^2 + 0^2 + 0.415^2 + 2^2}} = \frac{4.172225}{\sqrt{4.173225} \sqrt{4.173225}} = \mathbf{1}$$
+**Positivas: D1, D2**
 
-- Negativas: D3, D4
-  $$sim(D5, D3) = \frac{0.415 \cdot 0 + 0 \cdot 1 + 0.415 \cdot 0.415 + 0 \cdot 0}{\sqrt{0.415^2 + 0^2 + 0.415^2 + 2^2} \sqrt{0^2 + 1^2 + 0.415^2 + 0^2}} = \frac{0.172225}{\sqrt{4.173225} \sqrt{1.172225}} = \frac{0.172225}{2.0425 \cdot 1.0826} = \mathbf{0.0779}$$
-  $$sim(D5, D4) = \frac{0.415 \cdot 0 + 0 \cdot 1 + 0.415 \cdot 0.415 + 2 \cdot 0}{\sqrt{0.415^2 + 0^2 + 0.415^2 + 2^2} \sqrt{0.415^2 + 1^2 + 0.415^2 + 0^2}} = \frac{0.172225}{\sqrt{4.173225} \sqrt{1.172225}} = \frac{0.172225}{2.0425 \cdot 1.0826} = \mathbf{0.0779}$$
+$$sim(D5, D1) = \frac{0.415 \cdot 0.830 + 0 \cdot 4 + 0.415 \cdot 0 + 2 \cdot 0}{\sqrt{0.415^2 + 0^2 + 0.415^2 + 2^2} \sqrt{0.830^2 + 4^2 + 0^2 + 0^2}} = \frac{0.34495}{\sqrt{4.173225} \sqrt{16.6889}} = \frac{0.34495}{2.0425 \cdot 4.086} = \mathbf{0.0413}$$
+$$sim(D5, D2) = \frac{0.415 \cdot 0.415 + 0 \cdot 0 + 0.415 \cdot 0.415 + 2 \cdot 2}{\sqrt{0.415^2 + 0^2 + 0.415^2 + 2^2} \sqrt{0.415^2 + 0^2 + 0.415^2 + 2^2}} = \frac{4.172225}{\sqrt{4.173225} \sqrt{4.173225}} = \mathbf{1}$$
 
-- Concluimos que las estrofas más similares a D5 son D2, D4 y D3, de las cuales dos son positivas y una es negativa. Por lo tanto, clasificamos la estrofa D5 como positiva.
+**Negativas: D3, D4**
+
+$$sim(D5, D3) = \frac{0.415 \cdot 0 + 0 \cdot 1 + 0.415 \cdot 0.415 + 0 \cdot 0}{\sqrt{0.415^2 + 0^2 + 0.415^2 + 2^2} \sqrt{0^2 + 1^2 + 0.415^2 + 0^2}} = \frac{0.172225}{\sqrt{4.173225} \sqrt{1.172225}} = \frac{0.172225}{2.0425 \cdot 1.0826} = \mathbf{0.0779}$$
+$$sim(D5, D4) = \frac{0.415 \cdot 0 + 0 \cdot 1 + 0.415 \cdot 0.415 + 2 \cdot 0}{\sqrt{0.415^2 + 0^2 + 0.415^2 + 2^2} \sqrt{0.415^2 + 1^2 + 0.415^2 + 0^2}} = \frac{0.172225}{\sqrt{4.173225} \sqrt{1.172225}} = \frac{0.172225}{2.0425 \cdot 1.0826} = \mathbf{0.0779}$$
+
+**Concluimos que las estrofas más similares a D5 son D2, D4 y D3, de las cuales dos son positivas y una es negativa. Por lo tanto, clasificamos la estrofa D5 como positiva.**
 
 </div>
 
-### 1.4 Predicción de secuencia de términos
+<div class="clarification">
+
+## Aclaración sobre la viabilidad de aplicar regresión a modelos de lenguaje
+
+**No es del todo correcto.** Mientras que para la combinación de Bolsa de palabras + Naive Bayes Multinomial efectivamente no tiene sentido plantear un problema de regresión, para la pareja **TF-IDF + kNN** (o incluso Bolsa de palabras + kNN) **sí que es perfectamente posible y tiene todo el sentido práctico aplicar problemas de regresión**.
+
+A continuación se detalla el comportamiento y la viabilidad de cada metodología ante tareas de regresión:
+
+### 1. Bolsa de palabras + Naive Bayes Multinomial: Solo Clasificación
+
+Tu intuición es totalmente correcta para este caso. El modelo **Naive Bayes Multinomial** está diseñado matemáticamente de forma exclusiva para tareas de **clasificación** (donde el atributo objetivo es de tipo discreto o categórico).
+
+- Su formulación busca encontrar la clase discreta $\hat{c}$ que maximiza la probabilidad a posteriori $\mathbb{P}(c|D)$.
+- No es posible predecir un número real continuo con este modelo porque requiere calcular probabilidades a priori de clases discretas $\mathbb{P}(c)$ y verosimilitudes basadas en recuentos de categorías finitas. Por tanto, **en este escenario no tiene sentido plantear regresión**.
+
+### 2. TF-IDF + kNN: Clasificación y Regresión
+
+La situación cambia por completo con el modelo de **k Vecinos Más Cercanos (kNN)**, el cual es una herramienta sumamente versátil adecuada **tanto para tareas de clasificación como de regresión**. De hecho, la biblioteca de la asignatura (`scikit-learn`) implementa de manera independiente la clase `KNeighborsRegressor` para este propósito.
+
+Si representamos los documentos mediante **TF-IDF** (o Bolsa de palabras):
+
+1. Cada texto se convierte en un vector de pesos numéricos en un espacio geométrico de alta dimensión.
+2. La similitud o cercanía entre documentos se calcula usando una métrica como la **similitud del coseno**.
+3. Si el atributo objetivo que queremos predecir es **continuo** (regresión), el regresor kNN localiza los $k$ documentos de entrenamiento más similares y **asigna como predicción la media aritmética de sus valores reales**:
+   $$\hat{y} = \frac{1}{k} \sum_{i=1}^{k} y_i$$
+
+#### Ejemplos reales de regresión en textos usando TF-IDF + kNN:
+
+- **Predicción de valoraciones numéricas continuas:** A partir del texto en bruto de una reseña de un hotel, predecir la puntuación numérica exacta (por ejemplo, de 1.0 a 10.0 estrellas) en lugar de clasificarla de forma simplificada en "positiva" o "negativa".
+- **Estimación de fluctuaciones financieras:** Predecir la variación porcentual del precio de una acción (un número real continuo) basándose en el análisis de texto de las noticias de prensa del día anterior.
+- **Datación de manuscritos históricos:** Estimar el año exacto de redacción (un valor continuo en el tiempo) de un texto antiguo a partir de su vocabulario y estilo.
+
+En resumen, **kNN no tiene ninguna restricción que le impida hacer regresión sobre representaciones vectoriales de texto**, mientras que Naive Bayes Multinomial sí está estrictamente limitado por su propia naturaleza probabilística a predecir etiquetas de clase discretas.
+
+</div>
 
 <div class="highlight-theory">
 
-#### 1.4.1 Modelos de lenguaje n-grama
+## Predicción de secuencia de términos
+
+### Modelos de lenguaje n-grama
 
 ¡Tienes toda la razón, mis disculpas! Me enfoqué en corregir estrictamente las dos afirmaciones que me pasaste y dejé fuera el "broche de oro" matemático que une ambas ideas y que te di en el mensaje anterior.
 
@@ -352,6 +409,8 @@ $$P(w_{i}|w_{i-(n-1)}...w_{i-1}) = \frac{C(w_{i-(n-1)}...w_{i}) + k}{C(w_{i-(n-1
 
 ## Modelos de lenguaje n-grama - ejercicio 8
 
+### Enunciado
+
 Consideremos el vocabulario V = {a, b, c} y el corpus de entrenamiento formado por las siguientes secuencias de términos:
 
 - ⟨s⟩a a a b⟨/s⟩
@@ -369,9 +428,9 @@ Se pide **construir un modelo bigrama** y calcular la probabilidad que le asigna
 
 cuando se usa cada una de las siguientes técnicas para abordar el problema de las estimaciones nulas de las probabilidades de los bigramas que no aparecen en el corpus:
 
-- 1. Aplicar un suavizado de Laplace.
-- 2. Aplicar retroceso: si P(t1 | t2) se estima como 0, entonces usar P(t1) en su lugar.
-- 3. Aplicar la interpolación lineal 1/2P(t1 | t2) + 1/2P(t1).
+- Aplicar un suavizado de Laplace.
+- Aplicar retroceso: si P(t1 | t2) se estima como 0, entonces usar P(t1) en su lugar.
+- Aplicar la interpolación lineal 1/2P(t1 | t2) + 1/2P(t1).
 
 ### Solución
 
@@ -388,6 +447,10 @@ cuando se usa cada una de las siguientes técnicas para abordar el problema de l
 
 **Cálculo de probabilidades**
 ​
+
+- Suavizado de Laplace: $\large P(t1|t2) = \frac{C(t2 t1) + 1}{C(t2) + |V|}$, donde |V| = 4 (a, b, c, ⟨/s⟩)
+- Backoff: si $\large P(t1|t2) = 0$, entonces usar $\large P(t1)$
+- Interpolación lineal: $\large P(t1|t2) = \frac{1}{2} P(t1|t2) + \frac{1}{2} P(t1)$
 
 | Bigramas  | Frecuencia | Suavizado de Laplace (k=1)        |  Retroceso (si 0→P(y))  | Interpolación (λ=1/2) - $1/2 C(x)/C(xy) + 1/2  P(y)$ |
 | --------- | ---------- | --------------------------------- | :---------------------: | :--------------------------------------------------: |
@@ -637,11 +700,9 @@ Como puedes observar, la perplejidad global (12.25) se estabiliza como un "prome
 
 </div>
 
-### 1.5 Perplejidad
-
 <div class="summary">
 
-¡Tienes toda la razón y has dado en el clavo! La confusión viene de una pequeña mezcla de notación en mi explicación anterior al intentar simplificarte el cálculo práctico, pero tu deducción teórica es matemáticamente impecable.
+## Perplejidad
 
 Vamos a dejar clara la definición exacta de ambas letras según la teoría de tus apuntes:
 

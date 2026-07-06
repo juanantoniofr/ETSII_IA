@@ -2,9 +2,9 @@
 
 # Aprendizaje por refuerzo
 
-## Algunos conceptos clave:
-
 <div class="highlight-theory">
+
+## Algunos conceptos clave:
 
 ### A. Bases del Aprendizaje:
 
@@ -53,6 +53,8 @@ Donde:
 
 <div class="summary">
 
+## Concepto de Utilidad y Recompensa
+
 En la planificación bajo incertidumbre y el aprendizaje por refuerzo, la **Utilidad** representa el **valor o beneficio acumulado que un agente espera recibir a largo plazo** a partir de un estado o de una secuencia de decisiones (historia).
 
 Para comprender qué significa este concepto en el mundo real, la clave está en diferenciarlo de la **Recompensa inmediata** y analizar cómo se modela el comportamiento humano y empresarial:
@@ -78,7 +80,7 @@ Considera una empresa que puede estar en la situación de ser **"pobre pero cono
 
 ### 2. El Factor de Descuento ($\gamma$): La Impaciencia y la Incertidumbre
 
-En tus fuentes, la utilidad se calcula aplicando un factor de descuento $\gamma$ (donde $0 \le \gamma < 1$) a las recompensas futuras:
+En tus fuentes, la utilidad se calcula aplicando un **factor de descuento** $\gamma$ (donde $0 \le \gamma < 1$) a las recompensas futuras:
 $$U = \sum_{i\ge0} \gamma^{i} R_i$$
 
 En el mundo real, este factor de descuento tiene dos traducciones perfectas:
@@ -120,7 +122,7 @@ En el mundo real, esto representa el **techo utópico de rendimiento**. Es el va
 Has entendido perfectamente el escenario del problema: al no tener el "mapa interno del entorno" (las funciones de probabilidad de transición $P$ ni las recompensas $R$), el agente está ciego y los algoritmos clásicos que usaban ecuaciones matemáticas interconectadas ya no sirven.
 
 El primer "clic" mental que debes hacer para entender el método de Montecarlo es **el cambio de la función $U(s)$ a la función $q(s,a)$**.
-En los métodos anteriores calculábamos el valor de un estado ($U(s)$) y usábamos las probabilidades $P$ para deducir qué acción era mejor. Como ahora no tenemos $P$, Montecarlo no puede calcular $U(s)$, sino que tiene que estimar directamente **$q(s,a)$**: la utilidad esperada de aplicar una acción concreta $a$ estando en un estado $s$.
+En los métodos anteriores calculábamos el valor de un estado ($U(s)$) y usábamos las probabilidades $P$ para deducir qué acción era mejor. Como ahora no tenemos $P$, Montecarlo no puede calcular $U(s)$, sino que tiene que estimar directamente **$q(s,a)$**: **la utilidad esperada de aplicar una acción concreta $a$ estando en un estado $s$**.
 
 Para encontrar la política óptima usando ensayo y error, el método de Montecarlo intercala la evaluación empírica con la mejora de la política en un proceso cíclico:
 
@@ -190,11 +192,11 @@ A continuación, resolvemos de forma óptima y ultra-visual el **Ejercicio 6 del
 
 ---
 
-### Datos Iniciales del Problema (Ejercicio 6) [Excerpt 13, 14, 155, 156]
+### Datos Iniciales del Problema (Ejercicio 6)
 
 - **Estados:** $S = \{s_1, s_2, s_3\}$ ($s_3$ es terminal)
 - **Acciones:** $A = \{a_1, a_2, a_3\}$
-- **Parámetros:** $\gamma = 0.9$ [Excerpt 13, 155] | Valores iniciales: $q(s,a) = 0$ | Listas $Racum(s,a) = []$
+- **Parámetros:** $\gamma = 0.9$ | Valores iniciales: $q(s,a) = 0$ | Listas $Racum(s,a) = []$
 - **Regla de desempate en argmáx:** Se elige la primera acción con valor máximo.
 - **Episodio a evaluar:**
 
@@ -306,7 +308,7 @@ Esa es precisamente la mayor innovación de las diferencias temporales: el agent
 
 <div class="highlight-exercise">
 
-## Ejercicio 8: Modelo ilustrativo de Diferencias Temporales
+## Ejercicio 8: Modelo ilustrativo de Diferencias Temporales (Q-learning)
 
 Para presentar la resolución de un ejercicio de **Diferencias Temporales (DT)** de forma que sea impecable y facilísima de calificar por cualquier evaluador en un examen, la mejor estrategia es estructurar el desarrollo mediante una **tabla de transiciones paso a paso** acompañada de un desglose aritmético explícito.
 
@@ -314,7 +316,7 @@ A continuación, resolvemos de manera óptima el **Ejercicio 8 del boletín de p
 
 ---
 
-### Datos Iniciales del Problema (Ejercicio 8) [8: 159]
+### Datos Iniciales del Problema (Ejercicio 8)
 
 - **Estados:** $S = \{s_1, s_2, s_3, s_4\}$
 - **Acciones:** $A = \{a_1, a_2\}$ (todas aplicables en cada estado).
