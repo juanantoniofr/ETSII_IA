@@ -1,12 +1,10 @@
 <link rel="stylesheet" href="../css/estilo.css">
 
-# Propagación hacia adelante
-
-## Ejercicios
-
-### Ejercicio 11
-
 <div class="highlight-exercise">
+
+## Propagación hacia adelante - Ejercicio 11
+
+### Enunciado
 
 Considera la red neuronal siguiente:
 
@@ -44,6 +42,8 @@ Se pide calcular el error absoluto medio, el error cuadrático medio y el coefic
 
 <div class="summary">
 
+## ¿Cómo abordar el Ejercicio 11?
+
 Para practicar pura _forward propagation_ (propagación hacia adelante), te recomiendo sin duda que empieces por el **Ejercicio 11** del boletín de Redes Neuronales.
 
 **¿Por qué el Ejercicio 11 es perfecto para empezar?**
@@ -64,21 +64,21 @@ Para cada uno de los 5 ejemplos de la tabla, deberás aplicar secuencialmente el
 4. Repite el proceso para la Capa 3 ($z^3 = W^3 a^2 + w_0^3$ y $a^3 = \sigma(z^3)$) y finalmente para la Capa 4 de salida, recordando que esta última usa la identidad, por lo que $a^4 = z^4$.
 5. Compara tu $a^4$ final con la $y$ real de la tabla para sacar los errores.
 
-**Si después de este quieres otro reto:**
-Una vez domines el 11, salta al **Ejercicio 12**. La dinámica es exactamente la misma (hacer _forward propagation_ para calcular errores), pero cambia la función de activación de las capas ocultas a la **función rectificador (ReLU)** y la red produce múltiples valores de salida simultáneos (predice 3 números a la vez), lo que te obligará a operar con matrices de distintas dimensiones.
-
-¿Quieres que tomemos el primer ejemplo del Ejercicio 11 (la fila $x_1=1.0, x_2=-1.9$) y hagamos el primer cálculo de propagación juntos paso a paso?
-
 </div>
 
 <div class="highlight-exercise">
 
 #### Solución
 
-¡Claro que sí! Aquí tienes el desglose matricial paso a paso de los dos primeros ejemplos para que puedas comprobar todas tus operaciones, junto con los resultados directos de los tres ejemplos siguientes y el cálculo de las métricas globales finales que pide el **Ejercicio 11**.
+Desglose matricial paso a paso de los dos primeros ejemplos para que puedas comprobar todas tus operaciones, junto con los resultados directos de los tres ejemplos siguientes y el cálculo de las métricas globales finales que pide el **Ejercicio 11**.
 
 _(Nota: Los resultados se muestran con 4 decimales en cada capa intermedia para evitar arrastrar errores de redondeo)._
 
+<div class="nota">
+
+**Recuerda la fórmula de la función sigmoide**: $\sigma(z) = \frac{1}{1 + e^{-z}}$ y su derivada: $\sigma^{\prime}(z) = \sigma(z)(1 - \sigma(z))$
+
+</div>
 ### Cálculos desarrollados (Ejemplos 1 y 2)
 
 **Ejemplo 1: $x = (1.0, -1.9)^T$, $y = -0.4$**
@@ -145,15 +145,15 @@ Ahora que hemos pasado por la red los 5 ejemplos del **Ejercicio 11**, podemos c
    $\frac{0.1037 + 0.0143 + 0.0343 + 0.0120 + 0.0577}{5} = \mathbf{0.0444}$
 
 3. **Coeficiente de Determinación ($R^2$):**
-   Aplicando la fórmula que comentamos en el mensaje anterior ($R^2 = 1 - \frac{\sum (y_i - a_i)^2}{\sum (y_i - \bar{y})^2}$), calculamos primero la media de las $y$ reales ($\bar{y} = -0.06$).
+   Aplicando la fórmula que comentamos en el mensaje anterior ($\large R^2 = 1 - \frac{\sum (y_i - a_i)^2}{\sum (y_i - \bar{y})^2}$), calculamos primero la media de las $y$ reales ($\bar{y} = -0.06$).
    La suma de los errores al cuadrado ya la tenemos (es $0.222$). La suma total de las varianzas en el denominador da $0.352$.
-   $R^2 = 1 - \frac{0.222}{0.352} = \mathbf{0.3695}$
+   $\large R^2 = 1 - \frac{0.222}{0.352} = \mathbf{0.3695}$
 
 _(Dato curioso de cara al examen: Al obtener casi un 0.37 en el $R^2$, significa que esta red neuronal con sus pesos iniciales solo es capaz de explicar el 37% de la varianza del problema. El modelo sigue siendo bastante malo y nos está pidiendo a gritos que apliquemos retropropagación para que mejore)._
 
 </div>
 
-<div class="highlight-theory">
+<div class="summary">
 
 ## Algoritmo de retropropagación
 
@@ -178,7 +178,7 @@ Por último, entra en juego tu factor de aprendizaje ($\eta$). Si estás actuali
 
 <div class="highlight-exercise">
 
-### Ejemplo de retropropagación paso a paso de un solo ejemplo del ejercicio 11
+## Ejemplo de retropropagación paso a paso de un solo ejemplo del ejercicio 11
 
 Para cerrar el círculo completo de todo lo que hemos hablado, vamos a unificar los tres pasos y desarrollar el ciclo completo de retropropagación para el **Primer Ejemplo del Ejercicio 11** ($x_1=1.0, x_2=-1.9$, cuya respuesta correcta era $y=-0.4$).
 

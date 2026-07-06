@@ -1,6 +1,10 @@
-# Clasificación multiclase
+<link rel="stylesheet" href="../css/estilo.css">
 
-## Ejercicio 13
+<div class="highlight-exercise">
+
+## Clasificación multiclase - Ejercicio 13
+
+### Enunciado
 
 Dada la siguiente red neuronal
 
@@ -98,4 +102,4 @@ $$\text{Coste del Ejemplo 1} = -1 \times \log_e(0.249) \approx \mathbf{1.390}$$
 Tendrás que repetir estos tres pasos para los **4 ejemplos restantes de la tabla**.
 Una vez que tengas los 5 costes calculados (uno por cada ejemplo), simplemente los sumas y los divides entre 5. El resultado final será la **entropía cruzada categórica media** de la red.
 
-¿Te animas a calcular a mano el segundo ejemplo ($x_1=-2.5, x_2=4.1, x_3=1.2$) y comprobamos si te sale bien la aplicación de softmax?
+</div>

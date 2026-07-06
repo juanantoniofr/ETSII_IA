@@ -4,17 +4,17 @@
 
 <div class="highlight-theory">
 
-## Métricas de rendimiento
+## Medidas de rendimiento
 
 Según los documentos de estudio y los boletines de problemas, las métricas de rendimiento se dividen en dos grandes grupos dependiendo de si estás resolviendo una tarea de **clasificación** o una tarea de **regresión**:
 
-**1. Métricas para modelos de Clasificación**
+**1. Medidas de rendimiento para modelos de Clasificación**
 Se utilizan cuando el objetivo es predecir una categoría o clase discreta (como el autor de una pintura o si un cliente comprará un viaje). Las métricas evaluadas son:
 
 - **Tasa de acierto (Accuracy):** Es la métrica más directa y se utiliza habitualmente en problemas de Naive Bayes, CART y kNN para seleccionar el mejor hiperparámetro. Mide el porcentaje global de predicciones correctas sobre el total del conjunto de prueba.
 - **Medidas derivadas de la Matriz de Confusión:** En ejercicios completos se pide construir la matriz de confusión sobre el conjunto de prueba y derivar "todas las medidas posibles de rendimiento". _(Como mencionamos en mensajes anteriores, esto abarca la tasa de verdaderos positivos/negativos, la precisión, la exhaustividad o el F1-score, analizando los fallos clase por clase)_.
 
-**2. Métricas para modelos de Regresión**
+**2. Medidas de rendimiento para modelos de Regresión**
 Se utilizan estrictamente cuando el objetivo es predecir un valor numérico continuo (como la cantidad de helado vendido o el volumen de un árbol). Estas métricas evalúan la distancia entre el número que predijo el modelo y el número real, y son:
 
 - **Error absoluto medio:** Calcula el promedio de las diferencias absolutas entre la predicción y el valor real.
@@ -58,55 +58,27 @@ La relación entre ambos conceptos queda muy clara en el **Ejercicio 16** (el pr
 
 <div class="highlight-theory">
 
-## Medidas de rendimento derivadas de la matriz de confusión
+## Evaluación y selección de modelos (Matriz de confusión y medidas derivadas)
 
-En el apartado 3 del **Ejercicio 9**, el enunciado te pide literalmente lo siguiente: **"Derivar a partir de esa matriz de confusión todas las medidas posibles de rendimiento del modelo"**.
+### Métricas de rendimiento para Modelos de Clasificación
 
-Al exigirte calcular "todas las posibles" en un problema de clasificación binaria (donde solo hay Pintor A y Pintor B), se espera que, una vez construyas la matriz cruzando los 5 ejemplos de prueba, extraigas las siguientes proporciones:
+**Matriz de confusión**
 
-1.  **Tasa de acierto (Accuracy) y Tasa de error:** El porcentaje de cuadros totales que tu árbol CART ha clasificado correctamente frente al porcentaje global en el que ha fallado.
+|                         | **Predicción: Clase Positiva** | **Predicción: Clase Negativa** |
+| :---------------------- | :----------------------------- | :----------------------------- |
+| **Clase Positiva Real** | Verdaderos Positivos (TP)      | Falsos Negativos (FN)          |
+| **Clase Negativa Real** | Falsos Positivos (FP)          | Verdaderos Negativos (TN)      |
 
-$$Accuracy = \frac{TP + TN}{TP + TN + FP + FN} \quad ; \quad Error = 1 - Accuracy$$
-
-2.  **Precisión (Precision):** De todos los cuadros que tu árbol ha dicho que son del "Pintor A", cuántos resultaron ser realmente del Pintor A.
-
-$$Precision = \frac{TP}{TP + FP}$$
-
-3.  **Sensibilidad o Tasa de verdaderos positivos (Recall):** De todos los cuadros que en la realidad pertenecían al "Pintor A", cuántos fue capaz de detectar tu modelo correctamente.
-
-$$Recall = \frac{TP}{TP + FN}$$
-
-4.  **Especificidad o Tasa de verdaderos negativos:** El mismo análisis que la sensibilidad, pero evaluando tu éxito a la hora de identificar la otra clase (el "Pintor B").
-
-$$Specificity = \frac{TN}{TN + FP}$$
-
-5.  **Tasas de fallos:** Tasa de falsos positivos y falsos negativos (el porcentaje de veces que el modelo predijo un pintor cuando en realidad era el otro).
-
-$$FPR = \frac{FP}{FP + TN} \quad ; \quad FNR = \frac{FN}{FN + TP}$$
-
-6.  **Medida F1 (F1-score):** La media armónica que combina la Precisión y la Sensibilidad en un solo número.
-
-$$F1 = 2 \cdot \frac{Precision \cdot Recall}{Precision + Recall}$$
-
-Básicamente, el ejercicio no busca que apliques una única fórmula, sino que demuestres que sabes "leer" la matriz de confusión sacando los porcentajes tanto por filas (los datos reales) como por columnas (las predicciones de tu árbol).
-
-</div>
-
-<div class="highlight-theory">
-
-## Evaluación y selección de modelos
-
-### Métricas para Modelos de Clasificación
-
-| Métrica                            | ¿Apropiada para?        | Fórmula                                   | Explicación                                                                                                               | Interpretación (Aspectos relevantes)                                                                                                       |
-| :--------------------------------- | :---------------------- | :---------------------------------------- | :------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Exactitud o Tasa de acierto**    | Clasificación (General) | $\frac{VP + VN}{\vert \mathcal{D} \vert}$ | Proporción total de ejemplos clasificados correctamente sobre el total de ejemplos evaluados ($\vert \mathcal{D} \vert$). | Sirve para evaluar el desempeño general del modelo. Sin embargo, puede ser una métrica engañosa si las clases están muy desequilibradas.   |
-| **Tasa de error**                  | Clasificación (General) | $\frac{FP + FN}{\vert \mathcal{D} \vert}$ | Proporción total de ejemplos que el modelo ha clasificado de manera incorrecta.                                           | Mide la frecuencia global de fallos del modelo. Es exactamente el valor complementario a la exactitud.                                     |
-| **Sensibilidad o Recuerdo (TPR)**  | Clasificación Binaria   | $\frac{VP}{VP + FN}$                      | Proporción de ejemplos positivos reales que el modelo ha clasificado correctamente.                                       | Evalúa la capacidad para detectar los casos positivos. Responde a: _de todos los casos positivos reales, ¿cuántos cazó el modelo?_         |
-| **Especificidad (TNR)**            | Clasificación Binaria   | $\frac{VN}{FP + VN}$                      | Proporción de ejemplos negativos reales que el modelo ha clasificado correctamente como negativos.                        | Evalúa la capacidad para detectar los casos negativos. Responde a: _de todos los casos negativos reales, ¿cuántos descartó el modelo?_     |
-| **Precisión**                      | Clasificación Binaria   | $\frac{VP}{VP + FP}$                      | Proporción de ejemplos realmente positivos de entre todos los que el modelo ha clasificado como positivos.                | Evalúa la fiabilidad de las alarmas del modelo. Responde a: _si el modelo dice "es positivo", ¿qué porcentaje de veces acierta realmente?_ |
-| **Tasa de falsos positivos (FPR)** | Clasificación Binaria   | $\frac{FP}{FP + VN}$                      | Proporción de ejemplos negativos reales que el modelo ha clasificado incorrectamente como positivos.                      | Representa la probabilidad de que el modelo lance una "falsa alarma".                                                                      |
-| **Tasa de falsos negativos (FNR)** | Clasificación Binaria   | $\frac{FN}{VP + FN}$                      | Proporción de ejemplos positivos reales que el modelo ha clasificado incorrectamente como negativos.                      | Representa la probabilidad de que el modelo pase por alto un caso positivo real.                                                           |
+| Métrica                            | ¿Apropiada para?        | Fórmula                                                        | Explicación                                                                                                               | Interpretación (Aspectos relevantes)                                                                                                       |
+| :--------------------------------- | :---------------------- | :------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Exactitud o Tasa de acierto**    | Clasificación (General) | $\frac{TP + TN}{\vert \mathcal{D} \vert}$                      | Proporción total de ejemplos clasificados correctamente sobre el total de ejemplos evaluados ($\vert \mathcal{D} \vert$). | Sirve para evaluar el desempeño general del modelo. Sin embargo, puede ser una métrica engañosa si las clases están muy desequilibradas.   |
+| **Tasa de error**                  | Clasificación (General) | $\frac{FP + FN}{\vert \mathcal{D} \vert}$                      | Proporción total de ejemplos que el modelo ha clasificado de manera incorrecta.                                           | Mide la frecuencia global de fallos del modelo. Es exactamente el valor complementario a la exactitud.                                     |
+| **Sensibilidad o Recuerdo (TPR)**  | Clasificación Binaria   | $\frac{TP}{TP + FN}$                                           | Proporción de ejemplos positivos reales que el modelo ha clasificado correctamente.                                       | Evalúa la capacidad para detectar los casos positivos. Responde a: _de todos los casos positivos reales, ¿cuántos cazó el modelo?_         |
+| **Especificidad (TNR)**            | Clasificación Binaria   | $\frac{TN}{FP + TN}$                                           | Proporción de ejemplos negativos reales que el modelo ha clasificado correctamente como negativos.                        | Evalúa la capacidad para detectar los casos negativos. Responde a: _de todos los casos negativos reales, ¿cuántos descartó el modelo?_     |
+| **Precisión**                      | Clasificación Binaria   | $\frac{TP}{TP + FP}$                                           | Proporción de ejemplos realmente positivos de entre todos los que el modelo ha clasificado como positivos.                | Evalúa la fiabilidad de las alarmas del modelo. Responde a: _si el modelo dice "es positivo", ¿qué porcentaje de veces acierta realmente?_ |
+| **Tasa de falsos positivos (FPR)** | Clasificación Binaria   | $\frac{FP}{FP + TN}$                                           | Proporción de ejemplos negativos reales que el modelo ha clasificado incorrectamente como positivos.                      | Representa la probabilidad de que el modelo lance una "falsa alarma".                                                                      |
+| **Tasa de falsos negativos (FNR)** | Clasificación Binaria   | $\frac{FN}{TP + FN}$                                           | Proporción de ejemplos positivos reales que el modelo ha clasificado incorrectamente como negativos.                      | Representa la probabilidad de que el modelo pase por alto un caso positivo real.                                                           |
+| **Medida F1 (F1-score)**           | Clasificación Binaria   | $\large 2 * \frac{Precisión * Recuerdo}{Precisión + Recuerdo}$ | Media armónica entre la Precisión y la Sensibilidad.                                                                      | Combina en un solo valor la fiabilidad de las alarmas del modelo y su capacidad para detectar los casos positivos.                         |
 
 - TPR -> True Positive Rate
 - TNR -> True Negative Rate

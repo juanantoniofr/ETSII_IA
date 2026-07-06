@@ -1015,7 +1015,7 @@ Revisando todos los planes anteriores, el plan de menor coste es el "Plan relaja
 
 <div class="highlight-exercise">
 
-## Ejercicio 9
+## Ejercicio 9 - cálculo de planes relajados y heurística $h^+$
 
 Consideremos el siguiente problema de planificación automática:
 
@@ -1167,7 +1167,7 @@ La consecuencia teórica y matemática de tu deducción, y lo que cierra el ejer
 
 <div class="highlight-exercise">
 
-## Ejercicio 11
+## Ejercicio 11 - heurísticas $h^{max}$ y $h^{add}$
 
 Consideremos el siguiente problema de planificación automática:
 
@@ -1261,7 +1261,7 @@ Sabiendo que nuestro objetivo global es $G = \{H_1, H_4, H_5\}$, aplicamos las f
 
 <div class="highlight-exercise">
 
-## Ejercicio 12
+## Ejercicio 12 - heurísticas $h^{max}$ y $h^{add}$
 
 Consideremos el siguiente problema de planificación automática:
 
@@ -1329,10 +1329,46 @@ Para todos los hechos ($H_1$ a $H_6$), manteniendo estrictamente tu estructura d
   - Coste acción E: (como hay dos precondiciones, tomamos el máximo y la suma de sus costes)
     - $h^{max}$ = $\max(T_1(H_4), T_1(H_6)) + 3 = \max(3, 3) + 3 = 6$
     - $h^{add}$ = $(T_1(H_4) + T_1(H_6)) + 3 = (3 + 3) + 3 = 9$
-      **Por último actualizamos la tabla para $H_1$** -> $T_2(H_1):
-    - h^{max} = \min($T_1(H_1), Coste de E, Coste de F$) = \min(\infty, 6, \infty) = 6
-    - h^{add} = \min($T_1(H_1), Coste de E, Coste de F$) = \min(\infty, 9, \infty) = 9$
-  **En nuestro formato unificado, $T_2(H_1) = [6, 9]$\*\*
+    - **Por último actualizamos la tabla para $H_1$** -> $T_2(H_1):
+      - h^{max} = \min($T_1(H_1), Coste_acumulado de E, Coste_acumulado de F$) = \min(\infty, 6, \infty) = 6
+      - h^{add} = \min($T_1(H_1), Coste_acumulado de E, Coste_acumulado de F$) = \min(\infty, 9, \infty) = 9$
+      \*\*En nuestro formato unificado, $T_2(H_1) = [6, 9]$\*\*
+
+<div class="summary">
+  
+## Coste nominal de una acción versus coste acumulado
+
+**No, el coste de la acción $F$ en ese paso de la programación dinámica es efectivamente infinito ($\infty$) y no $3$.**
+
+La confusión suele venir de mezclar el **coste nominal de la acción** con el **coste acumulado** de la misma dentro del algoritmo de planificación clásica relajada.
+
+### 1. La fórmula del coste acumulado de una acción
+
+En cada iteración $T_i$, el coste de una acción $a$ no es únicamente su coste por sí misma ($c_a$), sino la suma del coste necesario para alcanzar sus precondiciones en el paso anterior más el coste de ejecutar la propia acción:
+$$\text{Coste}_{T_i}(a) = \text{Coste}_{T_{i-1}}(pre(a)) + c_a$$
+
+En el caso de la acción $F$, su única precondición es $H_3$ y su coste nominal de ejecución es $c_F = 3$. Por tanto:
+$$\text{Coste}_{T_2}(F) = T_1(H_3) + c_F = T_1(H_3) + 3$$
+
+### 2. ¿Por qué $T_1(H_3)$ es infinito?
+
+En el paso anterior $T_1$, el hecho $H_3$ aún es inalcanzable a partir de nuestro estado inicial $\{H_2\}$:
+
+- Las acciones que añaden $H_3$ son la acción $A$ (que requiere $H_1$, el cual vale $\infty$ en $T_0$) y la acción $C$ (que requiere $H_4$, el cual vale $\infty$ en $T_0$).
+- Como ninguna de estas acciones se pudo completar en la primera iteración a partir de los hechos del estado inicial, el coste acumulado para obtener $H_3$ en el paso $T_1$ es $T_1(H_3) = \infty$.
+
+Al aplicar la regla del algoritmo, el coste de $F$ se anula debido a su precondición pendiente:
+$$\text{Coste}_{T_2}(F) = \infty + 3 = \infty$$
+
+### Conclusión teórica para el examen
+
+En la **relajación del borrado**, lo que eliminamos son los efectos negativos (las listas de borrado), pero **las precondiciones siguen siendo estrictamente obligatorias**. Si una de las precondiciones necesarias para ejecutar una acción tiene coste infinito, la acción no se puede aplicar bajo ningún concepto y su coste acumulado se mantiene en infinito.
+
+---
+
+📊 ¿Te gustaría que calculemos juntos el paso $T_2$ para el resto de hechos ($H_3$ o $H_5$) y ver cómo $H_3$ por fin deja de ser infinito gracias a la acción $C$, abriendo el camino para activar la acción $F$ en $T_3$?
+
+</div>
 
 - **$T_2(H_2)$**:
   - Acciones que añaden $H_2$: D (pre: $H_2$ y coste 3) y E (pre: $H_4$ y $H_6$ y coste 3)
@@ -1341,40 +1377,38 @@ Para todos los hechos ($H_1$ a $H_6$), manteniendo estrictamente tu estructura d
   - Coste acción E:
     - $h^{max}$ = $\max(T_1(H_4), T_1(H_6)) + 3 = \max(3, 3) + 3 = 6$
     - $h^{add}$ = $(T_1(H_4) + T_1(H_6)) + 3 = (3 + 3) + 3 = 9$
-      **Por último actualizamos la tabla para $H_2$** -> $T_2(H_2):
-    - h^{max} = \min($T_1(H_2), Coste de D, Coste de E$) = \min(0, 3, 6) = 0
-    - h^{add} = \min($T_1(H_2), Coste de D, Coste de E$) = \min(0, 3, 9) = 0$
-  **En nuestro formato unificado, $T_2(H_2) = [0, 0]$\*\*
+    - **Por último actualizamos la tabla para $H_2$** -> $T_2(H_2):
+      - h^{max} = \min($T_1(H_2), Coste_acumulado de D, Coste_acumulado de E$) = \min(0, 3, 6) = 0
+      - h^{add} = \min($T_1(H_2), Coste_acumulado de D, Coste_acumulado de E$) = \min(0, 3, 9) = 0$
+      \*\*En nuestro formato unificado, $T_2(H_2) = [0, 0]$\*\*
 
 - **$T_2(H_3)$**:
   - Acciones que añaden $H_3$: A (pre: $H_1$ y coste 3) y C (pre: $H_4$ y coste 2).
   - Por A, miramos los costes acumulados de $H_1$ en $T_1$: **$T_1(H_1) = \infty$**, y por C, miramos los costes acumulados de $H_4$ en $T_1$: **$T_1(H_4) = 3$**
   - Coste acción A ($h^{max}$ y $h^{add}$): $T_1(H_1) + 3 = \infty + 3 = \infty$
   - Coste acción C: ($h^{max}$ y $h^{add}$): $T_1(H_4) + 2 = 3 + 2 = 5$
-    **Por último actualizamos la tabla para $H_3$** -> $T_2(H_3):
-    - h^{max} = \min($T_1(H_3), Coste de A, Coste de C$) = \min(\infty, \infty, 5) = 5
-    - h^{add} = \min($T_1(H_3), Coste de A, Coste de C$) = \min(\infty, \infty, 5) = 5$
+  - **Por último actualizamos la tabla para $H_3$** -> $T_2(H_3):
+    - h^{max} = \min($T_1(H_3), Coste_acumulado de A, Coste_acumulado de C$) = \min(\infty, \infty, 5) = 5
+    - h^{add} = \min($T_1(H_3), Coste_acumulado de A, Coste_acumulado  de C$) = \min(\infty, \infty, 5) = 5$
       **En nuestro formato unificado, $T_2(H_3) = [5, 5]**
+
 - **$T_2(H_4)$**:
   - Acciones que añaden $H_4$: A (pre: $H_1$ y coste 3) y D (pre: $H_2$ y coste 3)
   - Costes acumulados:
     - Por A: $T_1(H_1) = \infty$, coste acción A = $\infty + 3 = \infty$
     - Por D: $T_1(H_2) = 0$, coste acción D = $0 + 3 = 3$
-    <div class="nota">
-      <b>Recuerda:</b> Si solo tenemos una precondición, los costes acumulados de $h^{max}$ y $h^{add}$ son iguales, por lo que no es necesario calcularlos por separado.
-    </div>
+  - **Por último actualizamos la tabla para $H_4$** -> $T_2(H_4):
+    - h^{max} = \min($T_1(H_4), Coste_acumulado de A, Coste_acumulado de D$) = \min(3, \infty, 3) = 3
+    - h^{add} = \min($T_1(H_4), Coste_acumulado de A, Coste_acumulado  de D$) = \min(3, \infty, 3) = 3$
+      **En nuestro formato unificado, $T_2(H_4) = [3, 3]**
 
-  **Por último actualizamos la tabla para $H_4$** -> $T_2(H_4):
-  - h^{max} = \min($T_1(H_4), Coste de A, Coste de D$) = \min(3, \infty, 3) = 3
-  - h^{add} = \min($T_1(H_4), Coste de A, Coste de D$) = \min(3, \infty, 3) = 3$
-    **En nuestro formato unificado, $T_2(H_4) = [3, 3]**
+  <div class="nota">
+    <b>Recuerda:</b> Si solo tenemos una precondición, los costes acumulados de $h^{max}$ y $h^{add}$ son iguales, por lo que no es necesario calcularlos por separado.
+  </div>
 
 - **$T_2(H_5)$**:
   - Acciones que añaden $H_5$: B (pre: ($H_3$ y $H_4$) y coste 2), D (pre: $H_2$ y coste 3) y E (pre: $H_4$ y $H_6$ y coste 3)
   - Miramos los costes acumulados:
-  <div class="nota">
-    <b>Recuerda:</b> Si tenemos más de una precondición, los costes acumulados de $h^{max}$ y $h^{add}$ se evalúan separadamente, el primero toma el valor máximo y el segundo la suma de los costes.
-  </div>
   - Por B:
     - $h^{max}$ = $\max(T_1(H_3), T_1(H_4)) + 2 = \max(\infty, 3) + 2 = \infty$
     - $h^{add}$ = $(T_1(H_3) + T_1(H_4)) + 2 = (\infty + 3) + 2 = \infty$
@@ -1382,11 +1416,15 @@ Para todos los hechos ($H_1$ a $H_6$), manteniendo estrictamente tu estructura d
   - Por E:
     - $h^{max}$ = $\max(T_1(H_4), T_1(H_6)) + 3 = \max(3, 3) + 3 = 6$
     - $h^{add}$ = $(T_1(H_4) + T_1(H_6)) + 3 = (3 + 3) + 3 = 9$
+  - **Por último actualizamos la tabla para $H_5$** -> $T_2(H_5):
+    - h^{max} = \min($T_1(H_5), Coste_acumulado de B, Coste_acumulado de D, Coste_acumulado de E$) = \min(\infty, \infty, 3, 6) = 3
+    - h^{add} = \min($T_1(H_5), Coste_acumulado de B, Coste_acumulado de D, Coste_acumulado de E$) = \min(\infty, \infty, 3, 9) = 3$
 
-  **Por último actualizamos la tabla para $H_5$** -> $T_2(H_5):
-  - h^{max} = \min($T_1(H_5), Coste de B, Coste de D, Coste de E$) = \min(\infty, \infty, 3, 6) = 3
-  - h^{add} = \min($T_1(H_5), Coste de B, Coste de D, Coste de E$) = \min(\infty, \infty, 3, 9) = 3$
-    **En nuestro formato unificado, $T_2(H_5) = [3, 3]**
+  **En nuestro formato unificado, $T_2(H_5) = [3, 3]**
+
+  <div class="nota">
+    <b>Recuerda:</b> Si tenemos más de una precondición, los costes acumulados de $h^{max}$ y $h^{add}$ se evalúan separadamente, el primero toma el valor máximo y el segundo la suma de los costes.
+  </div>
 
 - **$T_2(H_6)$**:
   - Acciones que añaden $H_6$: B (pre: ($H_3$ y $H_4$) y coste 2), C (pre: $H_4$ y coste 2), D (pre: $H_2$ y coste 3) y F (pre: $H_3$ y coste 3)
@@ -1397,10 +1435,9 @@ Para todos los hechos ($H_1$ a $H_6$), manteniendo estrictamente tu estructura d
     - Por C: $T_1(H_4) + 2 = 3 + 2 = 5$ (para ambos $h^{max}$ y $h^{add}$)
     - Por D: $T_1(H_2) + 3 = 0 + 3 = 3$ (para ambos $h^{max}$ y $h^{add}$)
     - Por F: $T_1(H_3) + 3 = \infty + 3 = \infty$ (para ambos $h^{max}$ y $h^{add}$)
-
-  **Por último actualizamos la tabla para $H_6$** -> $T_2(H_6):
-  - h^{max} = \min($T_1(H_6), Coste de B, Coste de C, Coste de D, Coste de F$) = \min(\infty, \infty, 5, 3, \infty) = 3
-  - h^{add} = \min($T_1(H_6), Coste de B, Coste de C, Coste de D, Coste de F$) = \min(\infty, \infty, 5, 3, \infty) = 3$
+  - **Por último actualizamos la tabla para $H_6$** -> $T_2(H_6):
+    - h^{max} = \min($T_1(H_6), Coste_acumulado de B, Coste_acumulado de C, Coste_acumulado de D, Coste_acumulado de F$) = \min(\infty, \infty, 5, 3, \infty) = 3
+    - h^{add} = \min($T_1(H_6), Coste_acumulado de B, Coste_acumulado de C, Coste_acumulado de D, Coste_acumulado de F$) = \min(\infty, \infty, 5, 3, \infty) = 3$
 
 **Resultado de la iteración 2 ($T_2$)**
 
@@ -1420,10 +1457,10 @@ Para todos los hechos ($H_1$ a $H_6$), manteniendo estrictamente tu estructura d
   - Coste acción E:
     - $h^{max}$ = $\max(T_2(H_4), T_2(H_6)) + 3 = \max(3, 3) + 3 = 6$
     - $h^{add}$ = $(T_2(H_4) + T_2(H_6)) + 3 = (3 + 3) + 3 = 9$
-      **Por último actualizamos la tabla para $H_1$** -> $T_3(H_1):
-    - h^{max} = \min($T_2(H_1), Coste de E, Coste de F$) = \min(6, 6, 8) = 6
-    - h^{add} = \min($T_2(H_1), Coste de E, Coste de F$) = \min(9, 9, 8) = 8$
-      **En nuestro formato unificado, $T_3(H_1) = [6, 8]$\*\*
+    - **Por último actualizamos la tabla para $H_1$** -> $T_3(H_1):
+      - h^{max} = \min($T_2(H_1), Coste_acumulado de E, Coste_acumulado de F$) = \min(6, 6, 8) = 6
+    - h^{add} = \min($T_2(H_1), Coste_acumulado de E, Coste_acumulado de F$) = \min(9, 9, 8) = 8$
+    **En nuestro formato unificado, $T_3(H_1) = [6, 8]$**
 
 Para completar formalmente el **Ejercicio 12** y demostrar en el examen que has llegado a la estabilización de la tabla, aquí tienes el desglose detallado de los cálculos que faltan para el resto de los hechos en la **Iteración 3 ($T_3$)**, la comprobación de parada en la **Iteración 4 ($T_4$)** y el cálculo de los valores heurísticos finales.
 
@@ -1431,7 +1468,7 @@ Para completar formalmente el **Ejercicio 12** y demostrar en el examen que has 
 
 ### Paso 1: Completar la Iteración 3 ($T_3$) para el resto de hechos
 
-Dado que ya calculaste con total precisión que $T_3(H_1) =$, evaluamos el resto de hechos basándonos en la columna anterior ($T_2$):
+Dado que ya calculaste con total precisión que $T_3(H_1) = [6, 8]$, evaluamos el resto de hechos basándonos en la columna anterior ($T_2$):
 
 - **$T_3(H_2)$:**
   - Acciones que añaden $H_2$: B, E y F.
@@ -1498,7 +1535,7 @@ Dado que ya calculaste con total precisión que $T_3(H_1) =$, evaluamos el resto
 Como muy bien identificaste, al haber cambiado un coste en la columna anterior ($H_1$ bajó a $8$ en $h^{add}$), el algoritmo nos obliga a realizar la columna $T_4$ para demostrar que ya no hay más cambios:
 
 1.  **Evaluamos la Acción A en $T_3$:**
-    Dado que $T_3(H_1) =$, su coste base baja ligeramente para $h^{add}$:
+    Dado que $T_3(H_1) = 8$, su coste base baja ligeramente para $h^{add}$:
     - $h^{max} = 6 + 3 = 9$
     - $h^{add} = T_3(H_1) + 3 = 8 + 3 = 11$
 2.  **Actualizamos $T_4(H_3)$:**
@@ -1547,12 +1584,12 @@ Registrar qué hechos "añade" cada acción que se vuelve aplicable en una itera
 
 Aquí hay una **confusión conceptual muy común** entre las heurísticas $h^{max}$, $h^{add}$ y $h^+$ que debes separar claramente en tus apuntes:
 
-- **La heurística $h^+$ NO se calcula con la tabla de programación dinámica:** El valor de $h^+(s)$ representa el coste de un _plan relajado óptimo_. La única forma de calcular $h^+(s)$ de forma exacta es aplicando el algoritmo voraz explorando **todas las ramas posibles** (todas las combinaciones de acciones), medir el coste de cada plan relajado válido y quedarte con el mínimo . Como este cálculo es de coste exponencial (NP-difícil), en la práctica no se usa una tabla para él [Excerpt 87, 91].
+- **La heurística $h^+$ NO se calcula con la tabla de programación dinámica:** El valor de $h^+(s)$ representa el coste de un _plan relajado óptimo_. La única forma de calcular $h^+(s)$ de forma exacta es aplicando el algoritmo voraz explorando **todas las ramas posibles** (todas las combinaciones de acciones), medir el coste de cada plan relajado válido y quedarte con el mínimo . Como este cálculo es de coste exponencial (NP-difícil), en la práctica no se usa una tabla para él.
 - **La tabla sirve para aproximar $h^+$ a través de $h^{max}$ y $h^{add}$ [Excerpt 91]:** Dado que el Ejercicio 12 te pide calcular expresamente tanto $h^{max}$ como $h^{add}$, **sí, debes calcular la suma de las precondiciones, pero únicamente para rellenar la tabla de $h^{add}$**.
 
 Para tu examen, la regla de oro para combinar precondiciones en tus tablas es:
 
-1.  **Si estás calculando la tabla de $h^{max}$:** Para cualquier acción con múltiples precondiciones, calculas su coste utilizando el **máximo** de los costes de sus precondiciones en la iteración anterior [Excerpt 88].
+1.  **Si estás calculando la tabla de $h^{max}$:** Para cualquier acción con múltiples precondiciones, calculas su coste utilizando el **máximo** de los costes de sus precondiciones en la iteración anterior.
     $$c_{pre(a)} = \max(T_{i-1}(g') \mid g' \in pre(a))$$
 2.  **Si estás calculando la tabla de $h^{add}$:** Para esa misma acción, calculas su coste utilizando la **suma** de los costes de sus precondiciones.
     $$c_{pre(a)} = \sum_{g' \in pre(a)} T_{i-1}(g')$$

@@ -1,4 +1,10 @@
+<link rel="stylesheet" href="../css/estilo.css">
+
+<div class="highlight-exercise">
+
 ## Ejercicio 1
+
+### Enunciado
 
 Consideremos un dominio de planificación automática consistente en **furgonetas conducidas por conductores para transportar paquetes entre distintos lugares**.
 
@@ -24,7 +30,7 @@ En este dominio los hechos se especifican a partir de los siguientes predicados:
     - `conducir(c, f, l1, l2)`: representa que el conductor `c` conduce por carretera la furgoneta `f` del lugar `l1` al lugar `l2`.
     - `caminar(c, l1, l2)`: representa que el conductor `c` va andando por un camino del lugar `l1` al lugar `l2`.
 
-**Solución:**
+### Solución
 
 - `cargar_furgoneta(p, f, l)`: representa que en el lugar `l` se carga el paquete `p` en la furgoneta `f`.
   - _Precondiciones:_ furgoneta_en(f,l), paquete_en(p,l)
@@ -57,7 +63,10 @@ En este dominio los hechos se especifican a partir de los siguientes predicados:
   - _Lista de borrado_: conductor_en(c,l1)
   - _Lista de adicción_: conductor_en(c,l2)
 
-2.  **Representar el estado inicial y el objetivo** de un problema en ese dominio en el que:
+### Se pide:
+
+**Representar el estado inicial y el objetivo de un problema en ese dominio en el que**
+
     - Hay tres lugares: `L1`, `L2` y `L3`.
     - Hay dos furgonetas: `F1` y `F2`.
     - Hay dos conductores: `C1` y `C2`.
@@ -71,7 +80,7 @@ En este dominio los hechos se especifican a partir de los siguientes predicados:
       - La furgoneta `F1` se encuentre en el lugar `L1`,
       - El conductor `C2` se encuentre en el lugar `L2`.
 
-**Solución**
+### Solución
 
 - _Estado inicial:_
   - furgoneta_en(F1,L1), conductor_en(C1,L1), paquete_en(P1,L1)
@@ -85,7 +94,11 @@ En este dominio los hechos se especifican a partir de los siguientes predicados:
   - furgoneta_en(F1,L1)
   - conductor_en(C2,L2), conductor_en(C1,L3)
 
-3.  **Especificar un posible plan solución** del problema anterior y comprobar que efectivamente lo es describiendo la secuencia de estados que se obtiene al aplicar las acciones contenidas en el plan.
+### Se pide:
+
+**Especificar un posible plan solución** del problema anterior y comprobar que efectivamente lo es describiendo la secuencia de estados que se obtiene al aplicar las acciones contenidas en el plan.
+
+### Solución
 
 **Plan:** {cargar_furgoneta(P1,F1,L1), subir_a(C1,F1,L1), conducir(C1,F1,L1,L3), descargar_furgoneta(P1,F1,L3), bajar_de(C1,F1,L3), cargar_furgoneta(P2,F2,L2), subir_a(C2,F2,L2), conducir(C2,F2,L2,L3), descargar_furgoneta(P2,F2,L3), bajar_de(C2,F2,L3), subir_a(C2,F1,L3), conducir(C2,F1,L3,L1), bajar_de(C2,F1,L1),caminar(C2,L1,L2)}
 
@@ -111,80 +124,68 @@ En este dominio los hechos se especifican a partir de los siguientes predicados:
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - cargado_en(P1,F1), conduciendo(C1,F1)
-- ## **conducir(C1,F1,L1,L3)**
+- **conducir(C1,F1,L1,L3)**
   - furgoneta_en(F2,L2), conductor_en(C2,L2), paquete_en(P2,L2)
   - sin_conductor(F2)
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - cargado_en(P1,F1), conduciendo(C1,F1), furgoneta_en(F1,L3)
-- ## **bajar_de(C1,F1,L3)**
+- **bajar_de(C1,F1,L3)**
   - furgoneta_en(F2,L2), conductor_en(C2,L2), paquete_en(P2,L2)
   - sin_conductor(F2)
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - cargado_en(P1,F1), furgoneta_en(F1,L3), sin_conductor(F1), **conductor_en(C1,L3)**
-- ## **descargar_furgoneta(P1,F1,L3)**
+- **descargar_furgoneta(P1,F1,L3)**
   - furgoneta_en(F2,L2), conductor_en(C2,L2), paquete_en(P2,L2)
   - sin_conductor(F2)
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - furgoneta_en(F1,L3), sin_conductor(F1), **conductor_en(C1,L3)**, **paquete_en(P1,L3)**
-- ## **cargar_furgoneta(P2,F2,L2)**
+- **cargar_furgoneta(P2,F2,L2)**
   - furgoneta_en(F2,L2), conductor_en(C2,L2)
   - sin_conductor(F2)
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - furgoneta_en(F1,L3), sin_conductor(F1), **conductor_en(C1,L3)**, **paquete_en(P1,L3)**, paquete_en(P1,F2)
-- ## **subir_a(C2,F2,L2)**
+- **subir_a(C2,F2,L2)**
   - furgoneta_en(F2,L2),
   -
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - furgoneta_en(F1,L3), sin_conductor(F1), **conductor_en(C1,L3)**, **paquete_en(P1,L3)**, paquete_en(P1,F2), conduciendo(C2,F2)
-- ## **conducir(C2,F2,L2,L3)**
-  -
-  -
+- **conducir(C2,F2,L2,L3)**
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - furgoneta_en(F1,L3), sin_conductor(F1), **conductor_en(C1,L3)**, **paquete_en(P1,L3)**, paquete_en(P1,F2), conduciendo(C2,F2), furgoneta_en(F2,L3)
-- ## **bajar_de(C2,F2,L3)**
-  -
-  -
+- **bajar_de(C2,F2,L3)**
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - furgoneta_en(F1,L3), sin_conductor(F1), **conductor_en(C1,L3)**, **paquete_en(P1,L3)**, paquete_en(P1,F2), furgoneta_en(F2,L3), sin_conductor(F2), conductor_en(C2,L3)
-- ## **descargar_furgoneta(P2,F2,L3)**
-  -
-  -
+- **descargar_furgoneta(P2,F2,L3)**
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - furgoneta_en(F1,L3), sin_conductor(F1), **conductor_en(C1,L3)**, **paquete_en(P1,L3)**, furgoneta_en(F2,L3), sin_conductor(F2), conductor_en(C2,L3), **paquete_en(P2,L3)**
-- ## **subir_a(C2,F1,L3)**
-  -
-  -
+- **subir_a(C2,F1,L3)**
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - furgoneta_en(F1,L3), **conductor_en(C1,L3)**, **paquete_en(P1,L3)**, furgoneta_en(F2,L3), sin_conductor(F2), conductor_en(C2,L3), **paquete_en(P2,L3)**, conduciendo(C2,F1,)
-- ## **conducir(C2,F1,L3,L1)**
-  -
-  -
+- **conducir(C2,F1,L3,L1)**
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - **conductor_en(C1,L3)**, **paquete_en(P1,L3)**, furgoneta_en(F2,L3), sin_conductor(F2), conductor_en(C2,L3), **paquete_en(P2,L3)**, conduciendo(C2,F1),**furgoneta_en(F1,L1)**
-- ## **bajar_de(C2,F1,L1)**
-  -
-  -
+- **bajar_de(C2,F1,L1)**
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - **conductor_en(C1,L3)**, **paquete_en(P1,L3)**, furgoneta_en(F2,L3), sin_conductor(F2), conductor_en(C2,L3), **paquete_en(P2,L3)**, **furgoneta_en(F1,L1)**, conductor_en(C2,L1)
-- ## **caminar(C2,L1,L2)**
-  -
-  -
+- **caminar(C2,L1,L2)**
   - hay_carretera(L1,L3), hay_carretera(L2,L3), hay_carretera(L3,L1), hay_carretera(L3,L2)
   - Hay camino(L1,L2), Hay camino(L2,L1)
   - **conductor_en(C1,L3)**, **paquete_en(P1,L3)**, furgoneta_en(F2,L3), sin_conductor(F2), conductor_en(C2,L3), **paquete_en(P2,L3)**, **furgoneta_en(F1,L1)**, **conductor_en(C2,L2)**
 
 ---
+
+</div>
 
 ## Ejercicio 2
 

@@ -495,7 +495,7 @@ Es exactamente la misma filosofía de ahorro de recursos que estudiamos en el al
 
 <div class="highlight-exercise">
 
-## Ejercicio 7 del robot en la cuadrícula\*\* utilizando la imagen que has compartido.
+## Ejercicio 7 - Q-learning en la cuadrícula.
 
 Este tipo de ejercicio es un clásico de examen y resolverlo de forma estructurada te asegurará la máxima nota de forma directa.
 
